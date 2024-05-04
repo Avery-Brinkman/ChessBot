@@ -6,39 +6,39 @@ using Piece = uint_fast8_t;
 
 namespace Engine_NS {
 
-enum PieceBits : uint_fast8_t {
-  None = 0U,
-  Pawn = 1U,
-  Knight = 2U,
-  Bishop = 3U,
-  Rook = 4U,
-  Queen = 5U,
-  King = 6U,
-};
+// Flags
+constexpr Piece TypeFlag = 0b0111;
+constexpr Piece ColorFlag = 0b1000;
 
-enum ColorBits : uint_fast8_t {
-  White = 0U,
-  Black = 8U,
-};
+// Types
 
-namespace Pieces {
+constexpr Piece None = 0b0000;
+constexpr Piece Pawn = 0b0001;
+constexpr Piece Knight = 0b0010;
+constexpr Piece Bishop = 0b0011;
+constexpr Piece Rook = 0b0100;
+constexpr Piece Queen = 0b0101;
+constexpr Piece King = 0b0110;
 
-constexpr Piece None = PieceBits::None;
+// Colors
 
-constexpr Piece WhitePawn = PieceBits::Pawn | ColorBits::White;
-constexpr Piece WhiteKnight = PieceBits::Knight | ColorBits::White;
-constexpr Piece WhiteBishop = PieceBits::Bishop | ColorBits::White;
-constexpr Piece WhiteRook = PieceBits::Rook | ColorBits::White;
-constexpr Piece WhiteQueen = PieceBits::Queen | ColorBits::White;
-constexpr Piece WhiteKing = PieceBits::King | ColorBits::White;
+constexpr Piece White = 0b0000;
+constexpr Piece Black = 0b1000;
 
-constexpr Piece BlackPawn = PieceBits::Pawn | ColorBits::Black;
-constexpr Piece BlackKnight = PieceBits::Knight | ColorBits::Black;
-constexpr Piece BlackBishop = PieceBits::Bishop | ColorBits::Black;
-constexpr Piece BlackRook = PieceBits::Rook | ColorBits::Black;
-constexpr Piece BlackQueen = PieceBits::Queen | ColorBits::Black;
-constexpr Piece BlackKing = PieceBits::King | ColorBits::Black;
+// Pieces
 
-} // namespace Pieces
+constexpr Piece WhitePawn = Pawn | White;
+constexpr Piece WhiteKnight = Knight | White;
+constexpr Piece WhiteBishop = Bishop | White;
+constexpr Piece WhiteRook = Rook | White;
+constexpr Piece WhiteQueen = Queen | White;
+constexpr Piece WhiteKing = King | White;
+
+constexpr Piece BlackPawn = Pawn | Black;
+constexpr Piece BlackKnight = Knight | Black;
+constexpr Piece BlackBishop = Bishop | Black;
+constexpr Piece BlackRook = Rook | Black;
+constexpr Piece BlackQueen = Queen | Black;
+constexpr Piece BlackKing = King | Black;
 
 } // namespace Engine_NS

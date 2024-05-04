@@ -11,12 +11,13 @@ class Bot {
 public:
   void startNewGame();
 
+  void setToStartPosition();
+
   void setPosition(std::string_view position);
+
+  void makeMove(std::string_view move);
 
 private:
   Board m_board = {};
-
-  std::forward_list<Move> m_moves = {};
-  std::forward_list<Move>::iterator m_lastMove;
 };
 } // namespace Engine_NS
