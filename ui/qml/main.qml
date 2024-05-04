@@ -39,7 +39,15 @@ Rectangle {
                     margins: 2
                 }
                 radius: height / 2
-                color: model.hasValidMove ? "red" : "transparent"
+                color: {
+                    if (model.hasValidMove)
+                        return "green";
+                    if (model.hasValidCapture)
+                        return "red";
+                    if (boardModel.debugEnabled && model.debugInfo)
+                        return "purple";
+                    return "transparent";
+                }
             }
 
             Image {
@@ -50,12 +58,22 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if (model.hasValidMove) 
-                        model.moveHere = true
+                    if (model.hasValidMove || model.hasValidCapture) 
+                        model.moveHere = true;
                     else
-                        model.selected = true
+                        model.selected = true;
                 }
             }
         }
+    }
+
+    DebugPanel {
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: board.right
+            right: parent.right
+        }
+        model: boardModel
     }
 }

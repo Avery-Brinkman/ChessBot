@@ -23,15 +23,20 @@ public:
   Piece getPiece(size_t index) const;
 
   BitBoard getValidMoves(size_t index) const;
+  BitBoard getValidCaptures(size_t index) const;
 
   void movePiece(size_t from, size_t to);
+  void capturePiece(size_t from, size_t to);
+
+protected:
+  BitBoard getEnPassantMask() const;
 
 private:
   BitBoard getWhitePieces() const;
   BitBoard getBlackPieces() const;
 
-  BitBoard getValidWhitePawnMoves(size_t index) const;
-  BitBoard getValidBlackPawnMoves(size_t index) const;
+  BitBoard getValidPawnMoves(size_t index) const;
+  BitBoard getValidPawnCaptures(size_t index) const;
   BitBoard getValidKnightMoves(size_t index) const;
   BitBoard getValidWhiteBishopMoves(size_t index) const;
   BitBoard getValidBlackBishopMoves(size_t index) const;
@@ -45,6 +50,8 @@ private:
 
   void addPiece(Piece piece, size_t index);
   void removePiece(Piece piece, size_t index);
+
+  void updateBitBoards(size_t from, size_t to, Piece movedPiece, Piece capturedPiece = None);
 
   std::array<Piece, 64> m_board = {};
 
@@ -64,5 +71,7 @@ private:
 
   // [0 Rook King Rook], [0 Black | 0 White]
   int_fast8_t m_castlingRights = 0b01110111;
+
+  BitBoard m_enPassant = 0;
 };
 } // namespace Engine_NS

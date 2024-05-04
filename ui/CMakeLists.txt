@@ -19,6 +19,7 @@ set(INCLUDE_FILES
 )
 
 set(QML_FILES
+  qml/DebugPanel.qml
   qml/main.qml
 )
 

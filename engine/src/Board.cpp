@@ -1,4 +1,5 @@
 #include "Board.h"
+#include <numeric>
 
 namespace Engine_NS {
 
@@ -67,9 +68,8 @@ BitBoard Board::getValidMoves(size_t index) const {
 
   switch (piece) {
   case WhitePawn:
-    return getValidWhitePawnMoves(index);
   case BlackPawn:
-    return getValidBlackPawnMoves(index);
+    return getValidPawnMoves(index);
   case WhiteKnight:
   case BlackKnight:
     return getValidKnightMoves(index);
@@ -93,31 +93,61 @@ BitBoard Board::getValidMoves(size_t index) const {
   }
 }
 
+BitBoard Board::getValidCaptures(size_t index) const {
+  const Piece piece = getPiece(index);
+
+  switch (piece) {
+  case WhitePawn:
+  case BlackPawn:
+    return getValidPawnCaptures(index);
+  case WhiteKnight:
+  case BlackKnight:
+    // return getValidKnightMoves(index);
+  case WhiteBishop:
+    // return getValidWhiteBishopMoves(index);
+  case BlackBishop:
+    // return getValidBlackBishopMoves(index);
+  case WhiteRook:
+    // return getValidWhiteRookMoves(index);
+  case BlackRook:
+    // return getValidBlackRookMoves(index);
+  case WhiteQueen:
+    // return getValidWhiteQueenMoves(index);
+  case BlackQueen:
+    // return getValidBlackQueenMoves(index);
+  case WhiteKing:
+  case BlackKing:
+    // return getValidKingMoves(index);
+  default:
+    return 0;
+  }
+}
+
 void Board::movePiece(size_t from, size_t to) {
   const Piece piece = getPiece(from);
 
-  // Update castling rights
-  if (piece == WhiteKing) {
-    m_castlingRights &= 0b01110000;
-  } else if (piece == BlackKing) {
-    m_castlingRights &= 0b00000111;
-  } else if (piece == WhiteRook) {
-    if (from == 0) {
-      m_castlingRights &= 0b01110110;
-    } else if (from == 7) {
-      m_castlingRights &= 0b01110011;
-    }
-  } else if (piece == BlackRook) {
-    if (from == 56) {
-      m_castlingRights &= 0b01101111;
-    } else if (from == 63) {
-      m_castlingRights &= 0b00110111;
-    }
-  }
+  updateBitBoards(from, to, piece);
 
   addPiece(piece, to);
   removePiece(piece, from);
 }
+
+void Board::capturePiece(size_t from, size_t to) {
+  const Piece piece = getPiece(from);
+  const Piece capturedPiece = getPiece(to);
+
+  updateBitBoards(from, to, piece, capturedPiece);
+
+  addPiece(piece, to);
+  removePiece(piece, from);
+  removePiece(capturedPiece, to);
+}
+
+// Protected Functions
+
+BitBoard Board::getEnPassantMask() const { return m_enPassant; }
+
+// Private Functions
 
 BitBoard Board::getWhitePieces() const {
   return m_whitePawns | m_whiteRooks | m_whiteKnights | m_whiteBishops | m_whiteQueens |
@@ -129,50 +159,44 @@ BitBoard Board::getBlackPieces() const {
          m_blackKing;
 }
 
-BitBoard Board::getValidWhitePawnMoves(size_t index) const {
+BitBoard Board::getValidPawnMoves(size_t index) const {
   const BitBoard whitePieces = getWhitePieces();
   const BitBoard blackPieces = getBlackPieces();
+  const bool isWhite = whitePieces & (1ULL << index);
   const BitBoard allPieces = whitePieces | blackPieces;
   const BitBoard emptySquares = ~allPieces;
 
   const size_t row = index / 8;
-  const size_t col = index % 8;
+  const int forward = isWhite ? 8 : -8;
 
-  const BitBoard oneStep = (row < 7) ? 1ULL << (index + 8) : 0;
-  const BitBoard twoSteps = (row < 6) ? 1ULL << (index + 16) : 0;
-  // TODO: Implement promotion
-  // TODO: Only allow two steps on first move
-  const BitBoard movements = (oneStep | twoSteps) & emptySquares;
+  const bool canMoveForward = isWhite ? (row < 7) : (row > 0);
+  const bool canMoveTwoSteps = isWhite ? (row == 1) : (row == 6);
 
-  const BitBoard leftCapture = (row < 7) && (col < 7) ? 1ULL << (index + 9) : 0;
-  const BitBoard rightCapture = (row < 7) && (col > 0) ? 1ULL << (index + 7) : 0;
-  // TODO: En passant
-  const BitBoard captures = (leftCapture | rightCapture) & blackPieces;
-
-  return movements | captures;
+  const BitBoard oneStep = canMoveForward ? 1ULL << (index + forward) : 0;
+  const BitBoard twoSteps = canMoveTwoSteps ? 1ULL << (index + forward + forward) : 0;
+  return (oneStep | twoSteps) & emptySquares;
 }
 
-BitBoard Board::getValidBlackPawnMoves(size_t index) const {
+BitBoard Board::getValidPawnCaptures(size_t index) const {
   const BitBoard whitePieces = getWhitePieces();
   const BitBoard blackPieces = getBlackPieces();
-  const BitBoard allPieces = whitePieces | blackPieces;
-  const BitBoard emptySquares = ~allPieces;
+  const bool isWhite = whitePieces & (1ULL << index);
+  const BitBoard opponentPieces = isWhite ? blackPieces : whitePieces;
 
   const size_t row = index / 8;
   const size_t col = index % 8;
+  const int forwardLeft = isWhite ? 9 : -9;
+  const int forwardRight = isWhite ? 7 : -7;
 
-  const BitBoard oneStep = (row > 0) ? 1ULL << (index - 8) : 0;
-  const BitBoard twoSteps = (row > 1) ? 1ULL << (index - 16) : 0;
-  // TODO: Implement promotion
-  // TODO: Only allow two steps on first move
-  const BitBoard movements = (oneStep | twoSteps) & emptySquares;
+  const bool canMoveForward = isWhite ? (row < 7) : (row > 0);
+  const bool canMoveForwardLeft =
+      isWhite ? (canMoveForward && (col < 7)) : (canMoveForward && (col > 0));
+  const bool canMoveForwardRight =
+      isWhite ? (canMoveForward && (col > 0)) : (canMoveForward && (col < 7));
 
-  const BitBoard leftCapture = (row > 0) && (col > 0) ? 1ULL << (index - 9) : 0;
-  const BitBoard rightCapture = (row > 0) && (col < 7) ? 1ULL << (index - 7) : 0;
-  //  TODO: En passant
-  const BitBoard captures = (leftCapture | rightCapture) & whitePieces;
-
-  return movements | captures;
+  const BitBoard leftCapture = canMoveForwardLeft ? 1ULL << (index + forwardLeft) : 0;
+  const BitBoard rightCapture = canMoveForwardRight ? 1ULL << (index + forwardRight) : 0;
+  return (leftCapture | rightCapture) & (opponentPieces | m_enPassant);
 }
 
 BitBoard Board::getValidKnightMoves(size_t index) const {
@@ -252,8 +276,6 @@ BitBoard Board::getCastlingMoves(size_t index, bool isWhite) const {
 
 void Board::addPiece(Piece piece, size_t index) {
   const BitBoard pieceMask = 1ULL << index;
-  if (pieceMask & (piece & ColorFlag ? getWhitePieces() : getBlackPieces()))
-    removePiece(getPiece(index), index);
 
   switch (piece) {
   case WhitePawn:
@@ -338,6 +360,20 @@ void Board::removePiece(Piece piece, size_t index) {
     break;
   default:
     return;
+  }
+}
+
+void Board::updateBitBoards(size_t from, size_t to, Piece movedPiece, Piece capturedPiece) {
+  // Pawn move
+  if ((movedPiece & TypeFlag) == Pawn) {
+    // Moved two steps
+    if (abs(static_cast<int>(from / 8) - static_cast<int>(to / 8)) > 1) {
+      m_enPassant |= 1ULL << (std::midpoint(from, to));
+    } else {
+      // Clear en passant
+      const int behind = (movedPiece & ColorFlag) == White ? -8 : 8;
+      m_enPassant &= ~(1ULL << (from + behind));
+    }
   }
 }
 

@@ -21,10 +21,22 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     const bool valid = m_currentValidMoves & (1ULL << bitIndex);
     return valid;
   }
+  case ValidCaptureRole: {
+    const bool valid = m_currentValidCaptures & (1ULL << bitIndex);
+    return valid;
+  }
   case SelectedRole: {
     if (m_selectedIndex == -1)
       return false;
     return m_selectedIndex == bitIndex;
+  }
+  case DebugInfoRole: {
+    if (!m_debugEnabled)
+      return false;
+
+    const Piece piece = getPiece(index.row(), index.column());
+
+    return getDebugInfo() & (1ULL << bitIndex);
   }
   default:
     return QVariant();
@@ -39,14 +51,18 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
   case SelectedRole: {
     m_selectedIndex = static_cast<int>(bitIndex);
     m_currentValidMoves = getValidMoves(bitIndex);
+    m_currentValidCaptures = getValidCaptures(bitIndex);
     break;
   }
   case MoveRole: {
     if (m_currentValidMoves & (1ULL << bitIndex)) {
       movePiece(m_selectedIndex, bitIndex);
-      m_selectedIndex = -1;
-      m_currentValidMoves = 0;
+    } else if (m_currentValidCaptures & (1ULL << bitIndex)) {
+      capturePiece(m_selectedIndex, bitIndex);
     }
+    m_selectedIndex = -1;
+    m_currentValidMoves = 0;
+    m_currentValidCaptures = 0;
     break;
   }
   default:
@@ -63,10 +79,21 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
   return {
       {static_cast<int>(ImageRole), "pieceImage"},
       {static_cast<int>(ValidMoveRole), "hasValidMove"},
+      {static_cast<int>(ValidCaptureRole), "hasValidCapture"},
       {static_cast<int>(SelectedRole), "selected"},
       {static_cast<int>(MoveRole), "moveHere"},
+      {static_cast<int>(DebugInfoRole), "debugInfo"},
   };
 }
+
+// void BoardModel::setDebugType(const QString& debugType) {
+//   if (m_debugType == debugType)
+//     return;
+//   m_debugType = debugType;
+//   emit debugTypeChanged();
+//   emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+//                    {static_cast<int>(BoardRoles::DebugInfoRole)});
+// }
 
 QUrl BoardModel::pieceImage(Piece piece) const {
   switch (piece) {
@@ -97,6 +124,13 @@ QUrl BoardModel::pieceImage(Piece piece) const {
   default:
     return QUrl("");
   }
+}
+
+BitBoard BoardModel::getDebugInfo() const {
+  if (m_enPassant)
+    return getEnPassantMask();
+
+  return 0;
 }
 
 } // namespace Chess_UI
