@@ -372,6 +372,14 @@ void Board::updateBitBoards(const Move& move) {
     }
   }
 
+  // Remove En Passant when a pawn is captured
+  if (Pieces::getType(move.capturedPiece) == Pieces::Pawn) {
+    if (move.capturedPos / 8 == 3 || move.capturedPos / 8 == 4) {
+      m_bitBoards.enPassant &=
+          ~(1ULL << (move.capturedPos + getBackward(Pieces::isWhite(move.capturedPiece))));
+    }
+  }
+
   addPiece(pieceToAdd, move.endPos);
   removePiece(pieceToRemove, move.startPos);
 
