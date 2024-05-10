@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Board.h"
+#include "DebugPanel.h"
 
 #include <QAbstractTableModel>
 
@@ -11,14 +12,11 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
     ValidMoveRole,
     SelectedRole,
     DebugInfoRole,
+    BitBoardRole,
   };
 
   Q_OBJECT
-  Q_PROPERTY(
-      bool debugEnabled READ getDebugEnabled WRITE setDebugEnabled NOTIFY debugEnabledChanged)
-  Q_PROPERTY(bool showWhite READ getShowWhite WRITE setShowWhite NOTIFY showWhiteChanged)
-  Q_PROPERTY(bool showBlack READ getShowBlack WRITE setShowBlack NOTIFY showBlackChanged)
-  Q_PROPERTY(bool enPassant READ getEnPassant WRITE setEnPassant NOTIFY enPassantChanged)
+  Q_PROPERTY(DebugPanel* debugPanel READ getDebugPanel CONSTANT)
 
 public:
   explicit BoardModel(QObject* parent = nullptr);
@@ -31,23 +29,7 @@ public:
 
   QHash<int, QByteArray> roleNames() const override;
 
-  bool getDebugEnabled() const;
-  void setDebugEnabled(bool debugEnabled);
-
-  bool getShowWhite() const;
-  void setShowWhite(bool showWhite);
-
-  bool getShowBlack() const;
-  void setShowBlack(bool showBlack);
-
-  bool getEnPassant() const;
-  void setEnPassant(bool enPassant);
-
-signals:
-  void debugEnabledChanged();
-  void showWhiteChanged();
-  void showBlackChanged();
-  void enPassantChanged();
+  DebugPanel* getDebugPanel() const;
 
 private:
   QUrl pieceImage(Piece piece) const;
@@ -57,9 +39,8 @@ private:
   int m_selectedIndex = -1;
   BitBoard m_currentValidMoves = 0;
 
-  bool m_debugEnabled = false;
-  bool m_showWhite = false;
-  bool m_showBlack = false;
-  bool m_enPassant = false;
+  DebugPanel* m_debugPanel = new DebugPanel();
+
+  BitBoard m_bitBoard = 0;
 };
 } // namespace Chess_UI

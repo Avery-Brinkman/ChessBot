@@ -30,8 +30,7 @@ private:
 
   BitBoard getValidPawnMoves(size_t index) const;
   BitBoard getValidKnightMoves(size_t index) const;
-  BitBoard getValidWhiteBishopMoves(size_t index) const;
-  BitBoard getValidBlackBishopMoves(size_t index) const;
+  BitBoard getValidBishopMoves(size_t index) const;
   BitBoard getValidWhiteRookMoves(size_t index) const;
   BitBoard getValidBlackRookMoves(size_t index) const;
   BitBoard getValidWhiteQueenMoves(size_t index) const;

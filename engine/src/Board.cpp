@@ -96,13 +96,16 @@ Piece Board::getPiece(size_t index) const {
 }
 
 BitBoard Board::getValidMoves(size_t index) const {
+  using namespace Pieces;
   const Piece piece = getPiece(index);
 
-  switch (Pieces::getType(piece)) {
-  case Pieces::Pawn:
+  switch (getType(piece)) {
+  case Pawn:
     return getValidPawnMoves(index);
-  case Pieces::Knight:
+  case Knight:
     return getValidKnightMoves(index);
+  case Bishop:
+    return getValidBishopMoves(index);
   default:
     return 0;
   }
@@ -203,9 +206,7 @@ BitBoard Board::getValidKnightMoves(size_t index) const {
   return (one | two | three | four | five | six | seven | eight) & validSquares;
 }
 
-BitBoard Board::getValidWhiteBishopMoves(size_t index) const { return 0xFFFFFFFFFFFFFFFF; }
-
-BitBoard Board::getValidBlackBishopMoves(size_t index) const { return 0xFFFFFFFFFFFFFFFF; }
+BitBoard Board::getValidBishopMoves(size_t index) const { return 0xFFFFFFFFFFFFFFFF; }
 
 BitBoard Board::getValidWhiteRookMoves(size_t index) const { return 0xFFFFFFFFFFFFFFFF; }
 
@@ -216,11 +217,10 @@ BitBoard Board::getValidWhiteQueenMoves(size_t index) const { return 0xFFFFFFFFF
 BitBoard Board::getValidBlackQueenMoves(size_t index) const { return 0xFFFFFFFFFFFFFFFF; }
 
 BitBoard Board::getValidKingMoves(size_t index) const {
-  const BitBoard whitePieces = getWhitePieces();
-  const BitBoard blackPieces = getBlackPieces();
-  const bool isWhite = whitePieces & (1ULL << index);
-  const BitBoard validSquares =
-      (isWhite ? blackPieces : whitePieces) | (~(whitePieces | blackPieces));
+  const BoardInfo boardInfo = m_bitBoards.getInfo();
+  const bool isWhite = boardInfo.whitePieces & (1ULL << index);
+  const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
+  const BitBoard validSquares = opponentPieces | boardInfo.emptySquares;
 
   const size_t row = index / 8;
   const size_t col = index % 8;

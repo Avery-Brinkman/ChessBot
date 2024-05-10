@@ -9,13 +9,13 @@ qt_standard_project_setup(REQUIRES 6.5)
 
 set(SRC_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/BoardModel.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/DebugPanel.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/PieceModel.cpp
 )
 
 set(INCLUDE_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/include/BoardModel.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/PieceModel.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/DebugPanel.h
 )
 
 set(QML_FILES

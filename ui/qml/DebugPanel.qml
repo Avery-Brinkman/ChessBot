@@ -6,30 +6,42 @@ Column {
     property var model
 
     Switch {
+        id: builderSwitch
         width: parent.width
+        text: "Bitboard builder"
+        checked: model.debugPanel.bitboardBuilder
+        onCheckedChanged: model.debugPanel.bitboardBuilder = checked
+    }
+
+    Switch {
+        width: parent.width
+        visible: !builderSwitch.checked
         text: "Show debug info"
-        checked: model.debugEnabled
-        onCheckedChanged: model.debugEnabled = checked
+        checked: model.debugPanel.debugEnabled
+        onCheckedChanged: model.debugPanel.debugEnabled = checked
     }
 
     Switch {
         width: parent.width
+        visible: !builderSwitch.checked
         text: "Show white"
-        checked: model.showWhite
-        onCheckedChanged: model.showWhite = checked
+        checked: model.debugPanel.showWhite
+        onCheckedChanged: model.debugPanel.showWhite = checked
     }
 
     Switch {
         width: parent.width
+        visible: !builderSwitch.checked
         text: "Show black"
-        checked: model.showBlack
-        onCheckedChanged: model.showBlack = checked
+        checked: model.debugPanel.showBlack
+        onCheckedChanged: model.debugPanel.showBlack = checked
     }
 
     Switch {
         width: parent.width
+        visible: !builderSwitch.checked
         text: "En passant"
-        checked: model.enPassant
-        onCheckedChanged: model.enPassant = checked
+        checked: model.debugPanel.enPassant
+        onCheckedChanged: model.debugPanel.enPassant = checked
     }
 }

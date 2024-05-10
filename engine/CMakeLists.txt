@@ -7,6 +7,7 @@ set(ENGINE_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Engine.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Move.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Piece.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/SlidingPieceBitBoards.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/UCICommands.h
 )
 

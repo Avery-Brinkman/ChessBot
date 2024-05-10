@@ -2,9 +2,16 @@
 
 #include <QColor>
 #include <QUrl>
+#include <bitset>
+#include <iostream>
 
 namespace Chess_UI {
-BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent) { setToStartPosition(); }
+BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent) {
+  setToStartPosition();
+
+  QObject::connect(m_debugPanel, &DebugPanel::updateBoard, this,
+                   [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
+}
 
 int BoardModel::rowCount(const QModelIndex& parent) const { return 8; }
 int BoardModel::columnCount(const QModelIndex& parent) const { return 8; }
@@ -27,10 +34,13 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     return m_selectedIndex == bitIndex;
   }
   case DebugInfoRole: {
-    if (!m_debugEnabled)
+    if (!m_debugPanel->getDebugEnabled())
       return false;
 
     return getDebugInfo() & (1ULL << bitIndex);
+  }
+  case BitBoardRole: {
+    return (m_bitBoard & (1ULL << bitIndex)) > 0;
   }
   default:
     return QVariant();
@@ -55,6 +65,14 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     m_currentValidMoves = 0;
     break;
   }
+  case BitBoardRole: {
+    // Toggle the bit
+    m_bitBoard ^= (1ULL << bitIndex);
+
+    std::cout << std::bitset<64>(m_bitBoard) << std::endl;
+
+    break;
+  }
   default:
     return false;
   }
@@ -64,74 +82,16 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
   return true;
 }
 
-bool BoardModel::getDebugEnabled() const { return m_debugEnabled; }
-void BoardModel::setDebugEnabled(bool debugEnabled) {
-  if (m_debugEnabled == debugEnabled)
-    return;
-  m_debugEnabled = debugEnabled;
-  emit debugEnabledChanged();
-
-  if (!debugEnabled) {
-    setShowWhite(false);
-    setShowBlack(false);
-    setEnPassant(false);
-  }
-
-  emit dataChanged(createIndex(0, 0), createIndex(7, 7),
-                   {static_cast<int>(BoardRoles::DebugInfoRole)});
-}
-
-bool BoardModel::getShowWhite() const { return m_showWhite; }
-void BoardModel::setShowWhite(bool showWhite) {
-  if (m_showWhite == showWhite)
-    return;
-  m_showWhite = showWhite;
-  emit showWhiteChanged();
-
-  if (showWhite)
-    setDebugEnabled(true);
-
-  emit dataChanged(createIndex(0, 0), createIndex(7, 7),
-                   {static_cast<int>(BoardRoles::DebugInfoRole)});
-}
-
-bool BoardModel::getShowBlack() const { return m_showBlack; }
-void BoardModel::setShowBlack(bool showBlack) {
-  if (m_showBlack == showBlack)
-    return;
-  m_showBlack = showBlack;
-  emit showBlackChanged();
-
-  if (showBlack)
-    setDebugEnabled(true);
-
-  emit dataChanged(createIndex(0, 0), createIndex(7, 7),
-                   {static_cast<int>(BoardRoles::DebugInfoRole)});
-}
-
-bool BoardModel::getEnPassant() const { return m_enPassant; }
-void BoardModel::setEnPassant(bool enPassant) {
-  if (m_enPassant == enPassant)
-    return;
-  m_enPassant = enPassant;
-  emit enPassantChanged();
-
-  if (enPassant)
-    setDebugEnabled(true);
-
-  emit dataChanged(createIndex(0, 0), createIndex(7, 7),
-                   {static_cast<int>(BoardRoles::DebugInfoRole)});
-}
-
 QHash<int, QByteArray> BoardModel::roleNames() const {
   using enum Chess_UI::BoardModel::BoardRoles;
   return {
-      {static_cast<int>(ImageRole), "pieceImage"},
-      {static_cast<int>(ValidMoveRole), "validMove"},
-      {static_cast<int>(SelectedRole), "selected"},
-      {static_cast<int>(DebugInfoRole), "debugInfo"},
+      {static_cast<int>(ImageRole), "pieceImage"},  {static_cast<int>(ValidMoveRole), "validMove"},
+      {static_cast<int>(SelectedRole), "selected"}, {static_cast<int>(DebugInfoRole), "debugInfo"},
+      {static_cast<int>(BitBoardRole), "bitBoard"},
   };
 }
+
+DebugPanel* BoardModel::getDebugPanel() const { return m_debugPanel; }
 
 QUrl BoardModel::pieceImage(Piece piece) const {
   using namespace Engine_NS::Pieces;
@@ -167,7 +127,7 @@ QUrl BoardModel::pieceImage(Piece piece) const {
 
 BitBoard BoardModel::getDebugInfo() const {
   BitBoard debugInfo = 0;
-  if (m_enPassant)
+  if (m_debugPanel->getEnPassant())
     debugInfo |= getEnPassantMask();
 
   return debugInfo;
