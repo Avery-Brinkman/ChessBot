@@ -108,17 +108,6 @@ BitBoard Board::getValidMoves(size_t index) const {
   }
 }
 
-BitBoard Board::getValidCaptures(size_t index) const {
-  const Piece piece = getPiece(index);
-
-  switch (Pieces::getType(piece)) {
-  case Pieces::Pawn:
-    return getValidPawnCaptures(index);
-  default:
-    return 0;
-  }
-}
-
 void Board::movePiece(size_t from, size_t to) {
   Move move = {};
   move.startPos = from;
@@ -169,35 +158,27 @@ BitBoard Board::getValidPawnMoves(size_t index) const {
   // TODO: This only needs to be calculated once per move
   const BoardInfo boardInfo = m_bitBoards.getInfo();
   const bool isWhite = boardInfo.whitePieces & (1ULL << index);
-
-  const size_t row = index / 8;
-  const int forward = getForward(isWhite);
-
-  const bool canMoveForwards = canMoveForward(index, isWhite);
-  const bool canMoveTwoSteps = canMoveForwards && (isWhite ? (row == 1) : (row == 6));
-
-  const BitBoard oneStep = canMoveForwards ? 1ULL << (index + forward) : 0;
-  const BitBoard twoSteps = canMoveTwoSteps ? 1ULL << (index + forward + forward) : 0;
-  return (oneStep | twoSteps) & boardInfo.emptySquares;
-}
-
-BitBoard Board::getValidPawnCaptures(size_t index) const {
-  // TODO: This only needs to be calculated once per move
-  const BoardInfo boardInfo = m_bitBoards.getInfo();
-  const bool isWhite = boardInfo.whitePieces & (1ULL << index);
   const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
 
+  const size_t row = index / 8;
   const int forward = getForward(isWhite);
   const int forwardLeft = forward + getLeft(isWhite);
   const int forwardRight = forward + getRight(isWhite);
 
   const bool canMoveForwards = canMoveForward(index, isWhite);
+  const bool canMoveTwoSteps = canMoveForwards && (isWhite ? (row == 1) : (row == 6));
   const bool canMoveForwardLeft = canMoveForwards && canMoveLeft(index, isWhite);
   const bool canMoveForwardRight = canMoveForwards && canMoveRight(index, isWhite);
 
+  const BitBoard oneStep = canMoveForwards ? 1ULL << (index + forward) : 0;
+  const BitBoard twoSteps = canMoveTwoSteps ? 1ULL << (index + forward + forward) : 0;
+  const BitBoard moves = (oneStep | twoSteps) & boardInfo.emptySquares;
+
   const BitBoard leftCapture = canMoveForwardLeft ? 1ULL << (index + forwardLeft) : 0;
   const BitBoard rightCapture = canMoveForwardRight ? 1ULL << (index + forwardRight) : 0;
-  return (leftCapture | rightCapture) & (opponentPieces | m_bitBoards.enPassant);
+  const BitBoard captures = (leftCapture | rightCapture) & (opponentPieces | m_bitBoards.enPassant);
+
+  return moves | captures;
 }
 
 BitBoard Board::getValidKnightMoves(size_t index) const {

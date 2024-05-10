@@ -21,10 +21,6 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     const bool valid = m_currentValidMoves & (1ULL << bitIndex);
     return valid;
   }
-  case ValidCaptureRole: {
-    const bool valid = m_currentValidCaptures & (1ULL << bitIndex);
-    return valid;
-  }
   case SelectedRole: {
     if (m_selectedIndex == -1)
       return false;
@@ -49,17 +45,14 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
   case SelectedRole: {
     m_selectedIndex = static_cast<int>(bitIndex);
     m_currentValidMoves = getValidMoves(bitIndex);
-    m_currentValidCaptures = getValidCaptures(bitIndex);
     break;
   }
-  case ValidMoveRole:
-  case ValidCaptureRole: {
-    if ((m_currentValidCaptures | m_currentValidMoves) & (1ULL << bitIndex)) {
+  case ValidMoveRole: {
+    if (m_currentValidMoves & (1ULL << bitIndex)) {
       movePiece(m_selectedIndex, bitIndex);
     }
     m_selectedIndex = -1;
     m_currentValidMoves = 0;
-    m_currentValidCaptures = 0;
     break;
   }
   default:
@@ -135,7 +128,6 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
   return {
       {static_cast<int>(ImageRole), "pieceImage"},
       {static_cast<int>(ValidMoveRole), "validMove"},
-      {static_cast<int>(ValidCaptureRole), "validCapture"},
       {static_cast<int>(SelectedRole), "selected"},
       {static_cast<int>(DebugInfoRole), "debugInfo"},
   };

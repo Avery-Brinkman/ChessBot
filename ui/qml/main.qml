@@ -42,8 +42,6 @@ Rectangle {
                 color: {
                     if (model.validMove)
                         return "green";
-                    if (model.validCapture)
-                        return "red";
                     if (boardModel.debugEnabled && model.debugInfo)
                         return "purple";
                     return "transparent";
@@ -60,8 +58,6 @@ Rectangle {
                 onClicked: {
                     if (model.validMove)
                         model.validMove = true;
-                    else if (model.validCapture) 
-                        model.validCapture = true;
                     else
                         model.selected = true;
                 }

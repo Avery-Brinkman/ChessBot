@@ -18,7 +18,6 @@ public:
   Piece getPiece(size_t index) const;
 
   BitBoard getValidMoves(size_t index) const;
-  BitBoard getValidCaptures(size_t index) const;
 
   void movePiece(size_t from, size_t to);
 
@@ -30,7 +29,6 @@ private:
   BitBoard getBlackPieces() const;
 
   BitBoard getValidPawnMoves(size_t index) const;
-  BitBoard getValidPawnCaptures(size_t index) const;
   BitBoard getValidKnightMoves(size_t index) const;
   BitBoard getValidWhiteBishopMoves(size_t index) const;
   BitBoard getValidBlackBishopMoves(size_t index) const;
