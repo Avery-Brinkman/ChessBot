@@ -11,12 +11,11 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
     ValidMoveRole,
     ValidCaptureRole,
     SelectedRole,
-    MoveRole,
     DebugInfoRole,
   };
 
   Q_OBJECT
-  Q_PROPERTY(bool debugEnabled MEMBER m_debugEnabled NOTIFY debugEnabledChanged)
+  Q_PROPERTY(bool debugEnabled READ getDebugEnabled WRITE setDebugEnabled NOTIFY debugEnabledChanged)
   Q_PROPERTY(bool showWhite READ getShowWhite WRITE setShowWhite NOTIFY showWhiteChanged)
   Q_PROPERTY(bool showBlack READ getShowBlack WRITE setShowBlack NOTIFY showBlackChanged)
   Q_PROPERTY(bool enPassant READ getEnPassant WRITE setEnPassant NOTIFY enPassantChanged)
@@ -32,8 +31,23 @@ public:
 
   QHash<int, QByteArray> roleNames() const override;
 
+  bool getDebugEnabled() const;
+  void setDebugEnabled(bool debugEnabled);
+
+  bool getShowWhite() const;
+  void setShowWhite(bool showWhite);
+
+  bool getShowBlack() const;
+  void setShowBlack(bool showBlack);
+
+  bool getEnPassant() const;
+  void setEnPassant(bool enPassant);
+
 signals:
   void debugEnabledChanged();
+  void showWhiteChanged();
+  void showBlackChanged();
+  void enPassantChanged();
 
 private:
   QUrl pieceImage(Piece piece) const;
@@ -45,5 +59,8 @@ private:
   BitBoard m_currentValidCaptures = 0;
 
   bool m_debugEnabled = false;
+  bool m_showWhite = false;
+  bool m_showBlack = false;
+  bool m_enPassant = false;
 };
 } // namespace Chess_UI

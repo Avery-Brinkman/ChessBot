@@ -40,9 +40,9 @@ Rectangle {
                 }
                 radius: height / 2
                 color: {
-                    if (model.hasValidMove)
+                    if (model.validMove)
                         return "green";
-                    if (model.hasValidCapture)
+                    if (model.validCapture)
                         return "red";
                     if (boardModel.debugEnabled && model.debugInfo)
                         return "purple";
@@ -58,8 +58,10 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if (model.hasValidMove || model.hasValidCapture) 
-                        model.moveHere = true;
+                    if (model.validMove)
+                        model.validMove = true;
+                    else if (model.validCapture) 
+                        model.validCapture = true;
                     else
                         model.selected = true;
                 }

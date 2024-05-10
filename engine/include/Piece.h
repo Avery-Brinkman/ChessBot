@@ -4,7 +4,11 @@
 
 using Piece = uint_fast8_t;
 
-namespace Engine_NS {
+namespace Engine_NS::Pieces {
+
+Piece getColor(Piece piece);
+Piece getType(Piece piece);
+bool isWhite(Piece piece);
 
 // Flags
 constexpr Piece TypeFlag = 0b0111;
@@ -41,4 +45,4 @@ constexpr Piece BlackRook = Rook | Black;
 constexpr Piece BlackQueen = Queen | Black;
 constexpr Piece BlackKing = King | Black;
 
-} // namespace Engine_NS
+} // namespace Engine_NS::Pieces

@@ -1,33 +1,29 @@
 #pragma once
 
 #include "Piece.h"
+#include <cstdint>
 
-using MoveBits = uint_fast16_t;
+using MoveFlags = uint_fast8_t;
 
 namespace Engine_NS {
-class Move {
-  // Masks
+// Flags
 
-  constexpr static MoveBits StartPosMask = 0b0000000000111111;
-  constexpr static MoveBits EndPosMask = 0b0000111111000000;
-  constexpr static MoveBits FlagMask = 0b1111000000000000;
+constexpr MoveFlags NoFlag = 0b00000000;
+constexpr MoveFlags DoublePawnPush = 0b00000001;
+constexpr MoveFlags EnPassant = 0b00000010;
+constexpr MoveFlags Castle = 0b00000011;
+constexpr MoveFlags QueenPromotion = 0b00000100;
+constexpr MoveFlags KnightPromotion = 0b00000101;
+constexpr MoveFlags BishopPromotion = 0b00000110;
+constexpr MoveFlags RookPromotion = 0b00000111;
 
-  // Flags
-
-  constexpr static MoveBits NoFlag = 0b0000000000000000;
-  constexpr static MoveBits PawnMoveTwoFlag = 0b0001000000000000;
-  constexpr static MoveBits EnPassantFlag = 0b0010000000000000;
-  constexpr static MoveBits CastleFlag = 0b0011000000000000;
-  constexpr static MoveBits QueenPromotionFlag = 0b1000000000000000;
-  constexpr static MoveBits KnightPromotionFlag = 0b1001000000000000;
-  constexpr static MoveBits BishopPromotionFlag = 0b1010000000000000;
-  constexpr static MoveBits RookPromotionFlag = 0b1011000000000000;
-
-public:
-  Move(MoveBits start, MoveBits end, MoveBits flags = NoFlag);
-  explicit Move(MoveBits move);
-
-private:
-  MoveBits m_move;
+struct Move {
+  size_t startPos = 0;
+  size_t endPos = 0;
+  Piece movedPiece = Pieces::None;
+  size_t capturedPos = 0;
+  Piece capturedPiece = Pieces::None;
+  MoveFlags flags = NoFlag;
 };
+
 } // namespace Engine_NS

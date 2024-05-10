@@ -34,8 +34,6 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     if (!m_debugEnabled)
       return false;
 
-    const Piece piece = getPiece(index.row(), index.column());
-
     return getDebugInfo() & (1ULL << bitIndex);
   }
   default:
@@ -54,11 +52,10 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     m_currentValidCaptures = getValidCaptures(bitIndex);
     break;
   }
-  case MoveRole: {
-    if (m_currentValidMoves & (1ULL << bitIndex)) {
+  case ValidMoveRole:
+  case ValidCaptureRole: {
+    if ((m_currentValidCaptures | m_currentValidMoves) & (1ULL << bitIndex)) {
       movePiece(m_selectedIndex, bitIndex);
-    } else if (m_currentValidCaptures & (1ULL << bitIndex)) {
-      capturePiece(m_selectedIndex, bitIndex);
     }
     m_selectedIndex = -1;
     m_currentValidMoves = 0;
@@ -74,52 +71,102 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
   return true;
 }
 
+bool BoardModel::getDebugEnabled() const { return m_debugEnabled; }
+void BoardModel::setDebugEnabled(bool debugEnabled) {
+  if (m_debugEnabled == debugEnabled)
+    return;
+  m_debugEnabled = debugEnabled;
+  emit debugEnabledChanged();
+
+  if (!debugEnabled) {
+    setShowWhite(false);
+    setShowBlack(false);
+    setEnPassant(false);
+  }
+
+  emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+                   {static_cast<int>(BoardRoles::DebugInfoRole)});
+}
+
+bool BoardModel::getShowWhite() const { return m_showWhite; }
+void BoardModel::setShowWhite(bool showWhite) {
+  if (m_showWhite == showWhite)
+    return;
+  m_showWhite = showWhite;
+  emit showWhiteChanged();
+
+  if (showWhite)
+    setDebugEnabled(true);
+
+  emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+                   {static_cast<int>(BoardRoles::DebugInfoRole)});
+}
+
+bool BoardModel::getShowBlack() const { return m_showBlack; }
+void BoardModel::setShowBlack(bool showBlack) {
+  if (m_showBlack == showBlack)
+    return;
+  m_showBlack = showBlack;
+  emit showBlackChanged();
+
+  if (showBlack)
+    setDebugEnabled(true);
+
+  emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+                   {static_cast<int>(BoardRoles::DebugInfoRole)});
+}
+
+bool BoardModel::getEnPassant() const { return m_enPassant; }
+void BoardModel::setEnPassant(bool enPassant) {
+  if (m_enPassant == enPassant)
+    return;
+  m_enPassant = enPassant;
+  emit enPassantChanged();
+
+  if (enPassant)
+    setDebugEnabled(true);
+
+  emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+                   {static_cast<int>(BoardRoles::DebugInfoRole)});
+}
+
 QHash<int, QByteArray> BoardModel::roleNames() const {
   using enum Chess_UI::BoardModel::BoardRoles;
   return {
       {static_cast<int>(ImageRole), "pieceImage"},
-      {static_cast<int>(ValidMoveRole), "hasValidMove"},
-      {static_cast<int>(ValidCaptureRole), "hasValidCapture"},
+      {static_cast<int>(ValidMoveRole), "validMove"},
+      {static_cast<int>(ValidCaptureRole), "validCapture"},
       {static_cast<int>(SelectedRole), "selected"},
-      {static_cast<int>(MoveRole), "moveHere"},
       {static_cast<int>(DebugInfoRole), "debugInfo"},
   };
 }
 
-// void BoardModel::setDebugType(const QString& debugType) {
-//   if (m_debugType == debugType)
-//     return;
-//   m_debugType = debugType;
-//   emit debugTypeChanged();
-//   emit dataChanged(createIndex(0, 0), createIndex(7, 7),
-//                    {static_cast<int>(BoardRoles::DebugInfoRole)});
-// }
-
 QUrl BoardModel::pieceImage(Piece piece) const {
+  using namespace Engine_NS::Pieces;
   switch (piece) {
-  case Engine_NS::WhitePawn:
+  case WhitePawn:
     return QUrl("qrc:/images/whitePawn.png");
-  case Engine_NS::WhiteKnight:
+  case WhiteKnight:
     return QUrl("qrc:/images/whiteKnight.png");
-  case Engine_NS::WhiteBishop:
+  case WhiteBishop:
     return QUrl("qrc:/images/whiteBishop.png");
-  case Engine_NS::WhiteRook:
+  case WhiteRook:
     return QUrl("qrc:/images/whiteRook.png");
-  case Engine_NS::WhiteQueen:
+  case WhiteQueen:
     return QUrl("qrc:/images/whiteQueen.png");
-  case Engine_NS::WhiteKing:
+  case WhiteKing:
     return QUrl("qrc:/images/whiteKing.png");
-  case Engine_NS::BlackPawn:
+  case BlackPawn:
     return QUrl("qrc:/images/blackPawn.png");
-  case Engine_NS::BlackKnight:
+  case BlackKnight:
     return QUrl("qrc:/images/blackKnight.png");
-  case Engine_NS::BlackBishop:
+  case BlackBishop:
     return QUrl("qrc:/images/blackBishop.png");
-  case Engine_NS::BlackRook:
+  case BlackRook:
     return QUrl("qrc:/images/blackRook.png");
-  case Engine_NS::BlackQueen:
+  case BlackQueen:
     return QUrl("qrc:/images/blackQueen.png");
-  case Engine_NS::BlackKing:
+  case BlackKing:
     return QUrl("qrc:/images/blackKing.png");
   default:
     return QUrl("");
@@ -127,10 +174,11 @@ QUrl BoardModel::pieceImage(Piece piece) const {
 }
 
 BitBoard BoardModel::getDebugInfo() const {
+  BitBoard debugInfo = 0;
   if (m_enPassant)
-    return getEnPassantMask();
+    debugInfo |= getEnPassantMask();
 
-  return 0;
+  return debugInfo;
 }
 
 } // namespace Chess_UI

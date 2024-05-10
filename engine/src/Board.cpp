@@ -1,93 +1,108 @@
 #include "Board.h"
+#include <iostream>
 #include <numeric>
+
+namespace {
+struct Directions {
+  int forward = 0;
+  int backward = 0;
+  int left = 0;
+  int right = 0;
+};
+
+inline int getForward(bool isWhite) { return isWhite ? 8 : -8; }
+inline int getBackward(bool isWhite) { return isWhite ? -8 : 8; }
+inline int getLeft(bool isWhite) { return isWhite ? 1 : -1; }
+inline int getRight(bool isWhite) { return isWhite ? -1 : 1; }
+
+inline bool canMoveForward(size_t index, bool isWhite, int times = 0) {
+  const int row = static_cast<int>(index) / 8;
+  return isWhite ? (row < 7 - times) : (row > 0 + times);
+}
+inline bool canMoveBackward(size_t index, bool isWhite, int times = 0) {
+  const int row = static_cast<int>(index) / 8;
+  return isWhite ? (row > 0 + times) : (row < 7 - times);
+}
+inline bool canMoveLeft(size_t index, bool isWhite, int times = 0) {
+  const int col = static_cast<int>(index) % 8;
+  return isWhite ? (col < 7 - times) : (col > 0 + times);
+}
+inline bool canMoveRight(size_t index, bool isWhite, int times = 0) {
+  const int col = static_cast<int>(index) % 8;
+  return isWhite ? (col > 0 + times) : (col < 7 - times);
+}
+
+inline Directions getDirections(bool isWhite) {
+  return Directions{.forward = getForward(isWhite),
+                    .backward = getBackward(isWhite),
+                    .left = getLeft(isWhite),
+                    .right = getRight(isWhite)};
+}
+} // namespace
 
 namespace Engine_NS {
 
-void Board::clear() { m_board.fill(None); }
-
 void Board::setToStartPosition() {
-  m_whiteRooks = 0b0000000000000000000000000000000000000000000000000000000010000001;
-  m_whiteKnights = 0b0000000000000000000000000000000000000000000000000000000001000010;
-  m_whiteBishops = 0b0000000000000000000000000000000000000000000000000000000000100100;
-  m_whiteQueens = 0b0000000000000000000000000000000000000000000000000000000000010000;
-  m_whiteKing = 0b0000000000000000000000000000000000000000000000000000000000001000;
-  m_whitePawns = 0b0000000000000010000000000000000000000000000000001111110100000000;
+  m_bitBoards.whiteRooks = 0b0000000000000000000000000000000000000000000000000000000010000001;
+  m_bitBoards.whiteKnights = 0b0000000000000000000000000000000000000000000000000000000001000010;
+  m_bitBoards.whiteBishops = 0b0000000000000000000000000000000000000000000000000000000000100100;
+  m_bitBoards.whiteQueens = 0b0000000000000000000000000000000000000000000000000000000000010000;
+  m_bitBoards.whiteKing = 0b0000000000000000000000000000000000000000000000000000000000001000;
+  m_bitBoards.whitePawns = 0b0000000010000000000000000000000000000000000000000111111100000000;
 
-  m_blackRooks = 0b1000000100000000000000000000000000000000000000000000000000000000;
-  m_blackKnights = 0b0100001000000000000000000000000000000000000000000000000000000000;
-  m_blackBishops = 0b0010010000000000000000000000000000000000000000000000000000000000;
-  m_blackQueens = 0b0001000000000000000000000000000000000000000000000000000000000000;
-  m_blackKing = 0b0000100000000000000000000000000000000000000000000000000000000000;
-  m_blackPawns = 0b0000000011111101000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackRooks = 0b0000000100000000000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackKnights = 0b0100001000000000000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackBishops = 0b0010010000000000000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackQueens = 0b0001000000000000000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackKing = 0b0000100000000000000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackPawns = 0b0000000001111111000000000000000000000000000000000000000000000000;
 }
 
-void Board::makeMove(uint16_t startIndex, uint16_t endIndex) {
-  m_board[endIndex] = m_board[startIndex];
-  m_board[startIndex] = None;
-}
-
-size_t Board::getIndex(size_t row, size_t col) const { return (7 - row) * 8 + (7 - col); }
+inline size_t Board::getIndex(size_t row, size_t col) const { return (7 - row) * 8 + (7 - col); }
 
 Piece Board::getPiece(size_t row, size_t col) const {
   if (row > 7 || col > 7)
-    return None;
+    return Pieces::None;
   return getPiece(getIndex(row, col));
 }
 Piece Board::getPiece(size_t index) const {
   const BitBoard pieceMask = 1ULL << index;
-  if (m_whitePawns & pieceMask)
-    return WhitePawn;
-  if (m_whiteRooks & pieceMask)
-    return WhiteRook;
-  if (m_whiteKnights & pieceMask)
-    return WhiteKnight;
-  if (m_whiteBishops & pieceMask)
-    return WhiteBishop;
-  if (m_whiteQueens & pieceMask)
-    return WhiteQueen;
-  if (m_whiteKing & pieceMask)
-    return WhiteKing;
-  if (m_blackPawns & pieceMask)
-    return BlackPawn;
-  if (m_blackRooks & pieceMask)
-    return BlackRook;
-  if (m_blackKnights & pieceMask)
-    return BlackKnight;
-  if (m_blackBishops & pieceMask)
-    return BlackBishop;
-  if (m_blackQueens & pieceMask)
-    return BlackQueen;
-  if (m_blackKing & pieceMask)
-    return BlackKing;
+  if (m_bitBoards.whitePawns & pieceMask)
+    return Pieces::WhitePawn;
+  if (m_bitBoards.whiteRooks & pieceMask)
+    return Pieces::WhiteRook;
+  if (m_bitBoards.whiteKnights & pieceMask)
+    return Pieces::WhiteKnight;
+  if (m_bitBoards.whiteBishops & pieceMask)
+    return Pieces::WhiteBishop;
+  if (m_bitBoards.whiteQueens & pieceMask)
+    return Pieces::WhiteQueen;
+  if (m_bitBoards.whiteKing & pieceMask)
+    return Pieces::WhiteKing;
+  if (m_bitBoards.blackPawns & pieceMask)
+    return Pieces::BlackPawn;
+  if (m_bitBoards.blackRooks & pieceMask)
+    return Pieces::BlackRook;
+  if (m_bitBoards.blackKnights & pieceMask)
+    return Pieces::BlackKnight;
+  if (m_bitBoards.blackBishops & pieceMask)
+    return Pieces::BlackBishop;
+  if (m_bitBoards.blackQueens & pieceMask)
+    return Pieces::BlackQueen;
+  if (m_bitBoards.blackKing & pieceMask)
+    return Pieces::BlackKing;
 
-  return None;
+  return Pieces::None;
 }
 
 BitBoard Board::getValidMoves(size_t index) const {
   const Piece piece = getPiece(index);
 
-  switch (piece) {
-  case WhitePawn:
-  case BlackPawn:
+  switch (Pieces::getType(piece)) {
+  case Pieces::Pawn:
     return getValidPawnMoves(index);
-  case WhiteKnight:
-  case BlackKnight:
+  case Pieces::Knight:
     return getValidKnightMoves(index);
-  case WhiteBishop:
-    return getValidWhiteBishopMoves(index);
-  case BlackBishop:
-    return getValidBlackBishopMoves(index);
-  case WhiteRook:
-    return getValidWhiteRookMoves(index);
-  case BlackRook:
-    return getValidBlackRookMoves(index);
-  case WhiteQueen:
-    return getValidWhiteQueenMoves(index);
-  case BlackQueen:
-    return getValidBlackQueenMoves(index);
-  case WhiteKing:
-  case BlackKing:
-    return getValidKingMoves(index);
   default:
     return 0;
   }
@@ -96,114 +111,101 @@ BitBoard Board::getValidMoves(size_t index) const {
 BitBoard Board::getValidCaptures(size_t index) const {
   const Piece piece = getPiece(index);
 
-  switch (piece) {
-  case WhitePawn:
-  case BlackPawn:
+  switch (Pieces::getType(piece)) {
+  case Pieces::Pawn:
     return getValidPawnCaptures(index);
-  case WhiteKnight:
-  case BlackKnight:
-    // return getValidKnightMoves(index);
-  case WhiteBishop:
-    // return getValidWhiteBishopMoves(index);
-  case BlackBishop:
-    // return getValidBlackBishopMoves(index);
-  case WhiteRook:
-    // return getValidWhiteRookMoves(index);
-  case BlackRook:
-    // return getValidBlackRookMoves(index);
-  case WhiteQueen:
-    // return getValidWhiteQueenMoves(index);
-  case BlackQueen:
-    // return getValidBlackQueenMoves(index);
-  case WhiteKing:
-  case BlackKing:
-    // return getValidKingMoves(index);
   default:
     return 0;
   }
 }
 
 void Board::movePiece(size_t from, size_t to) {
-  const Piece piece = getPiece(from);
+  Move move = {};
+  move.startPos = from;
+  move.endPos = to;
+  move.movedPiece = getPiece(from);
 
-  updateBitBoards(from, to, piece);
+  move.capturedPiece = getPiece(to);
+  if (move.capturedPiece != Pieces::None) {
+    move.capturedPos = to;
+  }
 
-  addPiece(piece, to);
-  removePiece(piece, from);
-}
+  MoveFlags flags = 0;
 
-void Board::capturePiece(size_t from, size_t to) {
-  const Piece piece = getPiece(from);
-  const Piece capturedPiece = getPiece(to);
+  if (Pieces::getType(move.movedPiece) == Pieces::Pawn) {
+    // Double pawn push
+    if (abs(static_cast<int>(from / 8) - static_cast<int>(to / 8)) > 1) {
+      flags = DoublePawnPush;
+    }
+    // En passant capture
+    else if ((1ULL << to) & m_bitBoards.enPassant) {
+      flags = EnPassant;
 
-  updateBitBoards(from, to, piece, capturedPiece);
+      move.capturedPos = to + getBackward(Pieces::isWhite(move.movedPiece));
+      move.capturedPiece = getPiece(move.capturedPos);
+    }
+    // Promotion
+    else if (to / 8 == 0 || to / 8 == 7) {
+      flags = QueenPromotion;
+    }
+  }
 
-  addPiece(piece, to);
-  removePiece(piece, from);
-  removePiece(capturedPiece, to);
+  move.flags = flags;
+
+  updateBitBoards(move);
 }
 
 // Protected Functions
 
-BitBoard Board::getEnPassantMask() const { return m_enPassant; }
+BitBoard Board::getEnPassantMask() const { return m_bitBoards.enPassant; }
 
 // Private Functions
 
-BitBoard Board::getWhitePieces() const {
-  return m_whitePawns | m_whiteRooks | m_whiteKnights | m_whiteBishops | m_whiteQueens |
-         m_whiteKing;
-}
+BitBoard Board::getWhitePieces() const { return m_bitBoards.getWhitePieces(); }
 
-BitBoard Board::getBlackPieces() const {
-  return m_blackPawns | m_blackRooks | m_blackKnights | m_blackBishops | m_blackQueens |
-         m_blackKing;
-}
+BitBoard Board::getBlackPieces() const { return m_bitBoards.getBlackPieces(); }
 
 BitBoard Board::getValidPawnMoves(size_t index) const {
-  const BitBoard whitePieces = getWhitePieces();
-  const BitBoard blackPieces = getBlackPieces();
-  const bool isWhite = whitePieces & (1ULL << index);
-  const BitBoard allPieces = whitePieces | blackPieces;
-  const BitBoard emptySquares = ~allPieces;
+  // TODO: This only needs to be calculated once per move
+  const BoardInfo boardInfo = m_bitBoards.getInfo();
+  const bool isWhite = boardInfo.whitePieces & (1ULL << index);
 
   const size_t row = index / 8;
-  const int forward = isWhite ? 8 : -8;
+  const int forward = getForward(isWhite);
 
-  const bool canMoveForward = isWhite ? (row < 7) : (row > 0);
-  const bool canMoveTwoSteps = isWhite ? (row == 1) : (row == 6);
+  const bool canMoveForwards = canMoveForward(index, isWhite);
+  const bool canMoveTwoSteps = canMoveForwards && (isWhite ? (row == 1) : (row == 6));
 
-  const BitBoard oneStep = canMoveForward ? 1ULL << (index + forward) : 0;
+  const BitBoard oneStep = canMoveForwards ? 1ULL << (index + forward) : 0;
   const BitBoard twoSteps = canMoveTwoSteps ? 1ULL << (index + forward + forward) : 0;
-  return (oneStep | twoSteps) & emptySquares;
+  return (oneStep | twoSteps) & boardInfo.emptySquares;
 }
 
 BitBoard Board::getValidPawnCaptures(size_t index) const {
-  const BitBoard whitePieces = getWhitePieces();
-  const BitBoard blackPieces = getBlackPieces();
-  const bool isWhite = whitePieces & (1ULL << index);
-  const BitBoard opponentPieces = isWhite ? blackPieces : whitePieces;
+  // TODO: This only needs to be calculated once per move
+  const BoardInfo boardInfo = m_bitBoards.getInfo();
+  const bool isWhite = boardInfo.whitePieces & (1ULL << index);
+  const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
 
-  const size_t row = index / 8;
-  const size_t col = index % 8;
-  const int forwardLeft = isWhite ? 9 : -9;
-  const int forwardRight = isWhite ? 7 : -7;
+  const int forward = getForward(isWhite);
+  const int forwardLeft = forward + getLeft(isWhite);
+  const int forwardRight = forward + getRight(isWhite);
 
-  const bool canMoveForward = isWhite ? (row < 7) : (row > 0);
-  const bool canMoveForwardLeft =
-      isWhite ? (canMoveForward && (col < 7)) : (canMoveForward && (col > 0));
-  const bool canMoveForwardRight =
-      isWhite ? (canMoveForward && (col > 0)) : (canMoveForward && (col < 7));
+  const bool canMoveForwards = canMoveForward(index, isWhite);
+  const bool canMoveForwardLeft = canMoveForwards && canMoveLeft(index, isWhite);
+  const bool canMoveForwardRight = canMoveForwards && canMoveRight(index, isWhite);
 
   const BitBoard leftCapture = canMoveForwardLeft ? 1ULL << (index + forwardLeft) : 0;
   const BitBoard rightCapture = canMoveForwardRight ? 1ULL << (index + forwardRight) : 0;
-  return (leftCapture | rightCapture) & (opponentPieces | m_enPassant);
+  return (leftCapture | rightCapture) & (opponentPieces | m_bitBoards.enPassant);
 }
 
 BitBoard Board::getValidKnightMoves(size_t index) const {
-  const BitBoard whitePieces = getWhitePieces();
-  const BitBoard blackPieces = getBlackPieces();
-  const BitBoard validSquares =
-      (whitePieces & (1ULL << index) ? blackPieces : whitePieces) | (~(whitePieces | blackPieces));
+  // TODO: This only needs to be calculated once per move
+  const BoardInfo boardInfo = m_bitBoards.getInfo();
+  const bool isWhite = boardInfo.whitePieces & (1ULL << index);
+  const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
+  const BitBoard validSquares = opponentPieces | boardInfo.emptySquares;
 
   const size_t row = index / 8;
   const size_t col = index % 8;
@@ -278,41 +280,41 @@ void Board::addPiece(Piece piece, size_t index) {
   const BitBoard pieceMask = 1ULL << index;
 
   switch (piece) {
-  case WhitePawn:
-    m_whitePawns |= pieceMask;
+  case Pieces::WhitePawn:
+    m_bitBoards.whitePawns |= pieceMask;
     break;
-  case BlackPawn:
-    m_blackPawns |= pieceMask;
+  case Pieces::BlackPawn:
+    m_bitBoards.blackPawns |= pieceMask;
     break;
-  case WhiteKnight:
-    m_whiteKnights |= pieceMask;
+  case Pieces::WhiteKnight:
+    m_bitBoards.whiteKnights |= pieceMask;
     break;
-  case BlackKnight:
-    m_blackKnights |= pieceMask;
+  case Pieces::BlackKnight:
+    m_bitBoards.blackKnights |= pieceMask;
     break;
-  case WhiteBishop:
-    m_whiteBishops |= pieceMask;
+  case Pieces::WhiteBishop:
+    m_bitBoards.whiteBishops |= pieceMask;
     break;
-  case BlackBishop:
-    m_blackBishops |= pieceMask;
+  case Pieces::BlackBishop:
+    m_bitBoards.blackBishops |= pieceMask;
     break;
-  case WhiteRook:
-    m_whiteRooks |= pieceMask;
+  case Pieces::WhiteRook:
+    m_bitBoards.whiteRooks |= pieceMask;
     break;
-  case BlackRook:
-    m_blackRooks |= pieceMask;
+  case Pieces::BlackRook:
+    m_bitBoards.blackRooks |= pieceMask;
     break;
-  case WhiteQueen:
-    m_whiteQueens |= pieceMask;
+  case Pieces::WhiteQueen:
+    m_bitBoards.whiteQueens |= pieceMask;
     break;
-  case BlackQueen:
-    m_blackQueens |= pieceMask;
+  case Pieces::BlackQueen:
+    m_bitBoards.blackQueens |= pieceMask;
     break;
-  case WhiteKing:
-    m_whiteKing |= pieceMask;
+  case Pieces::WhiteKing:
+    m_bitBoards.whiteKing |= pieceMask;
     break;
-  case BlackKing:
-    m_blackKing |= pieceMask;
+  case Pieces::BlackKing:
+    m_bitBoards.blackKing |= pieceMask;
     break;
   default:
     return;
@@ -320,60 +322,80 @@ void Board::addPiece(Piece piece, size_t index) {
 }
 
 void Board::removePiece(Piece piece, size_t index) {
+  using namespace Pieces;
+
   const BitBoard pieceMask = 1ULL << index;
   switch (piece) {
   case WhitePawn:
-    m_whitePawns &= ~pieceMask;
+    m_bitBoards.whitePawns &= ~pieceMask;
     break;
   case BlackPawn:
-    m_blackPawns &= ~pieceMask;
+    m_bitBoards.blackPawns &= ~pieceMask;
     break;
   case WhiteKnight:
-    m_whiteKnights &= ~pieceMask;
+    m_bitBoards.whiteKnights &= ~pieceMask;
     break;
   case BlackKnight:
-    m_blackKnights &= ~pieceMask;
+    m_bitBoards.blackKnights &= ~pieceMask;
     break;
   case WhiteBishop:
-    m_whiteBishops &= ~pieceMask;
+    m_bitBoards.whiteBishops &= ~pieceMask;
     break;
   case BlackBishop:
-    m_blackBishops &= ~pieceMask;
+    m_bitBoards.blackBishops &= ~pieceMask;
     break;
   case WhiteRook:
-    m_whiteRooks &= ~pieceMask;
+    m_bitBoards.whiteRooks &= ~pieceMask;
     break;
   case BlackRook:
-    m_blackRooks &= ~pieceMask;
+    m_bitBoards.blackRooks &= ~pieceMask;
     break;
   case WhiteQueen:
-    m_whiteQueens &= ~pieceMask;
+    m_bitBoards.whiteQueens &= ~pieceMask;
     break;
   case BlackQueen:
-    m_blackQueens &= ~pieceMask;
+    m_bitBoards.blackQueens &= ~pieceMask;
     break;
   case WhiteKing:
-    m_whiteKing &= ~pieceMask;
+    m_bitBoards.whiteKing &= ~pieceMask;
     break;
   case BlackKing:
-    m_blackKing &= ~pieceMask;
+    m_bitBoards.blackKing &= ~pieceMask;
     break;
   default:
     return;
   }
 }
 
-void Board::updateBitBoards(size_t from, size_t to, Piece movedPiece, Piece capturedPiece) {
-  // Pawn move
-  if ((movedPiece & TypeFlag) == Pawn) {
+void Board::updateBitBoards(const Move& move) {
+  Piece pieceToAdd = move.movedPiece;
+  Piece pieceToRemove = move.movedPiece;
+
+  // Pawn moves
+  if (Pieces::getType(move.movedPiece) == Pieces::Pawn) {
     // Moved two steps
-    if (abs(static_cast<int>(from / 8) - static_cast<int>(to / 8)) > 1) {
-      m_enPassant |= 1ULL << (std::midpoint(from, to));
-    } else {
-      // Clear en passant
-      const int behind = (movedPiece & ColorFlag) == White ? -8 : 8;
-      m_enPassant &= ~(1ULL << (from + behind));
+    if (move.flags == DoublePawnPush) {
+      m_bitBoards.enPassant |= 1ULL << (std::midpoint(move.startPos, move.endPos));
     }
+    // Clear en passant
+    else {
+      const size_t clearLoc = move.flags == EnPassant
+                                  ? move.endPos
+                                  : move.startPos + getBackward(Pieces::isWhite(move.movedPiece));
+      m_bitBoards.enPassant &= ~(1ULL << clearLoc);
+    }
+
+    // Check for promotion
+    if (move.flags & QueenPromotion) {
+      pieceToAdd = Pieces::WhiteQueen;
+    }
+  }
+
+  addPiece(pieceToAdd, move.endPos);
+  removePiece(pieceToRemove, move.startPos);
+
+  if (move.capturedPiece != Pieces::None) {
+    removePiece(move.capturedPiece, move.capturedPos);
   }
 }
 
