@@ -1,22 +1,9 @@
 import QtQuick
 
 Rectangle {
-    width: 800
-    height: 640
-    color: "black"
+    id: root
 
-    Rectangle {
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
-            left: board.right
-            right: parent.right
-        }
-        color: "grey"
-        Column {
-            anchors.fill: parent
-        }
-    }
+    color: "black"
 
     TableView {
         id: board
@@ -29,9 +16,15 @@ Rectangle {
         model: boardModel
 
         delegate: Rectangle {
-            implicitWidth: 640 / 8
-            implicitHeight: 640 / 8
+            implicitWidth: board.width / 8
+            implicitHeight: board.height / 8
             color: (row + column) % 2 == 0 ? "#cfa08c" : "#7d4b36"
+
+            Text {
+                anchors.fill: parent
+                visible: boardModel.debugPanel.showRankAndFile
+                text: model.rankAndFile
+            }
 
             Rectangle {
                 anchors {

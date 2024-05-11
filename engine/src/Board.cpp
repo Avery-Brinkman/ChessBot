@@ -43,29 +43,31 @@ inline Directions getDirections(bool isWhite) {
 namespace Engine_NS {
 
 void Board::setToStartPosition() {
-  m_bitBoards.whiteRooks = 0b0000000000000000000000000000000000000000000000000000000010000001;
-  m_bitBoards.whiteKnights = 0b0000000000000000000000000000000000000000000000000000000001000010;
-  m_bitBoards.whiteBishops = 0b0000000000000000000000000000000000000000000000000000000000100100;
-  m_bitBoards.whiteQueens = 0b0000000000000000000000000000000000000000000000000000000000010000;
-  m_bitBoards.whiteKing = 0b0000000000000000000000000000000000000000000000000000000000001000;
-  m_bitBoards.whitePawns = 0b0000000010000000000000000000000000000000000000000111111100000000;
+  m_bitBoards.whiteRooks = 1ULL << 37;
+  m_bitBoards.whiteKnights = 0;
+  m_bitBoards.whiteBishops = 0;
+  m_bitBoards.whiteQueens = 0;
+  m_bitBoards.whiteKing = 0;
+  m_bitBoards.whitePawns = 0;
 
-  m_bitBoards.blackRooks = 0b0000000100000000000000000000000000000000000000000000000000000000;
-  m_bitBoards.blackKnights = 0b0100001000000000000000000000000000000000000000000000000000000000;
-  m_bitBoards.blackBishops = 0b0010010000000000000000000000000000000000000000000000000000000000;
-  m_bitBoards.blackQueens = 0b0001000000000000000000000000000000000000000000000000000000000000;
-  m_bitBoards.blackKing = 0b0000100000000000000000000000000000000000000000000000000000000000;
-  m_bitBoards.blackPawns = 0b0000000001111111000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackRooks = 0;
+  m_bitBoards.blackKnights = 0;
+  m_bitBoards.blackBishops = 0;
+  m_bitBoards.blackQueens = 0;
+  m_bitBoards.blackKing = 0;
+  m_bitBoards.blackPawns = 0;
 }
 
-inline size_t Board::getIndex(size_t row, size_t col) const { return (7 - row) * 8 + (7 - col); }
+inline BoardIndex Board::getIndex(size_t row, size_t col) const {
+  return BoardIndex((7 - row) * 8 + col);
+}
 
 Piece Board::getPiece(size_t row, size_t col) const {
   if (row > 7 || col > 7)
     return Pieces::None;
   return getPiece(getIndex(row, col));
 }
-Piece Board::getPiece(size_t index) const {
+Piece Board::getPiece(BoardIndex index) const {
   const BitBoard pieceMask = 1ULL << index;
   if (m_bitBoards.whitePawns & pieceMask)
     return Pieces::WhitePawn;
@@ -95,7 +97,7 @@ Piece Board::getPiece(size_t index) const {
   return Pieces::None;
 }
 
-BitBoard Board::getValidMoves(size_t index) const {
+BitBoard Board::getValidMoves(BoardIndex index) const {
   using namespace Pieces;
   const Piece piece = getPiece(index);
 
@@ -111,7 +113,7 @@ BitBoard Board::getValidMoves(size_t index) const {
   }
 }
 
-void Board::movePiece(size_t from, size_t to) {
+void Board::movePiece(BoardIndex from, BoardIndex to) {
   Move move = {};
   move.startPos = from;
   move.endPos = to;
@@ -126,14 +128,14 @@ void Board::movePiece(size_t from, size_t to) {
 
   if (Pieces::getType(move.movedPiece) == Pieces::Pawn) {
     // Double pawn push
-    if (abs(static_cast<int>(from / 8) - static_cast<int>(to / 8)) > 1) {
+    if (abs((from / 8) - (to / 8)) > 1) {
       flags = DoublePawnPush;
     }
     // En passant capture
     else if ((1ULL << to) & m_bitBoards.enPassant) {
       flags = EnPassant;
 
-      move.capturedPos = to + getBackward(Pieces::isWhite(move.movedPiece));
+      move.capturedPos = BoardIndex(to + getBackward(Pieces::isWhite(move.movedPiece)));
       move.capturedPiece = getPiece(move.capturedPos);
     }
     // Promotion
@@ -356,7 +358,8 @@ void Board::updateBitBoards(const Move& move) {
   if (Pieces::getType(move.movedPiece) == Pieces::Pawn) {
     // Moved two steps
     if (move.flags == DoublePawnPush) {
-      m_bitBoards.enPassant |= 1ULL << (std::midpoint(move.startPos, move.endPos));
+      m_bitBoards.enPassant |= 1ULL << (std::midpoint(static_cast<unsigned char>(move.startPos),
+                                                      static_cast<unsigned char>(move.endPos)));
     }
     // Clear en passant
     else {

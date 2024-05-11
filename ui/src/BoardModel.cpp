@@ -42,6 +42,8 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
   case BitBoardRole: {
     return (m_bitBoard & (1ULL << bitIndex)) > 0;
   }
+  case RankAndFileRole:
+    return QString::fromStdString(Engine_NS::to_string(getIndex(index.row(), index.column())));
   default:
     return QVariant();
   }
@@ -50,10 +52,10 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
 bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int role) {
   using enum Chess_UI::BoardModel::BoardRoles;
 
-  const size_t bitIndex = getIndex(index.row(), index.column());
+  const Engine_NS::BoardIndex bitIndex = getIndex(index.row(), index.column());
   switch (BoardRoles(role)) {
   case SelectedRole: {
-    m_selectedIndex = static_cast<int>(bitIndex);
+    m_selectedIndex = bitIndex;
     m_currentValidMoves = getValidMoves(bitIndex);
     break;
   }
@@ -61,7 +63,7 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     if (m_currentValidMoves & (1ULL << bitIndex)) {
       movePiece(m_selectedIndex, bitIndex);
     }
-    m_selectedIndex = -1;
+    m_selectedIndex = Engine_NS::BoardIndex::INVALID;
     m_currentValidMoves = 0;
     break;
   }
@@ -85,9 +87,12 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
 QHash<int, QByteArray> BoardModel::roleNames() const {
   using enum Chess_UI::BoardModel::BoardRoles;
   return {
-      {static_cast<int>(ImageRole), "pieceImage"},  {static_cast<int>(ValidMoveRole), "validMove"},
-      {static_cast<int>(SelectedRole), "selected"}, {static_cast<int>(DebugInfoRole), "debugInfo"},
+      {static_cast<int>(ImageRole), "pieceImage"},
+      {static_cast<int>(ValidMoveRole), "validMove"},
+      {static_cast<int>(SelectedRole), "selected"},
+      {static_cast<int>(DebugInfoRole), "debugInfo"},
       {static_cast<int>(BitBoardRole), "bitBoard"},
+      {static_cast<int>(RankAndFileRole), "rankAndFile"},
   };
 }
 

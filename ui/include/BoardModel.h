@@ -13,6 +13,7 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
     SelectedRole,
     DebugInfoRole,
     BitBoardRole,
+    RankAndFileRole,
   };
 
   Q_OBJECT
@@ -36,7 +37,7 @@ private:
 
   BitBoard getDebugInfo() const;
 
-  int m_selectedIndex = -1;
+  Engine_NS::BoardIndex m_selectedIndex = Engine_NS::BoardIndex::INVALID;
   BitBoard m_currentValidMoves = 0;
 
   DebugPanel* m_debugPanel = new DebugPanel();

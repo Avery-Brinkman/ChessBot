@@ -1,6 +1,20 @@
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+set(DEFINITION_INCLUDES
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/BoardIndicies.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Directions.h
+)
+
+set(DEFINITION_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/BoardIndicies.cpp
+)
+
+source_group("Definitions/Header Files" FILES ${DEFINITION_INCLUDES})
+source_group("Definitions/Source Files" FILES ${DEFINITION_SOURCES})
+
 set(ENGINE_INCLUDES
+  ${DEFINITION_INCLUDES}
+
   ${CMAKE_CURRENT_SOURCE_DIR}/include/BitBoard.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Board.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Bot.h
@@ -12,6 +26,8 @@ set(ENGINE_INCLUDES
 )
 
 set(ENGINE_SOURCES
+  ${DEFINITION_SOURCES}
+
   ${CMAKE_CURRENT_SOURCE_DIR}/src/BitBoard.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Board.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Bot.cpp

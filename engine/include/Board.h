@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BitBoard.h"
+#include "BoardIndicies.h"
 #include "Move.h"
 #include "Piece.h"
 
@@ -10,16 +11,16 @@ public:
   void setToStartPosition();
 
   // Gets 1D index based on row col (where 0,0 is top left)
-  size_t getIndex(size_t row, size_t col) const;
+  BoardIndex getIndex(size_t row, size_t col) const;
 
   // Gets the piece from the TL row col
   Piece getPiece(size_t row, size_t col) const;
   // Get the piece from the 1D index
-  Piece getPiece(size_t index) const;
+  Piece getPiece(BoardIndex index) const;
 
-  BitBoard getValidMoves(size_t index) const;
+  BitBoard getValidMoves(BoardIndex index) const;
 
-  void movePiece(size_t from, size_t to);
+  void movePiece(BoardIndex from, BoardIndex to);
 
 protected:
   BitBoard getEnPassantMask() const;

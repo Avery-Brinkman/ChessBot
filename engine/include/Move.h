@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BoardIndicies.h"
 #include "Piece.h"
 #include <cstdint>
 
@@ -18,10 +19,10 @@ constexpr MoveFlags BishopPromotion = 0b00000110;
 constexpr MoveFlags RookPromotion = 0b00000111;
 
 struct Move {
-  size_t startPos = 0;
-  size_t endPos = 0;
+  BoardIndex startPos = BoardIndex::A1;
+  BoardIndex endPos = BoardIndex::A1;
   Piece movedPiece = Pieces::None;
-  size_t capturedPos = 0;
+  BoardIndex capturedPos = BoardIndex::A1;
   Piece capturedPiece = Pieces::None;
   MoveFlags flags = NoFlag;
 };

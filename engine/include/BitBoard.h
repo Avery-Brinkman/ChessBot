@@ -1,10 +1,17 @@
 #pragma once
 
-#include <cstdint>
+#include "BoardIndicies.h"
 
 using BitBoard = uint_fast64_t;
 
 namespace Engine_NS {
+
+BitBoard getBitBoard(BoardIndex index);
+
+void enableBit(BitBoard& board, BoardIndex index);
+void disableBit(BitBoard& board, BoardIndex index);
+void toggleBit(BitBoard& board, BoardIndex index);
+bool checkBit(BitBoard board, BoardIndex index);
 
 struct BoardInfo {
   BitBoard whitePieces = 0;
