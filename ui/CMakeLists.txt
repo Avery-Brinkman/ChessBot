@@ -59,10 +59,3 @@ qt_add_resources(${UI_NAME} "qml"
     ${QML_FILES}
     ${IMAGES}
 )
-
-# install(TARGETS ${PROJECT_NAME}
-#   RUNTIME DESTINATION "AAA"
-#   BUNDLE DESTINATION "AAA"
-#   LIBRARY DESTINATION "AAA"
-# )
-
