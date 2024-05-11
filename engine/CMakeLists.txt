@@ -3,6 +3,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(DEFINITION_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/include/BoardIndicies.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Directions.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Piece.hpp
 )
 
 set(DEFINITION_SOURCES
@@ -20,7 +21,6 @@ set(ENGINE_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Bot.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Engine.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Move.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/Piece.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/SlidingPieceBitBoards.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/UCICommands.h
 )
@@ -33,7 +33,6 @@ set(ENGINE_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Bot.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Move.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/Piece.cpp
 )
 
 set(ENGINE_CLI_INCLUDES

@@ -3,7 +3,7 @@
 #include "BitBoard.hpp"
 #include "BoardIndicies.h"
 #include "Move.h"
-#include "Piece.h"
+#include "Piece.hpp"
 
 namespace Engine_NS {
 class Board {

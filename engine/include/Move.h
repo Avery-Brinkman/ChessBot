@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BoardIndicies.h"
-#include "Piece.h"
+#include "Piece.hpp"
 #include <cstdint>
 
 using MoveFlags = uint_fast8_t;
@@ -21,9 +21,9 @@ constexpr MoveFlags RookPromotion = 0b00000111;
 struct Move {
   BoardIndex startPos = BoardIndex::A1;
   BoardIndex endPos = BoardIndex::A1;
-  Piece movedPiece = Pieces::None;
+  Piece movedPiece = None;
   BoardIndex capturedPos = BoardIndex::A1;
-  Piece capturedPiece = Pieces::None;
+  Piece capturedPiece = None;
   MoveFlags flags = NoFlag;
 };
 

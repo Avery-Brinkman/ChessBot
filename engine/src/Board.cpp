@@ -62,43 +62,42 @@ BoardIndex Board::getIndex(size_t row, size_t col) const { return BoardIndex((7 
 
 Piece Board::getPiece(size_t row, size_t col) const {
   if (row > 7 || col > 7)
-    return Pieces::None;
+    return None;
   return getPiece(getIndex(row, col));
 }
 Piece Board::getPiece(BoardIndex index) const {
   if (m_bitBoards.whitePawns.checkBit(index))
-    return Pieces::WhitePawn;
+    return WhitePawn;
   if (m_bitBoards.whiteRooks.checkBit(index))
-    return Pieces::WhiteRook;
+    return WhiteRook;
   if (m_bitBoards.whiteKnights.checkBit(index))
-    return Pieces::WhiteKnight;
+    return WhiteKnight;
   if (m_bitBoards.whiteBishops.checkBit(index))
-    return Pieces::WhiteBishop;
+    return WhiteBishop;
   if (m_bitBoards.whiteQueens.checkBit(index))
-    return Pieces::WhiteQueen;
+    return WhiteQueen;
   if (m_bitBoards.whiteKing.checkBit(index))
-    return Pieces::WhiteKing;
+    return WhiteKing;
   if (m_bitBoards.blackPawns.checkBit(index))
-    return Pieces::BlackPawn;
+    return BlackPawn;
   if (m_bitBoards.blackRooks.checkBit(index))
-    return Pieces::BlackRook;
+    return BlackRook;
   if (m_bitBoards.blackKnights.checkBit(index))
-    return Pieces::BlackKnight;
+    return BlackKnight;
   if (m_bitBoards.blackBishops.checkBit(index))
-    return Pieces::BlackBishop;
+    return BlackBishop;
   if (m_bitBoards.blackQueens.checkBit(index))
-    return Pieces::BlackQueen;
+    return BlackQueen;
   if (m_bitBoards.blackKing.checkBit(index))
-    return Pieces::BlackKing;
+    return BlackKing;
 
-  return Pieces::None;
+  return None;
 }
 
 BitBoard Board::getValidMoves(BoardIndex index) const {
-  using namespace Pieces;
   const Piece piece = getPiece(index);
 
-  switch (getType(piece)) {
+  switch (piece.type()) {
   case Pawn:
     return getValidPawnMoves(index);
   case Knight:
@@ -117,13 +116,13 @@ void Board::movePiece(BoardIndex from, BoardIndex to) {
   move.movedPiece = getPiece(from);
 
   move.capturedPiece = getPiece(to);
-  if (move.capturedPiece != Pieces::None) {
+  if (move.capturedPiece != None) {
     move.capturedPos = to;
   }
 
   MoveFlags flags = 0;
 
-  if (Pieces::getType(move.movedPiece) == Pieces::Pawn) {
+  if (move.movedPiece.type() == Pawn) {
     // Double pawn push
     if (abs((from / 8) - (to / 8)) > 1) {
       flags = DoublePawnPush;
@@ -132,7 +131,7 @@ void Board::movePiece(BoardIndex from, BoardIndex to) {
     else if (m_bitBoards.enPassant.checkBit(to)) {
       flags = EnPassant;
 
-      move.capturedPos = BoardIndex(to + getBackward(Pieces::isWhite(move.movedPiece)));
+      move.capturedPos = BoardIndex(to + getBackward(move.movedPiece.isWhite()));
       move.capturedPiece = getPiece(move.capturedPos);
     }
     // Promotion
@@ -257,42 +256,41 @@ BitBoard Board::getCastlingMoves(size_t index, bool isWhite) const {
 }
 
 void Board::addPiece(Piece piece, BoardIndex index) {
-  using namespace Pieces;
-  switch (piece) {
-  case WhitePawn:
+  switch (piece.bits) {
+  case WhitePawn.bits:
     m_bitBoards.whitePawns.enableBit(index);
     break;
-  case BlackPawn:
+  case BlackPawn.bits:
     m_bitBoards.blackPawns.enableBit(index);
     break;
-  case WhiteKnight:
+  case WhiteKnight.bits:
     m_bitBoards.whiteKnights.enableBit(index);
     break;
-  case BlackKnight:
+  case BlackKnight.bits:
     m_bitBoards.blackKnights.enableBit(index);
     break;
-  case WhiteBishop:
+  case WhiteBishop.bits:
     m_bitBoards.whiteBishops.enableBit(index);
     break;
-  case BlackBishop:
+  case BlackBishop.bits:
     m_bitBoards.blackBishops.enableBit(index);
     break;
-  case WhiteRook:
+  case WhiteRook.bits:
     m_bitBoards.whiteRooks.enableBit(index);
     break;
-  case BlackRook:
+  case BlackRook.bits:
     m_bitBoards.blackRooks.enableBit(index);
     break;
-  case WhiteQueen:
+  case WhiteQueen.bits:
     m_bitBoards.whiteQueens.enableBit(index);
     break;
-  case BlackQueen:
+  case BlackQueen.bits:
     m_bitBoards.blackQueens.enableBit(index);
     break;
-  case WhiteKing:
+  case WhiteKing.bits:
     m_bitBoards.whiteKing.enableBit(index);
     break;
-  case BlackKing:
+  case BlackKing.bits:
     m_bitBoards.blackKing.enableBit(index);
     break;
   default:
@@ -301,42 +299,41 @@ void Board::addPiece(Piece piece, BoardIndex index) {
 }
 
 void Board::removePiece(Piece piece, BoardIndex index) {
-  using namespace Pieces;
-  switch (piece) {
-  case WhitePawn:
+  switch (piece.bits) {
+  case WhitePawn.bits:
     m_bitBoards.whitePawns.disableBit(index);
     break;
-  case BlackPawn:
+  case BlackPawn.bits:
     m_bitBoards.blackPawns.disableBit(index);
     break;
-  case WhiteKnight:
+  case WhiteKnight.bits:
     m_bitBoards.whiteKnights.disableBit(index);
     break;
-  case BlackKnight:
+  case BlackKnight.bits:
     m_bitBoards.blackKnights.disableBit(index);
     break;
-  case WhiteBishop:
+  case WhiteBishop.bits:
     m_bitBoards.whiteBishops.disableBit(index);
     break;
-  case BlackBishop:
+  case BlackBishop.bits:
     m_bitBoards.blackBishops.disableBit(index);
     break;
-  case WhiteRook:
+  case WhiteRook.bits:
     m_bitBoards.whiteRooks.disableBit(index);
     break;
-  case BlackRook:
+  case BlackRook.bits:
     m_bitBoards.blackRooks.disableBit(index);
     break;
-  case WhiteQueen:
+  case WhiteQueen.bits:
     m_bitBoards.whiteQueens.disableBit(index);
     break;
-  case BlackQueen:
+  case BlackQueen.bits:
     m_bitBoards.blackQueens.disableBit(index);
     break;
-  case WhiteKing:
+  case WhiteKing.bits:
     m_bitBoards.whiteKing.disableBit(index);
     break;
-  case BlackKing:
+  case BlackKing.bits:
     m_bitBoards.blackKing.disableBit(index);
     break;
   default:
@@ -349,7 +346,7 @@ void Board::updateBitBoards(const Move& move) {
   Piece pieceToRemove = move.movedPiece;
 
   // Pawn moves
-  if (Pieces::getType(move.movedPiece) == Pieces::Pawn) {
+  if (move.movedPiece.type() == Pawn) {
     // Moved two steps
     if (move.flags == DoublePawnPush) {
       m_bitBoards.enPassant.enableBit(BoardIndex(std::midpoint(
@@ -359,29 +356,29 @@ void Board::updateBitBoards(const Move& move) {
     else {
       const BoardIndex clearLoc = BoardIndex(
           move.flags == EnPassant ? move.endPos
-                                  : move.startPos + getBackward(Pieces::isWhite(move.movedPiece)));
+                                  : move.startPos + getBackward(move.movedPiece.isWhite()));
       m_bitBoards.enPassant.disableBit(clearLoc);
     }
 
     // Check for promotion
     if (move.flags & QueenPromotion) {
       // TODO: This gets triggered for a promotion of any type
-      pieceToAdd = Pieces::WhiteQueen;
+      pieceToAdd = WhiteQueen;
     }
   }
 
   // Remove En Passant when a pawn is captured
-  if (Pieces::getType(move.capturedPiece) == Pieces::Pawn) {
+  if (move.capturedPiece.type() == Pawn) {
     if (move.capturedPos / 8 == 3 || move.capturedPos / 8 == 4) {
       m_bitBoards.enPassant.disableBit(
-          BoardIndex(move.capturedPos + getBackward(Pieces::isWhite(move.capturedPiece))));
+          BoardIndex(move.capturedPos + getBackward(move.capturedPiece.isWhite())));
     }
   }
 
   addPiece(pieceToAdd, move.endPos);
   removePiece(pieceToRemove, move.startPos);
 
-  if (move.capturedPiece != Pieces::None) {
+  if (move.capturedPiece != None) {
     removePiece(move.capturedPiece, move.capturedPos);
   }
 }
