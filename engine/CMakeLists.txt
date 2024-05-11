@@ -15,7 +15,7 @@ source_group("Definitions/Source Files" FILES ${DEFINITION_SOURCES})
 set(ENGINE_INCLUDES
   ${DEFINITION_INCLUDES}
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/BitBoard.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/BitBoard.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Board.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Bot.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Engine.h

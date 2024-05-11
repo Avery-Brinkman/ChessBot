@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitBoard.h"
+#include "BitBoard.hpp"
 #include "BoardIndicies.h"
 #include "Move.h"
 #include "Piece.h"
@@ -29,19 +29,19 @@ private:
   BitBoard getWhitePieces() const;
   BitBoard getBlackPieces() const;
 
-  BitBoard getValidPawnMoves(size_t index) const;
-  BitBoard getValidKnightMoves(size_t index) const;
-  BitBoard getValidBishopMoves(size_t index) const;
-  BitBoard getValidWhiteRookMoves(size_t index) const;
-  BitBoard getValidBlackRookMoves(size_t index) const;
-  BitBoard getValidWhiteQueenMoves(size_t index) const;
-  BitBoard getValidBlackQueenMoves(size_t index) const;
-  BitBoard getValidKingMoves(size_t index) const;
+  BitBoard getValidPawnMoves(BoardIndex index) const;
+  BitBoard getValidKnightMoves(BoardIndex index) const;
+  BitBoard getValidBishopMoves(BoardIndex index) const;
+  BitBoard getValidWhiteRookMoves(BoardIndex index) const;
+  BitBoard getValidBlackRookMoves(BoardIndex index) const;
+  BitBoard getValidWhiteQueenMoves(BoardIndex index) const;
+  BitBoard getValidBlackQueenMoves(BoardIndex index) const;
+  BitBoard getValidKingMoves(BoardIndex index) const;
 
   BitBoard getCastlingMoves(size_t index, bool isWhite) const;
 
-  void addPiece(Piece piece, size_t index);
-  void removePiece(Piece piece, size_t index);
+  void addPiece(Piece piece, BoardIndex index);
+  void removePiece(Piece piece, BoardIndex index);
 
   void updateBitBoards(const Move& move);
 
