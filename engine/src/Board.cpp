@@ -3,18 +3,6 @@
 #include <numeric>
 
 namespace {
-struct Directions {
-  int forward = 0;
-  int backward = 0;
-  int left = 0;
-  int right = 0;
-};
-
-int getForward(bool isWhite) { return isWhite ? 8 : -8; }
-int getBackward(bool isWhite) { return isWhite ? -8 : 8; }
-int getLeft(bool isWhite) { return isWhite ? 1 : -1; }
-int getRight(bool isWhite) { return isWhite ? -1 : 1; }
-
 bool canMoveForward(size_t index, bool isWhite, int times = 0) {
   const int row = static_cast<int>(index) / 8;
   return isWhite ? (row < 7 - times) : (row > 0 + times);
@@ -30,13 +18,6 @@ bool canMoveLeft(size_t index, bool isWhite, int times = 0) {
 bool canMoveRight(size_t index, bool isWhite, int times = 0) {
   const int col = static_cast<int>(index) % 8;
   return isWhite ? (col > 0 + times) : (col < 7 - times);
-}
-
-Directions getDirections(bool isWhite) {
-  return Directions{.forward = getForward(isWhite),
-                    .backward = getBackward(isWhite),
-                    .left = getLeft(isWhite),
-                    .right = getRight(isWhite)};
 }
 } // namespace
 
@@ -131,7 +112,7 @@ void Board::movePiece(BoardIndex from, BoardIndex to) {
     else if (m_bitBoards.enPassant.checkBit(to)) {
       flags = EnPassant;
 
-      move.capturedPos = BoardIndex(to + getBackward(move.movedPiece.isWhite()));
+      move.capturedPos = BoardIndex(to + move.movedPiece.backward());
       move.capturedPiece = getPiece(move.capturedPos);
     }
     // Promotion
@@ -158,25 +139,26 @@ BitBoard Board::getBlackPieces() const { return m_bitBoards.getBlackPieces(); }
 BitBoard Board::getValidPawnMoves(BoardIndex index) const {
   // TODO: This only needs to be calculated once per move
   const BoardInfo boardInfo = m_bitBoards.getInfo();
-  const bool isWhite = boardInfo.whitePieces.checkBit(index);
+  const Piece piece = getPiece(index);
+  const bool isWhite = piece.isWhite();
   const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
 
   const size_t row = index / 8;
-  const int forward = getForward(isWhite);
-  const int forwardLeft = forward + getLeft(isWhite);
-  const int forwardRight = forward + getRight(isWhite);
+  const CompassDirection forward = piece.forward();
+  const CompassDirection forwardLeft = piece.forwardLeft();
+  const CompassDirection forwardRight = piece.forwardRight();
 
   const bool canMoveForwards = canMoveForward(index, isWhite);
   const bool canMoveTwoSteps = canMoveForwards && (isWhite ? (row == 1) : (row == 6));
   const bool canMoveForwardLeft = canMoveForwards && canMoveLeft(index, isWhite);
   const bool canMoveForwardRight = canMoveForwards && canMoveRight(index, isWhite);
 
-  const BitBoard oneStep = canMoveForwards ? 1ULL << (index + forward) : 0;
-  const BitBoard twoSteps = canMoveTwoSteps ? 1ULL << (index + forward + forward) : 0;
+  const BitBoard oneStep = canMoveForwards ? index + forward : 0;
+  const BitBoard twoSteps = canMoveTwoSteps ? index + forward + forward : 0;
   const BitBoard moves = (oneStep | twoSteps) & boardInfo.emptySquares;
 
-  const BitBoard leftCapture = canMoveForwardLeft ? 1ULL << (index + forwardLeft) : 0;
-  const BitBoard rightCapture = canMoveForwardRight ? 1ULL << (index + forwardRight) : 0;
+  const BitBoard leftCapture = canMoveForwardLeft ? index + forwardLeft : 0;
+  const BitBoard rightCapture = canMoveForwardRight ? index + forwardRight : 0;
   const BitBoard captures = (leftCapture | rightCapture) & (opponentPieces | m_bitBoards.enPassant);
 
   return moves | captures;
@@ -192,14 +174,14 @@ BitBoard Board::getValidKnightMoves(BoardIndex index) const {
   const size_t row = index / 8;
   const size_t col = index % 8;
 
-  const BitBoard one = (row < 6) && (col < 7) ? 1ULL << (index + 17) : 0;
-  const BitBoard two = (row < 6) && (col > 0) ? 1ULL << (index + 15) : 0;
-  const BitBoard three = (row < 7) && (col < 6) ? 1ULL << (index + 10) : 0;
-  const BitBoard four = (row < 7) && (col > 1) ? 1ULL << (index + 6) : 0;
-  const BitBoard five = (row > 0) && (col < 6) ? 1ULL << (index - 6) : 0;
-  const BitBoard six = (row > 0) && (col > 1) ? 1ULL << (index - 10) : 0;
-  const BitBoard seven = (row > 1) && (col < 7) ? 1ULL << (index - 15) : 0;
-  const BitBoard eight = (row > 1) && (col > 0) ? 1ULL << (index - 17) : 0;
+  const BitBoard one = (row < 6) && (col < 7) ? index + 17 : 0;
+  const BitBoard two = (row < 6) && (col > 0) ? index + 15 : 0;
+  const BitBoard three = (row < 7) && (col < 6) ? index + 10 : 0;
+  const BitBoard four = (row < 7) && (col > 1) ? index + 6 : 0;
+  const BitBoard five = (row > 0) && (col < 6) ? index - 6 : 0;
+  const BitBoard six = (row > 0) && (col > 1) ? index - 10 : 0;
+  const BitBoard seven = (row > 1) && (col < 7) ? index - 15 : 0;
+  const BitBoard eight = (row > 1) && (col > 0) ? index - 17 : 0;
 
   return (one | two | three | four | five | six | seven | eight) & validSquares;
 }
@@ -223,10 +205,10 @@ BitBoard Board::getValidKingMoves(BoardIndex index) const {
   const size_t row = index / 8;
   const size_t col = index % 8;
 
-  const BitBoard up = (row < 7) ? 1ULL << (index + 8) : 0;
-  const BitBoard down = (row > 0) ? 1ULL << (index - 8) : 0;
-  const BitBoard left = (col < 7) ? 1ULL << (index + 1) : 0;
-  const BitBoard right = (col > 0) ? 1ULL << (index - 1) : 0;
+  const BitBoard up = (row < 7) ? index + 8 : 0;
+  const BitBoard down = (row > 0) ? index - 8 : 0;
+  const BitBoard left = (col < 7) ? index + 1 : 0;
+  const BitBoard right = (col > 0) ? index - 1 : 0;
   const BitBoard upLeft = (row < 7) && (col < 7) ? up << 1 : 0;
   const BitBoard upRight = (row < 7) && (col > 0) ? up >> 1 : 0;
   const BitBoard downLeft = (row > 0) && (col < 7) ? down << 1 : 0;
@@ -355,8 +337,7 @@ void Board::updateBitBoards(const Move& move) {
     // Clear en passant
     else {
       const BoardIndex clearLoc = BoardIndex(
-          move.flags == EnPassant ? move.endPos
-                                  : move.startPos + getBackward(move.movedPiece.isWhite()));
+          move.flags == EnPassant ? move.endPos : move.startPos + move.movedPiece.backward());
       m_bitBoards.enPassant.disableBit(clearLoc);
     }
 
@@ -371,7 +352,7 @@ void Board::updateBitBoards(const Move& move) {
   if (move.capturedPiece.type() == Pawn) {
     if (move.capturedPos / 8 == 3 || move.capturedPos / 8 == 4) {
       m_bitBoards.enPassant.disableBit(
-          BoardIndex(move.capturedPos + getBackward(move.capturedPiece.isWhite())));
+          BoardIndex(move.capturedPos + move.capturedPiece.backward()));
     }
   }
 

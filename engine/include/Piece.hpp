@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Directions.h"
 #include <cstdint>
 
 using PieceBits = uint_fast8_t;
@@ -21,6 +22,15 @@ struct Piece {
   Color color() const { return Color(bits & 0b1000); }
   PieceType type() const { return PieceType(bits & 0b0111); }
   bool isWhite() const { return color() == Color::White; }
+
+  CompassDirection forward() const { return isWhite() ? North : South; }
+  CompassDirection backward() const { return isWhite() ? South : North; }
+  CompassDirection left() const { return isWhite() ? West : East; }
+  CompassDirection right() const { return isWhite() ? East : West; }
+  CompassDirection forwardLeft() const { return isWhite() ? NorthWest : SouthEast; }
+  CompassDirection forwardRight() const { return isWhite() ? NorthEast : SouthWest; }
+  CompassDirection backwardLeft() const { return isWhite() ? SouthWest : NorthEast; }
+  CompassDirection backwardRight() const { return isWhite() ? SouthEast : NorthWest; }
 
   PieceBits bits = Color::White | PieceType::NoneType;
 
