@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(ChessBot LANGUAGES CXX)
 
 option(SKIP_UI "SKIP_UI" OFF)
+option(SKIP_TOOLS "SKIP_TOOLS" OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,6 +16,13 @@ set(ENGINE_NAME ${PROJECT_NAME}_Engine)
 
 message(STATUS "Building Engine")
 add_subdirectory(engine)
+
+if(${SKIP_TOOLS})
+  message(STATUS "Skipping Tools")
+else()
+  message(STATUS "Building Tools")
+  add_subdirectory(tools)
+endif()
 
 if(${SKIP_UI})
   message(STATUS "Skipping UI")
