@@ -1,3 +1,4 @@
+#include "MoveGenerators.h"
 #include <iostream>
 
 namespace ToolMenu {
@@ -57,9 +58,18 @@ void runTool(Option option) {
   using enum Option;
 
   switch (option) {
-  case PawnMovements:
-    std::cout << "pawn" << std::endl;
+  case PawnMovements: {
+    std::cout << "White:" << std::endl;
+    std::array<BitBoardBits, 64> pawnMoves = Tools::generateWhitePawnMoves();
+    for (const BitBoardBits& bitBoard : pawnMoves)
+      std::cout << bitBoard << ", ";
+    std::cout << "\b\b  " << std::endl;
+    std::cout << "Black:" << std::endl;
+    pawnMoves = Tools::generateBlackPawnMoves();
+    for (const BitBoardBits& bitBoard : pawnMoves)
+      std::cout << bitBoard << ", ";
     break;
+  }
   case KnightMovements:
     std::cout << "knight" << std::endl;
     break;
@@ -76,12 +86,14 @@ void runTool(Option option) {
     std::cout << "king" << std::endl;
     break;
   case Quit:
-    std::cout << "Goodbye!" << std::endl;
+    std::cout << "Goodbye!  ";
     break;
   default:
-    std::cout << "Invalid option!" << std::endl;
+    std::cout << "Invalid option!  ";
     break;
   }
+  std::cout << "\b\b  " << std::endl;
+  std::cout << std::endl;
 }
 
 } // namespace ToolMenu
