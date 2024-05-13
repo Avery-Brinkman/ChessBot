@@ -33,15 +33,15 @@ public:
   DebugPanel* getDebugPanel() const;
 
 private:
-  QUrl pieceImage(Piece piece) const;
+  QUrl pieceImage(const Engine_NS::Piece& piece) const;
 
-  BitBoard getDebugInfo() const;
+  Engine_NS::BitBoard getDebugInfo() const;
 
   Engine_NS::BoardIndex m_selectedIndex = Engine_NS::BoardIndex::INVALID;
-  BitBoard m_currentValidMoves = 0;
+  Engine_NS::BitBoard m_currentValidMoves = 0;
 
   DebugPanel* m_debugPanel = new DebugPanel();
 
-  BitBoard m_bitBoard = 0;
+  Engine_NS::BitBoard m_bitBoard = 0;
 };
 } // namespace Chess_UI
