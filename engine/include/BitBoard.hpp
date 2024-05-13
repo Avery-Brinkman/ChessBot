@@ -1,37 +1,33 @@
 #pragma once
 
-#include "BoardIndicies.h"
-
-using BitBoardBits = uint_fast64_t;
+#include "BoardIndicies.hpp"
 
 namespace Engine_NS {
+using BitBoardBits = uint_fast64_t;
 
-class BitBoard {
+struct BitBoard {
 public:
-  BitBoard(BoardIndex bitIndex) : BitBoard(1ULL << bitIndex) {}
-  BitBoard(BitBoardBits bits) : m_bits(bits) {}
+  BitBoard(const BoardIndex& index) : BitBoard(1ULL << index.index) {}
+  BitBoard(BitBoardBits bits) : bits(bits) {}
 
-  BitBoardBits bits() const { return m_bits; }
+  BitBoardBits bits = 0;
 
-  void enableBit(BoardIndex index) { enableBits(BitBoard(index)); };
-  void disableBit(BoardIndex index) { disableBits(BitBoard(index)); };
-  void toggleBit(BoardIndex index) { toggleBits(BitBoard(index)); };
-  bool checkBit(BoardIndex index) const { return checkBits(BitBoard(index)); };
+  void enableBit(const BoardIndex& index) { enableBits(BitBoard(index)); };
+  void disableBit(const BoardIndex& index) { disableBits(BitBoard(index)); };
+  void toggleBit(const BoardIndex& index) { toggleBits(BitBoard(index)); };
+  bool checkBit(const BoardIndex& index) const { return checkBits(BitBoard(index)); };
 
-  void enableBits(const BitBoard& bits) { m_bits |= bits.bits(); };
-  void disableBits(const BitBoard& bits) { m_bits &= ~(bits.bits()); };
-  void toggleBits(const BitBoard& bits) { m_bits ^= bits.bits(); };
-  bool checkBits(const BitBoard& bits) const { return m_bits & bits.bits(); };
+  void enableBits(const BitBoard& bits) { this->bits |= bits.bits; };
+  void disableBits(const BitBoard& bits) { this->bits &= ~(bits.bits); };
+  void toggleBits(const BitBoard& bits) { this->bits ^= bits.bits; };
+  bool checkBits(const BitBoard& bits) const { return this->bits & bits.bits; };
 
-  BitBoard operator&(const BitBoard& other) const { return m_bits & other.m_bits; }
-  BitBoard operator|(const BitBoard& other) const { return m_bits | other.m_bits; }
-  BitBoard operator^(const BitBoard& other) const { return m_bits ^ other.m_bits; }
-  BitBoard operator~() const { return ~m_bits; }
-  BitBoard operator<<(int value) const { return m_bits << value; }
-  BitBoard operator>>(int value) const { return m_bits >> value; }
-
-private:
-  BitBoardBits m_bits = 0;
+  BitBoard operator&(const BitBoard& other) const { return bits & other.bits; }
+  BitBoard operator|(const BitBoard& other) const { return bits | other.bits; }
+  BitBoard operator^(const BitBoard& other) const { return bits ^ other.bits; }
+  BitBoard operator~() const { return ~bits; }
+  BitBoard operator<<(int value) const { return bits << value; }
+  BitBoard operator>>(int value) const { return bits >> value; }
 };
 
 struct BoardInfo {

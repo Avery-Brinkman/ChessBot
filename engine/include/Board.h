@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BitBoard.hpp"
-#include "BoardIndicies.h"
+#include "BoardIndicies.hpp"
 #include "Move.h"
 #include "Piece.hpp"
 
@@ -16,11 +16,11 @@ public:
   // Gets the piece from the TL row col
   Piece getPiece(size_t row, size_t col) const;
   // Get the piece from the 1D index
-  Piece getPiece(BoardIndex index) const;
+  Piece getPiece(const BoardIndex& index) const;
 
-  BitBoard getValidMoves(BoardIndex index) const;
+  BitBoard getValidMoves(const BoardIndex& index) const;
 
-  void movePiece(BoardIndex from, BoardIndex to);
+  void movePiece(const BoardIndex& from, const BoardIndex& to);
 
 protected:
   BitBoard getEnPassantMask() const;
@@ -29,19 +29,19 @@ private:
   BitBoard getWhitePieces() const;
   BitBoard getBlackPieces() const;
 
-  BitBoard getValidPawnMoves(BoardIndex index) const;
-  BitBoard getValidKnightMoves(BoardIndex index) const;
-  BitBoard getValidBishopMoves(BoardIndex index) const;
-  BitBoard getValidWhiteRookMoves(BoardIndex index) const;
-  BitBoard getValidBlackRookMoves(BoardIndex index) const;
-  BitBoard getValidWhiteQueenMoves(BoardIndex index) const;
-  BitBoard getValidBlackQueenMoves(BoardIndex index) const;
-  BitBoard getValidKingMoves(BoardIndex index) const;
+  BitBoard getValidPawnMoves(const BoardIndex& index) const;
+  BitBoard getValidKnightMoves(const BoardIndex& index) const;
+  BitBoard getValidBishopMoves(const BoardIndex& index) const;
+  BitBoard getValidWhiteRookMoves(const BoardIndex& index) const;
+  BitBoard getValidBlackRookMoves(const BoardIndex& index) const;
+  BitBoard getValidWhiteQueenMoves(const BoardIndex& index) const;
+  BitBoard getValidBlackQueenMoves(const BoardIndex& index) const;
+  BitBoard getValidKingMoves(const BoardIndex& index) const;
 
-  BitBoard getCastlingMoves(size_t index, bool isWhite) const;
+  BitBoard getCastlingMoves(const BoardIndex& index, bool isWhite) const;
 
-  void addPiece(Piece piece, BoardIndex index);
-  void removePiece(Piece piece, BoardIndex index);
+  void addPiece(const Piece& piece, const BoardIndex& index);
+  void removePiece(const Piece& piece, const BoardIndex& index);
 
   void updateBitBoards(const Move& move);
 

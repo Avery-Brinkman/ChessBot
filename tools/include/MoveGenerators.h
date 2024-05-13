@@ -4,6 +4,6 @@
 #include <array>
 
 namespace Tools {
-std::array<BitBoardBits, 64> generateWhitePawnMoves();
-std::array<BitBoardBits, 64> generateBlackPawnMoves();
+std::array<Engine_NS::BitBoardBits, 64> generateWhitePawnMoves();
+std::array<Engine_NS::BitBoardBits, 64> generateBlackPawnMoves();
 } // namespace Tools

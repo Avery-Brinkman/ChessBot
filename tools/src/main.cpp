@@ -60,13 +60,13 @@ void runTool(Option option) {
   switch (option) {
   case PawnMovements: {
     std::cout << "White:" << std::endl;
-    std::array<BitBoardBits, 64> pawnMoves = Tools::generateWhitePawnMoves();
-    for (const BitBoardBits& bitBoard : pawnMoves)
+    std::array<Engine_NS::BitBoardBits, 64> pawnMoves = Tools::generateWhitePawnMoves();
+    for (const Engine_NS::BitBoardBits& bitBoard : pawnMoves)
       std::cout << bitBoard << ", ";
     std::cout << "\b\b  " << std::endl;
     std::cout << "Black:" << std::endl;
     pawnMoves = Tools::generateBlackPawnMoves();
-    for (const BitBoardBits& bitBoard : pawnMoves)
+    for (const Engine_NS::BitBoardBits& bitBoard : pawnMoves)
       std::cout << bitBoard << ", ";
     break;
   }

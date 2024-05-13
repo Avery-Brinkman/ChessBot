@@ -1,7 +1,7 @@
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 set(DEFINITION_INCLUDES
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/BoardIndicies.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/BoardIndicies.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Directions.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Piece.hpp
 )
