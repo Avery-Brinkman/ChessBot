@@ -39,7 +39,6 @@ struct BoardIndex {
   Index index = INVALID;
 
   operator Index() const { return index; }
-  operator int() const { return index; }
 };
 
 } // namespace Engine_NS

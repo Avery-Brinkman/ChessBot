@@ -43,7 +43,7 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     return m_bitBoard.checkBit(bitIndex);
   }
   case RankAndFileRole:
-    return QString::fromStdString(Engine_NS::to_string(getIndex(index.row(), index.column())));
+    return QString::fromStdString(getIndex(index.row(), index.column()).toString());
   default:
     return QVariant();
   }
@@ -63,7 +63,7 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     if (m_currentValidMoves.checkBit(bitIndex)) {
       movePiece(m_selectedIndex, bitIndex);
     }
-    m_selectedIndex = Engine_NS::BoardIndex::INVALID;
+    m_selectedIndex = {};
     m_currentValidMoves = 0;
     break;
   }
@@ -71,7 +71,7 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     // Toggle the bit
     m_bitBoard.toggleBit(bitIndex);
 
-    std::cout << std::bitset<64>(m_bitBoard.bits()) << std::endl;
+    std::cout << std::bitset<64>(m_bitBoard.bits) << std::endl;
 
     break;
   }

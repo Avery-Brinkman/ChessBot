@@ -7,8 +7,9 @@ using BitBoardBits = uint_fast64_t;
 
 struct BitBoard {
 public:
-  BitBoard(const BoardIndex& index) : BitBoard(1ULL << index.index) {}
+  BitBoard(BoardIndex index) : BitBoard(1ULL << index.index) {}
   BitBoard(BitBoardBits bits) : bits(bits) {}
+  BitBoard() = default;
 
   BitBoardBits bits = 0;
 

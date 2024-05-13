@@ -37,11 +37,11 @@ private:
 
   Engine_NS::BitBoard getDebugInfo() const;
 
-  Engine_NS::BoardIndex m_selectedIndex = Engine_NS::BoardIndex::INVALID;
-  Engine_NS::BitBoard m_currentValidMoves = 0;
+  Engine_NS::BoardIndex m_selectedIndex = {};
+  Engine_NS::BitBoard m_currentValidMoves = {};
 
   DebugPanel* m_debugPanel = new DebugPanel();
 
-  Engine_NS::BitBoard m_bitBoard = 0;
+  Engine_NS::BitBoard m_bitBoard = {};
 };
 } // namespace Chess_UI
