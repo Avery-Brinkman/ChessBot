@@ -4,6 +4,7 @@ set(DEFINITION_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/include/BoardIndicies.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Directions.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Piece.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/PrecomputedMoves.h
 )
 
 set(DEFINITION_SOURCES

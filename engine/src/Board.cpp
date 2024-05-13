@@ -1,4 +1,5 @@
 #include "Board.h"
+#include "PrecomputedMoves.h"
 #include <iostream>
 #include <numeric>
 
@@ -186,25 +187,10 @@ BitBoard Board::getValidPawnMoves(const BoardIndex& index) const {
   const bool isWhite = piece.isWhite();
   const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
 
-  const Rank row = index.rank();
-  const CompassDirection forward = piece.forward();
-  const CompassDirection forwardLeft = piece.forwardLeft();
-  const CompassDirection forwardRight = piece.forwardRight();
+  const BitBoard moves = Engine_NS::Precomputed::PawnMoves.at(isWhite).at(index.index);
+  const BitBoard attacks = Engine_NS::Precomputed::PawnAttacks.at(isWhite).at(index.index);
 
-  const bool canMoveForwards = canMoveForward(index, isWhite);
-  const bool canMoveTwoSteps = canMoveForwards && (isWhite ? (row == 1) : (row == 6));
-  const bool canMoveForwardLeft = canMoveForwards && canMoveLeft(index, isWhite);
-  const bool canMoveForwardRight = canMoveForwards && canMoveRight(index, isWhite);
-
-  const BitBoard oneStep = canMoveForwards ? index.index + forward : 0;
-  const BitBoard twoSteps = canMoveTwoSteps ? index.index + forward + forward : 0;
-  const BitBoard moves = (oneStep | twoSteps) & boardInfo.emptySquares;
-
-  const BitBoard leftCapture = canMoveForwardLeft ? index.index + forwardLeft : 0;
-  const BitBoard rightCapture = canMoveForwardRight ? index.index + forwardRight : 0;
-  const BitBoard captures = (leftCapture | rightCapture) & (opponentPieces | m_bitBoards.enPassant);
-
-  return moves | captures;
+  return (moves & boardInfo.emptySquares) | (attacks & (opponentPieces | m_bitBoards.enPassant));
 }
 
 BitBoard Board::getValidKnightMoves(const BoardIndex& index) const {
@@ -386,8 +372,8 @@ void Board::updateBitBoards(const Move& move) {
     }
     // Clear en passant
     else {
-      const BoardIndex clearLoc = Index(
-          move.flags == EnPassant ? move.endPos : move.startPos.index + move.movedPiece.backward());
+      const BoardIndex clearLoc =
+          move.flags == EnPassant ? move.endPos : move.startPos + move.movedPiece.backward();
       m_bitBoards.enPassant.disableBit(clearLoc);
     }
 

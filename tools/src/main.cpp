@@ -1,4 +1,5 @@
 #include "MoveGenerators.h"
+#include "Piece.hpp"
 #include <iostream>
 
 namespace ToolMenu {
@@ -14,7 +15,7 @@ enum Option {
   Quit = 'q',
 };
 
-void clearScreen() {
+static void clearScreen() {
 #if defined _WIN32
   system("cls");
 #elif defined(__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
@@ -24,7 +25,7 @@ void clearScreen() {
 #endif
 }
 
-void printMenu() {
+static void printMenu() {
   std::cout << "+------------------------------+" << std::endl;
   std::cout << "| Tools                        |" << std::endl;
   std::cout << "+------------------------------+" << std::endl;
@@ -39,7 +40,7 @@ void printMenu() {
   std::cout << "+------------------------------+" << std::endl;
 }
 
-Option getInput() {
+static Option getInput() {
   using enum Option;
   char input;
 
@@ -54,20 +55,32 @@ Option getInput() {
   return option;
 }
 
-void runTool(Option option) {
+static void runTool(Option option) {
   using enum Option;
 
   switch (option) {
   case PawnMovements: {
-    std::cout << "White:" << std::endl;
-    std::array<Engine_NS::BitBoardBits, 64> pawnMoves = Tools::generateWhitePawnMoves();
-    for (const Engine_NS::BitBoardBits& bitBoard : pawnMoves)
-      std::cout << bitBoard << ", ";
+    std::cout << "White Pawn Moves:" << std::endl;
+    std::array<Engine_NS::BitBoard, 64> pawnMoves = Tools::generateMoves(Engine_NS::WhitePawn);
+    for (const Engine_NS::BitBoard& bitBoard : pawnMoves)
+      std::cout << bitBoard.bits << ", ";
     std::cout << "\b\b  " << std::endl;
-    std::cout << "Black:" << std::endl;
-    pawnMoves = Tools::generateBlackPawnMoves();
-    for (const Engine_NS::BitBoardBits& bitBoard : pawnMoves)
-      std::cout << bitBoard << ", ";
+    std::cout << "White Pawn Attacks:" << std::endl;
+    pawnMoves = Tools::generateAttacks(Engine_NS::WhitePawn);
+    for (const Engine_NS::BitBoard& bitBoard : pawnMoves)
+      std::cout << bitBoard.bits << ", ";
+    std::cout << "\b\b  " << std::endl;
+    std::cout << std::endl;
+    std::cout << "Black Pawn Moves:" << std::endl;
+    pawnMoves = Tools::generateMoves(Engine_NS::BlackPawn);
+    for (const Engine_NS::BitBoard& bitBoard : pawnMoves)
+      std::cout << bitBoard.bits << ", ";
+    std::cout << "\b\b  " << std::endl;
+    std::cout << "Black Pawn Attacks:" << std::endl;
+    pawnMoves = Tools::generateAttacks(Engine_NS::BlackPawn);
+    for (const Engine_NS::BitBoard& bitBoard : pawnMoves)
+      std::cout << bitBoard.bits << ", ";
+    std::cout << "\b\b  " << std::endl;
     break;
   }
   case KnightMovements:
