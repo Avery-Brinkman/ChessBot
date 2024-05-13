@@ -10,7 +10,8 @@ DebugPanel::DebugPanel(QObject* parent) : QObject(parent) {
   QObject::connect(this, &DebugPanel::bitboardBuilderChanged, this, &DebugPanel::updateBoard);
 }
 
-bool DebugPanel::getRankAndFile() const { return m_rankAndFile; }
+bool DebugPanel::getShowRankAndFile() const { return m_showRankAndFile; }
+bool DebugPanel::getShowBits() const { return m_showBits; }
 
 bool DebugPanel::getDebugEnabled() const { return m_debugEnabled; }
 bool DebugPanel::getShowWhite() const { return m_showWhite; }

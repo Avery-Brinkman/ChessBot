@@ -7,7 +7,8 @@ namespace Chess_UI {
 class DebugPanel : public QObject {
 
   Q_OBJECT
-  Q_PROPERTY(bool showRankAndFile MEMBER m_rankAndFile NOTIFY rankAndFileChanged)
+  Q_PROPERTY(bool showRankAndFile MEMBER m_showRankAndFile NOTIFY showRankAndFileChanged)
+  Q_PROPERTY(bool showBits MEMBER m_showBits NOTIFY showBitsChanged)
 
   Q_PROPERTY(bool debugEnabled MEMBER m_debugEnabled NOTIFY debugEnabledChanged)
   Q_PROPERTY(bool showWhite MEMBER m_showWhite NOTIFY showWhiteChanged)
@@ -19,7 +20,8 @@ class DebugPanel : public QObject {
 public:
   explicit DebugPanel(QObject* parent = nullptr);
 
-  bool getRankAndFile() const;
+  bool getShowRankAndFile() const;
+  bool getShowBits() const;
 
   bool getDebugEnabled() const;
   bool getShowWhite() const;
@@ -29,7 +31,8 @@ public:
   bool getBitboardBuilder() const;
 
 signals:
-  void rankAndFileChanged();
+  void showRankAndFileChanged();
+  void showBitsChanged();
 
   void debugEnabledChanged();
   void showWhiteChanged();
@@ -41,7 +44,8 @@ signals:
   void updateBoard();
 
 private:
-  bool m_rankAndFile = true;
+  bool m_showRankAndFile = true;
+  bool m_showBits = true;
 
   bool m_debugEnabled = true;
   bool m_showWhite = false;

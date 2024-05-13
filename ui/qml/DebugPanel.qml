@@ -4,32 +4,16 @@ import QtQuick.Layouts
 
 Rectangle {
     property var model
+    property alias currentIndex: stackLayout.currentIndex
 
     implicitWidth: 400
     implicitHeight: 400
 
     color: "grey"
 
-    TabBar {
-        id: tabBar
-        width: parent.width
-
-        Repeater {
-            model: ["General", "Bitboards", "Builders"]
-            TabButton {
-                text: modelData
-            }
-        }
-    }
-
     StackLayout {
-        anchors {
-            top: tabBar.bottom
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
-        currentIndex: tabBar.currentIndex
+        id: stackLayout
+        anchors.fill: parent
 
         Column {
             Layout.fillWidth: true
@@ -50,6 +34,13 @@ Rectangle {
                 text: "Show debug info"
                 checked: model.debugPanel.debugEnabled
                 onCheckedChanged: model.debugPanel.debugEnabled = checked
+            }
+
+            Switch {
+                width: parent.width
+                text: "Show bits"
+                checked: model.debugPanel.showBits
+                onCheckedChanged: model.debugPanel.showBits = checked
             }
 
             Switch  {
