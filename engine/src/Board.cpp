@@ -130,6 +130,49 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
 
 BitBoard Board::getEnPassantMask() const { return m_bitBoards.enPassant; }
 
+void Board::togglePiece(const Piece& piece, const BoardIndex& index) {
+  switch (piece.bits) {
+  case WhitePawn.bits:
+    m_bitBoards.whitePawns.toggleBit(index);
+    break;
+  case BlackPawn.bits:
+    m_bitBoards.blackPawns.toggleBit(index);
+    break;
+  case WhiteKnight.bits:
+    m_bitBoards.whiteKnights.toggleBit(index);
+    break;
+  case BlackKnight.bits:
+    m_bitBoards.blackKnights.toggleBit(index);
+    break;
+  case WhiteBishop.bits:
+    m_bitBoards.whiteBishops.toggleBit(index);
+    break;
+  case BlackBishop.bits:
+    m_bitBoards.blackBishops.toggleBit(index);
+    break;
+  case WhiteRook.bits:
+    m_bitBoards.whiteRooks.toggleBit(index);
+    break;
+  case BlackRook.bits:
+    m_bitBoards.blackRooks.toggleBit(index);
+    break;
+  case WhiteQueen.bits:
+    m_bitBoards.whiteQueens.toggleBit(index);
+    break;
+  case BlackQueen.bits:
+    m_bitBoards.blackQueens.toggleBit(index);
+    break;
+  case WhiteKing.bits:
+    m_bitBoards.whiteKing.toggleBit(index);
+    break;
+  case BlackKing.bits:
+    m_bitBoards.blackKing.toggleBit(index);
+    break;
+  default:
+    return;
+  }
+}
+
 // Private Functions
 
 BitBoard Board::getWhitePieces() const { return m_bitBoards.getWhitePieces(); }

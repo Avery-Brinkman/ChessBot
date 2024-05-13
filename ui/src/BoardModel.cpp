@@ -75,6 +75,16 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
     break;
   }
+  case TogglePieceRole: {
+    if (value.toBool()) {
+      togglePiece(Engine_NS::Piece(m_debugPanel->getPieceType() | Engine_NS::Color::White),
+                  bitIndex);
+    } else {
+      togglePiece(Engine_NS::Piece(m_debugPanel->getPieceType() | Engine_NS::Color::Black),
+                  bitIndex);
+    }
+    break;
+  }
   default:
     return false;
   }
@@ -86,14 +96,13 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
 QHash<int, QByteArray> BoardModel::roleNames() const {
   using enum Chess_UI::BoardModel::BoardRoles;
-  return {
-      {static_cast<int>(ImageRole), "pieceImage"},
-      {static_cast<int>(ValidMoveRole), "validMove"},
-      {static_cast<int>(SelectedRole), "selected"},
-      {static_cast<int>(DebugInfoRole), "debugInfo"},
-      {static_cast<int>(BitBoardRole), "bitBoard"},
-      {static_cast<int>(RankAndFileRole), "rankAndFile"},
-  };
+  return {{static_cast<int>(ImageRole), "pieceImage"},
+          {static_cast<int>(ValidMoveRole), "validMove"},
+          {static_cast<int>(SelectedRole), "selected"},
+          {static_cast<int>(DebugInfoRole), "debugInfo"},
+          {static_cast<int>(BitBoardRole), "bitBoard"},
+          {static_cast<int>(RankAndFileRole), "rankAndFile"},
+          {static_cast<int>(TogglePieceRole), "togglePiece"}};
 }
 
 DebugPanel* BoardModel::getDebugPanel() const { return m_debugPanel; }

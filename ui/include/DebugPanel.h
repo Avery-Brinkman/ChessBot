@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Piece.hpp"
 #include <QObject>
 
 namespace Chess_UI {
@@ -15,7 +16,7 @@ class DebugPanel : public QObject {
   Q_PROPERTY(bool showBlack MEMBER m_showBlack NOTIFY showBlackChanged)
   Q_PROPERTY(bool enPassant MEMBER m_enPassant NOTIFY enPassantChanged)
 
-  Q_PROPERTY(bool bitboardBuilder MEMBER m_bitboardBuilder NOTIFY bitboardBuilderChanged)
+  Q_PROPERTY(int pieceType READ getPieceType_QML WRITE setPieceType NOTIFY pieceTypeChanged)
 
 public:
   explicit DebugPanel(QObject* parent = nullptr);
@@ -28,7 +29,7 @@ public:
   bool getShowBlack() const;
   bool getEnPassant() const;
 
-  bool getBitboardBuilder() const;
+  Engine_NS::PieceType getPieceType() const;
 
 signals:
   void showRankAndFileChanged();
@@ -39,11 +40,14 @@ signals:
   void showBlackChanged();
   void enPassantChanged();
 
-  void bitboardBuilderChanged();
+  void pieceTypeChanged();
 
   void updateBoard();
 
 private:
+  int getPieceType_QML() const;
+  void setPieceType(int pieceType);
+
   bool m_showRankAndFile = true;
   bool m_showBits = true;
 
@@ -52,7 +56,7 @@ private:
   bool m_showBlack = false;
   bool m_enPassant = false;
 
-  bool m_bitboardBuilder = false;
+  Engine_NS::PieceType m_pieceType = Engine_NS::PieceType::Pawn;
 };
 
 } // namespace Chess_UI

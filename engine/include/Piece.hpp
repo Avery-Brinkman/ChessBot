@@ -3,9 +3,9 @@
 #include "Directions.h"
 #include <cstdint>
 
-using PieceBits = uint_fast8_t;
-
 namespace Engine_NS {
+
+using PieceBits = uint_fast8_t;
 
 enum Color : uint_fast8_t { White = 0b0000, Black = 0b1000 };
 enum PieceType : uint_fast8_t {

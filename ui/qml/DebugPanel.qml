@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
+    id: debugPanel
     property var model
     property alias currentIndex: stackLayout.currentIndex
 
@@ -67,6 +68,19 @@ Rectangle {
 
         Column {
             Layout.fillWidth: true
+
+            Text {
+                width: parent.width
+                text: "Click to toggle white, right click to toggle black"
+                wrapMode: Text.WordWrap
+            }
+
+            ComboBox {
+                width: parent.width
+                model: ["Pawn", "Knight", "Bishop", "Rook", "Queen", "King"]
+                currentIndex: debugPanel.model.debugPanel.pieceType - 1
+                onCurrentIndexChanged: debugPanel.model.debugPanel.pieceType = currentIndex + 1
+            }
         }
     }
 }

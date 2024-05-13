@@ -24,6 +24,7 @@ public:
 
 protected:
   BitBoard getEnPassantMask() const;
+  void togglePiece(const Piece& piece, const BoardIndex& index);
 
 private:
   BitBoard getWhitePieces() const;
