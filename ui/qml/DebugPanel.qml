@@ -82,11 +82,25 @@ Rectangle {
                 wrapMode: Text.WordWrap
             }
 
-            ComboBox {
-                width: parent.width
+            Repeater {
                 model: ["Pawn", "Knight", "Bishop", "Rook", "Queen", "King"]
-                currentIndex: debugPanel.model.debugPanel.pieceType - 1
-                onCurrentIndexChanged: debugPanel.model.debugPanel.pieceType = currentIndex + 1
+
+                RadioDelegate {
+                    required property var modelData
+                    required property int index
+
+                    width: parent.width
+                    text: `<font color='black'>${modelData}</font>`
+                    checked: model.debugPanel.pieceType == index + 1
+                    onCheckedChanged: {
+                        if (checked)
+                            model.debugPanel.pieceType = index + 1;
+                    }
+
+                    background: Rectangle {
+                        color: checked ? "lightgrey" : "transparent"
+                    }
+                }
             }
         }
     }
