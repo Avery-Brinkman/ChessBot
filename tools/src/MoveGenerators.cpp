@@ -6,22 +6,21 @@
 namespace Tools {
 
 std::array<Engine_NS::BitBoard, 64> generateMoves(const Engine_NS::Piece& piece) {
+  using enum Engine_NS::PieceType;
   switch (piece.type()) {
-  case Engine_NS::PieceType::Pawn:
+  case Pawn:
     return generatePawnMoves(piece);
+  case Knight:
+    return generateKnightMoves(piece);
   default:
     break;
   }
   return std::array<Engine_NS::BitBoard, 64>();
 }
 std::array<Engine_NS::BitBoard, 64> generateAttacks(const Engine_NS::Piece& piece) {
-  switch (piece.type()) {
-  case Engine_NS::PieceType::Pawn:
+  if (piece.type() == Engine_NS::PieceType::Pawn)
     return generatePawnAttacks(piece);
-  default:
-    break;
-  }
-  return std::array<Engine_NS::BitBoard, 64>();
+  return generateMoves(piece);
 }
 
 std::array<Engine_NS::BitBoard, 64> generatePawnMoves(const Engine_NS::Piece& piece) {
@@ -58,6 +57,10 @@ std::array<Engine_NS::BitBoard, 64> generatePawnAttacks(const Engine_NS::Piece& 
     }
   }
   return attacks;
+}
+
+std::array<Engine_NS::BitBoard, 64> generateKnightMoves(const Engine_NS::Piece& piece) {
+  return std::array<Engine_NS::BitBoard, 64>();
 }
 
 } // namespace Tools

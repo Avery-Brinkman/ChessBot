@@ -4,7 +4,8 @@
 #include <array>
 
 namespace Engine_NS::Precomputed {
-// All follow the pattern Array[Color (Black, White)][Index (0, 1, ..., 62, 63)]
+
+// Array[Color (Black, White)][Index (0, 1, ..., 62, 63)]
 
 const std::array<const std::array<const BitBoard, 64>, 2> PawnMoves = {{{0,
                                                                          0,
@@ -262,5 +263,13 @@ const std::array<const std::array<const BitBoard, 64>, 2> PawnAttacks = {{{0,
                                                                            0,
                                                                            0,
                                                                            0}}};
+
+// Array[Index (0, 1, ..., 62, 63)]
+
+const std::array<const BitBoard, 64> KnightMoves;
+const std::array<const BitBoard, 64> BishopMoves;
+const std::array<const BitBoard, 64> RookMoves;
+const std::array<const BitBoard, 64> QueenMoves;
+const std::array<const BitBoard, 64> KingMoves;
 
 } // namespace Engine_NS::Precomputed

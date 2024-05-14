@@ -12,4 +12,6 @@ std::array<Engine_NS::BitBoard, 64> generateAttacks(const Engine_NS::Piece& piec
 std::array<Engine_NS::BitBoard, 64> generatePawnMoves(const Engine_NS::Piece& piece);
 std::array<Engine_NS::BitBoard, 64> generatePawnAttacks(const Engine_NS::Piece& piece);
 
+std::array<Engine_NS::BitBoard, 64> generateKnightMoves(const Engine_NS::Piece& piece);
+
 } // namespace Tools
