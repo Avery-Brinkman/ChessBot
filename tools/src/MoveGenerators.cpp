@@ -100,4 +100,54 @@ std::array<Engine_NS::BitBoard, 64> generateKnightMoves() {
   return moves;
 }
 
+std::array<Engine_NS::BitBoard, 64> generateBishopMoves() {
+  return std::array<Engine_NS::BitBoard, 64>();
+}
+
+std::array<Engine_NS::BitBoard, 64> generateRookMoves() {
+  return std::array<Engine_NS::BitBoard, 64>();
+}
+
+std::array<Engine_NS::BitBoard, 64> generateQueenMoves() {
+  std::array<Engine_NS::BitBoard, 64> moves = {};
+  const std::array<Engine_NS::BitBoard, 64> bishopMoves = generateBishopMoves();
+  const std::array<Engine_NS::BitBoard, 64> rookMoves = generateRookMoves();
+  for (int i = 0; i < 64; i++)
+    moves.at(i).enableBits(bishopMoves.at(i) | rookMoves.at(i));
+  return moves;
+}
+
+std::array<Engine_NS::BitBoard, 64> generateKingMoves() {
+  std::array<Engine_NS::BitBoard, 64> moves = {};
+
+  for (int i = 0; i < 64; i++) {
+    const Engine_NS::BoardIndex index = Engine_NS::Index(i);
+
+    const bool canMoveNorth = index.rank() < 8;
+    const bool canMoveSouth = index.rank() > 1;
+    const bool canMoveEast = index.file() < Engine_NS::File::H;
+    const bool canMoveWest = index.file() > Engine_NS::File::A;
+
+    if (canMoveNorth)
+      moves.at(i).enableBit(index + Engine_NS::North);
+    if (canMoveSouth)
+      moves.at(i).enableBit(index + Engine_NS::South);
+    if (canMoveEast)
+      moves.at(i).enableBit(index + Engine_NS::East);
+    if (canMoveWest)
+      moves.at(i).enableBit(index + Engine_NS::West);
+
+    if (canMoveNorth && canMoveEast)
+      moves.at(i).enableBit(index + Engine_NS::NorthEast);
+    if (canMoveNorth && canMoveWest)
+      moves.at(i).enableBit(index + Engine_NS::NorthWest);
+    if (canMoveSouth && canMoveEast)
+      moves.at(i).enableBit(index + Engine_NS::SouthEast);
+    if (canMoveSouth && canMoveWest)
+      moves.at(i).enableBit(index + Engine_NS::SouthWest);
+  }
+
+  return moves;
+}
+
 } // namespace Tools

@@ -94,12 +94,18 @@ static void runTool(Option option) {
   case RookMovements:
     std::cout << "rook" << std::endl;
     break;
-  case QueenMovements:
-    std::cout << "queen" << std::endl;
+  case QueenMovements: {
+    std::cout << "Queen Moves:" << std::endl;
+    for (const Engine_NS::BitBoard& bitBoard : Tools::generateMoves(Engine_NS::WhiteQueen))
+      std::cout << bitBoard.bits << ", ";
     break;
-  case KingMovements:
-    std::cout << "king" << std::endl;
+  }
+  case KingMovements: {
+    std::cout << "King Moves:" << std::endl;
+    for (const Engine_NS::BitBoard& bitBoard : Tools::generateMoves(Engine_NS::WhiteKing))
+      std::cout << bitBoard.bits << ", ";
     break;
+  }
   case Quit:
     std::cout << "Goodbye!  ";
     break;
