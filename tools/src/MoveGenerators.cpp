@@ -12,6 +12,14 @@ std::array<Engine_NS::BitBoard, 64> generateMoves(const Engine_NS::Piece& piece)
     return generatePawnMoves(piece);
   case Knight:
     return generateKnightMoves();
+  case Bishop:
+    return generateBishopMoves();
+  case Rook:
+    return generateRookMoves();
+  case Queen:
+    return generateQueenMoves();
+  case King:
+    return generateKingMoves();
   default:
     break;
   }
@@ -112,6 +120,7 @@ std::array<Engine_NS::BitBoard, 64> generateRookMoves() {
   std::array<Engine_NS::BitBoard, 64> moves = {};
   const Engine_NS::BitBoard horizontal = 0b11111111;
   const Engine_NS::BitBoard vertical = 0x0101010101010101;
+
   for (int i = 0; i < 64; i++) {
     const Engine_NS::BoardIndex index = Engine_NS::Index(i);
     const Engine_NS::BitBoard horizontalComponent = horizontal << ((index.rank() - 1) * 8);
