@@ -80,12 +80,14 @@ static void runTool(Option option) {
     pawnMoves = Tools::generateAttacks(Engine_NS::BlackPawn);
     for (const Engine_NS::BitBoard& bitBoard : pawnMoves)
       std::cout << bitBoard.bits << ", ";
-    std::cout << "\b\b  " << std::endl;
     break;
   }
-  case KnightMovements:
-    std::cout << "knight" << std::endl;
+  case KnightMovements: {
+    std::cout << "Knight Moves:" << std::endl;
+    for (const Engine_NS::BitBoard& bitBoard : Tools::generateMoves(Engine_NS::WhiteKnight))
+      std::cout << bitBoard.bits << ", ";
     break;
+  }
   case BishopMovements:
     std::cout << "bishop" << std::endl;
     break;

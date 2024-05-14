@@ -11,7 +11,7 @@ std::array<Engine_NS::BitBoard, 64> generateMoves(const Engine_NS::Piece& piece)
   case Pawn:
     return generatePawnMoves(piece);
   case Knight:
-    return generateKnightMoves(piece);
+    return generateKnightMoves();
   default:
     break;
   }
@@ -59,8 +59,45 @@ std::array<Engine_NS::BitBoard, 64> generatePawnAttacks(const Engine_NS::Piece& 
   return attacks;
 }
 
-std::array<Engine_NS::BitBoard, 64> generateKnightMoves(const Engine_NS::Piece& piece) {
-  return std::array<Engine_NS::BitBoard, 64>();
+std::array<Engine_NS::BitBoard, 64> generateKnightMoves() {
+  using namespace Engine_NS;
+
+  std::array<BitBoard, 64> moves = {};
+  for (int i = 0; i < 64; i++) {
+    const BoardIndex index = Index(i);
+
+    const bool canMoveNorth = index.rank() < 8;
+    const bool canMoveSouth = index.rank() > 1;
+    const bool canMoveEast = index.file() < File::H;
+    const bool canMoveWest = index.file() > File::A;
+
+    // Clockwise, from north 2 west 1
+    if (index.rank() < 7) {
+      if (canMoveWest)
+        moves.at(i).enableBit(index + North + NorthWest);
+      if (canMoveEast)
+        moves.at(i).enableBit(index + North + NorthEast);
+    }
+    if (index.file() < File::G) {
+      if (canMoveNorth)
+        moves.at(i).enableBit(index + East + NorthEast);
+      if (canMoveSouth)
+        moves.at(i).enableBit(index + East + SouthEast);
+    }
+    if (index.rank() > 2) {
+      if (canMoveEast)
+        moves.at(i).enableBit(index + South + SouthEast);
+      if (canMoveWest)
+        moves.at(i).enableBit(index + South + SouthWest);
+    }
+    if (index.file() > File::B) {
+      if (canMoveSouth)
+        moves.at(i).enableBit(index + West + SouthWest);
+      if (canMoveNorth)
+        moves.at(i).enableBit(index + West + NorthWest);
+    }
+  }
+  return moves;
 }
 
 } // namespace Tools
