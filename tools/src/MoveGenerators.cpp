@@ -101,11 +101,25 @@ std::array<Engine_NS::BitBoard, 64> generateKnightMoves() {
 }
 
 std::array<Engine_NS::BitBoard, 64> generateBishopMoves() {
-  return std::array<Engine_NS::BitBoard, 64>();
+  std::array<Engine_NS::BitBoard, 64> moves = {};
+  for (int i = 0; i < 64; i++) {
+    const Engine_NS::BoardIndex index = Engine_NS::Index(i);
+  }
+  return moves;
 }
 
 std::array<Engine_NS::BitBoard, 64> generateRookMoves() {
-  return std::array<Engine_NS::BitBoard, 64>();
+  std::array<Engine_NS::BitBoard, 64> moves = {};
+  const Engine_NS::BitBoard horizontal = 0b11111111;
+  const Engine_NS::BitBoard vertical = 0x0101010101010101;
+  for (int i = 0; i < 64; i++) {
+    const Engine_NS::BoardIndex index = Engine_NS::Index(i);
+    const Engine_NS::BitBoard horizontalComponent = horizontal << ((index.rank() - 1) * 8);
+    const Engine_NS::BitBoard verticalComponent = vertical << index.file();
+
+    moves.at(i).enableBits((horizontalComponent | verticalComponent) & ~index);
+  }
+  return moves;
 }
 
 std::array<Engine_NS::BitBoard, 64> generateQueenMoves() {
