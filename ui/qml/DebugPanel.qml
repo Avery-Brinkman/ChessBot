@@ -25,6 +25,13 @@ Rectangle {
                 checked: model.debugPanel.showRankAndFile
                 onCheckedChanged: model.debugPanel.showRankAndFile = checked
             }
+
+            Switch {
+                width: parent.width
+                text: "Show Index"
+                checked: model.debugPanel.showIndex
+                onCheckedChanged: model.debugPanel.showIndex = checked
+            }
         }
 
         Column {

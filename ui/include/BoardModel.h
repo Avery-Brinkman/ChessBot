@@ -14,6 +14,7 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
     DebugInfoRole,
     BitBoardRole,
     RankAndFileRole,
+    BoardIndexRole,
     TogglePieceRole,
   };
 

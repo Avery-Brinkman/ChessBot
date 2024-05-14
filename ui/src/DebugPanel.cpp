@@ -10,9 +10,10 @@ DebugPanel::DebugPanel(QObject* parent) : QObject(parent) {
 }
 
 bool DebugPanel::getShowRankAndFile() const { return m_showRankAndFile; }
-bool DebugPanel::getShowBits() const { return m_showBits; }
+bool DebugPanel::getShowIndex() const { return m_showIndex; }
 
 bool DebugPanel::getDebugEnabled() const { return m_debugEnabled; }
+bool DebugPanel::getShowBits() const { return m_showBits; }
 bool DebugPanel::getShowWhite() const { return m_showWhite; }
 bool DebugPanel::getShowBlack() const { return m_showBlack; }
 bool DebugPanel::getEnPassant() const { return m_enPassant; }

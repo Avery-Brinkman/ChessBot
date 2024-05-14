@@ -44,6 +44,8 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
   }
   case RankAndFileRole:
     return QString::fromStdString(getIndex(index.row(), index.column()).toString());
+  case BoardIndexRole:
+    return bitIndex.index;
   default:
     return QVariant();
   }
@@ -102,6 +104,7 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
           {static_cast<int>(DebugInfoRole), "debugInfo"},
           {static_cast<int>(BitBoardRole), "bitBoard"},
           {static_cast<int>(RankAndFileRole), "rankAndFile"},
+          {static_cast<int>(BoardIndexRole), "boardIndex"},
           {static_cast<int>(TogglePieceRole), "togglePiece"}};
 }
 
