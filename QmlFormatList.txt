@@ -1,0 +1,3 @@
+.\ui\qml\Board.qml
+.\ui\qml\DebugPanel.qml
+.\ui\qml\main.qml

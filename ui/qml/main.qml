@@ -3,61 +3,65 @@ import QtQuick.Controls.Universal
 import QtQuick.Layouts
 
 Rectangle {
-    id: root
+  id: root
 
-    property int gridSize: Math.min(root.width, root.height - tabBar.height - bits.height) / 8
+  property int gridSize: Math.min(root.width, root.height - tabBar.height - bits.height) / 8
 
-    color: "black"
+  color: "black"
 
-    TabBar {
-        id: tabBar
-        width: parent.width
-        Repeater {
-            model: ["General", "Bitboards", "Add/Remove Pieces"]
-            TabButton {
-                text: modelData
-            }
-        }
+  TabBar {
+    id: tabBar
+
+    width: parent.width
+
+    Repeater {
+      model: ["General", "Bitboards", "Add/Remove Pieces"]
+
+      TabButton {
+        text: modelData
+      }
+    }
+  }
+
+  ColumnLayout {
+    spacing: 0
+
+    anchors {
+      bottom: parent.bottom
+      left: parent.left
+      right: parent.right
+      top: tabBar.bottom
     }
 
-    ColumnLayout {
-        anchors {
-            top: tabBar.bottom
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-        }
-        spacing: 0
+    RowLayout {
+      Layout.fillHeight: true
+      Layout.fillWidth: true
+      spacing: 0
 
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            spacing: 0
+      Board {
+        id: board
 
-            Board {
-                id: board
-                gridSize: root.gridSize
-                Layout.preferredWidth: gridSize * 8
-                Layout.preferredHeight: gridSize * 8
-                model: boardModel
-            }
+        Layout.preferredHeight: gridSize * 8
+        Layout.preferredWidth: gridSize * 8
+        gridSize: root.gridSize
+        model: boardModel
+      }
 
-            DebugPanel {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                currentIndex: tabBar.currentIndex
-                model: boardModel
-            }
-        }
-
-        Text {
-            id: bits
-
-            Layout.fillWidth: true
-            Layout.preferredHeight: boardModel.debugPanel.showBits ? implicitHeight : 0
-            text: "Hello"
-            color: "white"
-        }
+      DebugPanel {
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        currentIndex: tabBar.currentIndex
+        model: boardModel
+      }
     }
+
+    Text {
+      id: bits
+
+      Layout.fillWidth: true
+      Layout.preferredHeight: boardModel.debugPanel.showBits ? implicitHeight : 0
+      color: "white"
+      text: "Hello"
+    }
+  }
 }
