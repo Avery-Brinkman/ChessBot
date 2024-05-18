@@ -148,15 +148,16 @@ std::array<Engine_NS::BitBoard, 64> generateBishopMoves() {
 
 std::array<Engine_NS::BitBoard, 64> generateRookMoves() {
   std::array<Engine_NS::BitBoard, 64> moves = {};
-  const Engine_NS::BitBoard horizontal = 0b11111111;
-  const Engine_NS::BitBoard vertical = 0x0101010101010101;
 
   for (int i = 0; i < 64; i++) {
     const Engine_NS::BoardIndex index = Engine_NS::Index(i);
-    const Engine_NS::BitBoard horizontalComponent = horizontal << ((index.rank() - 1) * 8);
-    const Engine_NS::BitBoard verticalComponent = vertical << index.file();
+    for (int s = 0; s < 64; s++) {
+      const Engine_NS::BoardIndex square = Engine_NS::Index(s);
+      if ((index.rank() == square.rank()) || (index.file() == square.file()))
+        moves.at(i).enableBit(square);
+    }
 
-    moves.at(i).enableBits((horizontalComponent | verticalComponent) & ~index);
+    moves.at(i).disableBit(index);
   }
   return moves;
 }
