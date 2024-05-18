@@ -1,9 +1,11 @@
 #pragma once
 
+#include "BitboardsModel.h"
 #include "Board.h"
 #include "SettingsPanel.h"
 
 #include <QAbstractTableModel>
+#include <memory>
 
 namespace Chess_UI {
 class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
@@ -14,10 +16,12 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
     RankAndFileRole,
     BoardIndexRole,
     TogglePieceRole,
+    BitboardRole,
   };
 
   Q_OBJECT
   Q_PROPERTY(SettingsPanel* settingsPanel READ getSettingsPanel CONSTANT)
+  Q_PROPERTY(BitboardsModel* bitboards READ getBitboardsModel CONSTANT)
 
 public:
   explicit BoardModel(QObject* parent = nullptr);
@@ -30,15 +34,18 @@ public:
 
   QHash<int, QByteArray> roleNames() const override;
 
+private:
   SettingsPanel* getSettingsPanel() const;
 
-private:
+  BitboardsModel* getBitboardsModel() const;
+
   QUrl pieceImage(const Engine_NS::Piece& piece) const;
 
   Engine_NS::BoardIndex m_selectedIndex = {};
   Engine_NS::Bitboard m_currentValidMoves = {};
 
-  SettingsPanel* m_settingsPanel = new SettingsPanel();
+  std::unique_ptr<SettingsPanel> m_settingsPanel = std::make_unique<SettingsPanel>();
+  std::unique_ptr<BitboardsModel> m_bitboardsModel;
 
   Engine_NS::Bitboard m_bitboard = {};
 };

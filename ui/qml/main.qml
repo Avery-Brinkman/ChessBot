@@ -16,7 +16,7 @@ Rectangle {
     width: parent.width
 
     Repeater {
-      model: ["General", "Add/Remove Pieces"]
+      model: ["General", "Bitboards", "Add/Remove Pieces"]
 
       TabButton {
         text: modelData
@@ -27,7 +27,7 @@ Rectangle {
   RowLayout {
     id: rowLayout
 
-    spacing: 0
+    spacing: 2
 
     anchors {
       bottom: parent.bottom

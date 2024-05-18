@@ -4,10 +4,18 @@
 #include <QUrl>
 
 namespace Chess_UI {
-BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent) {
+BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent), Engine_NS::Board() {
   setToStartPosition();
 
-  QObject::connect(m_settingsPanel, &SettingsPanel::updateBoard, this,
+  m_bitboardsModel = std::make_unique<BitboardsModel>();
+  m_bitboardsModel->updateBoards(getBitboards());
+
+  QObject::connect(m_settingsPanel.get(), &SettingsPanel::updateBoard, this,
+                   [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
+
+  QObject::connect(m_bitboardsModel.get(), &BitboardsModel::dataChanged, this,
+                   [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
+  QObject::connect(m_bitboardsModel.get(), &BitboardsModel::enabledChanged, this,
                    [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
 }
 
@@ -72,6 +80,7 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     return false;
   }
 
+  m_bitboardsModel->updateBoards(getBitboards());
   emit dataChanged(createIndex(0, 0), createIndex(7, 7));
 
   return true;
@@ -79,15 +88,20 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
 QHash<int, QByteArray> BoardModel::roleNames() const {
   using enum Chess_UI::BoardModel::BoardRoles;
-  return {{static_cast<int>(ImageRole), "pieceImage"},
-          {static_cast<int>(ValidMoveRole), "validMove"},
-          {static_cast<int>(SelectedRole), "selected"},
-          {static_cast<int>(RankAndFileRole), "rankAndFile"},
-          {static_cast<int>(BoardIndexRole), "boardIndex"},
-          {static_cast<int>(TogglePieceRole), "togglePiece"}};
+  return {
+      {static_cast<int>(ImageRole), "pieceImage"},
+      {static_cast<int>(ValidMoveRole), "validMove"},
+      {static_cast<int>(SelectedRole), "selected"},
+      {static_cast<int>(RankAndFileRole), "rankAndFile"},
+      {static_cast<int>(BoardIndexRole), "boardIndex"},
+      {static_cast<int>(TogglePieceRole), "togglePiece"},
+      {static_cast<int>(BitboardRole), "bitboard"},
+  };
 }
 
-SettingsPanel* BoardModel::getSettingsPanel() const { return m_settingsPanel; }
+SettingsPanel* BoardModel::getSettingsPanel() const { return m_settingsPanel.get(); }
+
+BitboardsModel* BoardModel::getBitboardsModel() const { return m_bitboardsModel.get(); }
 
 QUrl BoardModel::pieceImage(const Engine_NS::Piece& piece) const {
   using namespace Engine_NS;

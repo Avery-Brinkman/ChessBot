@@ -23,7 +23,7 @@ public:
   void movePiece(const BoardIndex& from, const BoardIndex& to);
 
 protected:
-  Bitboard getEnPassantMask() const;
+  const Bitboards& getBitboards() const;
   void togglePiece(const Piece& piece, const BoardIndex& index);
 
 private:

@@ -6,17 +6,20 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick)
 qt_standard_project_setup(REQUIRES 6.5)
 
 set(SRC_FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/BitboardsModel.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/BoardModel.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/SettingsPanel.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 )
 
 set(INCLUDE_FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/BitboardsModel.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/BoardModel.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/SettingsPanel.h
 )
 
 set(QML_FILES
+  qml/BitboardDisplays.qml
   qml/Board.qml
   qml/SettingsPanel.qml
   qml/main.qml

@@ -140,9 +140,7 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
 
 // Protected Functions
 
-Bitboard Board::getEnPassantMask() const {
-  return m_bitboards.enPassant[0] | m_bitboards.enPassant[1];
-}
+const Bitboards& Board::getBitboards() const { return m_bitboards; }
 
 void Board::togglePiece(const Piece& piece, const BoardIndex& index) {
   switch (piece.type()) {

@@ -33,14 +33,10 @@ Rectangle {
 
         onCheckedChanged: model.settingsPanel.showIndex = checked
       }
+    }
 
-      Switch {
-        checked: model.settingsPanel.showBitboards
-        text: "Show Bitboards"
-        width: parent.width
-
-        onCheckedChanged: model.settingsPanel.showBitboards = checked
-      }
+    BitboardDisplays {
+      Layout.fillWidth: true
     }
 
     Column {

@@ -1,3 +1,4 @@
+.\ui\qml\BitboardDisplays.qml
 .\ui\qml\Board.qml
 .\ui\qml\SettingsPanel.qml
 .\ui\qml\main.qml
