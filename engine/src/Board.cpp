@@ -218,7 +218,12 @@ BitBoard Board::getValidRookMoves(const BoardIndex& index) const {
 }
 
 BitBoard Board::getValidQueenMoves(const BoardIndex& index) const {
-  return Precomputed::QueenMoves.at(index.index);
+  const BoardInfo boardInfo = m_bitBoards.getInfo();
+  const bool isWhite = boardInfo.whitePieces.checkBit(index);
+  const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
+  const BitBoard validSquares = opponentPieces | boardInfo.emptySquares;
+
+  return Precomputed::QueenMoves.at(index.index) & validSquares;
 }
 
 BitBoard Board::getValidKingMoves(const BoardIndex& index) const {
@@ -227,15 +232,12 @@ BitBoard Board::getValidKingMoves(const BoardIndex& index) const {
   const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
   const BitBoard validSquares = opponentPieces | boardInfo.emptySquares;
 
-  // const size_t row = index / 8;
-  // const size_t col = index % 8;
-
-  return Precomputed::KingMoves.at(index.index);
+  const BitBoard moves = Precomputed::KingMoves.at(index.index);
 
   // const BitBoard castling = getCastlingMoves(index, isWhite);
+  const BitBoard castling = 0;
 
-  // return ((up | down | left | right | upLeft | upRight | downLeft | downRight) & validSquares) |
-  //        castling;
+  return (moves & validSquares) | castling;
 }
 
 BitBoard Board::getCastlingMoves(const BoardIndex& index, bool isWhite) const {
