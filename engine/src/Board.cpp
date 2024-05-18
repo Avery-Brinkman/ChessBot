@@ -111,12 +111,16 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
   MoveFlags flags = 0;
 
   if (move.movedPiece.type() == Pawn) {
+    const bool isWhite = move.movedPiece.isWhite();
+    const BitBoard& opponentEnPassant =
+        isWhite ? m_bitBoards.blackEnPassant : m_bitBoards.whiteEnPassant;
+
     // Double pawn push
     if (abs(from.rank() - to.rank()) > 1) {
       flags = DoublePawnPush;
     }
     // En passant capture
-    else if (m_bitBoards.enPassant.checkBit(to)) {
+    else if (opponentEnPassant.checkBit(to)) {
       flags = EnPassant;
 
       move.capturedPos = Index(to.index + move.movedPiece.backward());
@@ -135,7 +139,9 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
 
 // Protected Functions
 
-BitBoard Board::getEnPassantMask() const { return m_bitBoards.enPassant; }
+BitBoard Board::getEnPassantMask() const {
+  return m_bitBoards.whiteEnPassant | m_bitBoards.blackEnPassant;
+}
 
 void Board::togglePiece(const Piece& piece, const BoardIndex& index) {
   switch (piece.bits) {
@@ -192,11 +198,12 @@ BitBoard Board::getValidPawnMoves(const BoardIndex& index) const {
   const Piece piece = getPiece(index);
   const bool isWhite = piece.isWhite();
   const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
+  const BitBoard enPassant = isWhite ? m_bitBoards.blackEnPassant : m_bitBoards.whiteEnPassant;
 
   const BitBoard moves = Engine_NS::Precomputed::PawnMoves.at(isWhite).at(index.index);
   const BitBoard attacks = Engine_NS::Precomputed::PawnAttacks.at(isWhite).at(index.index);
 
-  return (moves & boardInfo.emptySquares) | (attacks & (opponentPieces | m_bitBoards.enPassant));
+  return (moves & boardInfo.emptySquares) | (attacks & (opponentPieces | enPassant));
 }
 
 BitBoard Board::getValidKnightMoves(const BoardIndex& index) const {
@@ -348,18 +355,22 @@ void Board::updateBitBoards(const Move& move) {
   Piece pieceToAdd = move.movedPiece;
   Piece pieceToRemove = move.movedPiece;
 
+  const bool isWhite = move.movedPiece.isWhite();
+
   // Pawn moves
   if (move.movedPiece.type() == Pawn) {
+    BitBoard& enPassant = isWhite ? m_bitBoards.whiteEnPassant : m_bitBoards.blackEnPassant;
+
     // Moved two steps
     if (move.flags == DoublePawnPush) {
-      m_bitBoards.enPassant.enableBit(Index(std::midpoint(
-          static_cast<unsigned char>(move.startPos), static_cast<unsigned char>(move.endPos))));
+      enPassant.enableBit(Index(std::midpoint(static_cast<unsigned char>(move.startPos),
+                                              static_cast<unsigned char>(move.endPos))));
     }
     // Clear en passant
     else {
       const BoardIndex clearLoc =
           move.flags == EnPassant ? move.endPos : move.startPos + move.movedPiece.backward();
-      m_bitBoards.enPassant.disableBit(clearLoc);
+      enPassant.disableBit(clearLoc);
     }
 
     // Check for promotion
@@ -372,8 +383,10 @@ void Board::updateBitBoards(const Move& move) {
   // Remove En Passant when a pawn is captured
   if (move.capturedPiece.type() == Pawn) {
     if (move.capturedPos.rank() == 4 || move.capturedPos.rank() == 5) {
-      m_bitBoards.enPassant.disableBit(
-          Index(move.capturedPos.index + move.capturedPiece.backward()));
+      BitBoard& opponentEnPassant =
+          isWhite ? m_bitBoards.blackEnPassant : m_bitBoards.whiteEnPassant;
+
+      opponentEnPassant.disableBit(Index(move.capturedPos.index + move.capturedPiece.backward()));
     }
   }
 

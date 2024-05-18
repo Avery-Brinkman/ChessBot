@@ -61,7 +61,8 @@ struct BitBoards {
   // [0 Rook King Rook], [0 Black | 0 White]
   int_fast8_t castlingRights = 0b01110111;
 
-  BitBoard enPassant = 0;
+  BitBoard whiteEnPassant = 0;
+  BitBoard blackEnPassant = 0;
 };
 
 } // namespace Engine_NS
