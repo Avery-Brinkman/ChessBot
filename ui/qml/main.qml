@@ -7,6 +7,7 @@ Rectangle {
 
   property int gridSize: Math.min(root.width, root.height - tabBar.height) / 8
 
+  anchors.fill: parent
   color: "black"
 
   TabBar {
@@ -23,7 +24,9 @@ Rectangle {
     }
   }
 
-  ColumnLayout {
+  RowLayout {
+    id: rowLayout
+
     spacing: 0
 
     anchors {
@@ -33,26 +36,20 @@ Rectangle {
       top: tabBar.bottom
     }
 
-    RowLayout {
+    SettingsPanel {
       Layout.fillHeight: true
       Layout.fillWidth: true
-      spacing: 0
+      currentIndex: tabBar.currentIndex
+      model: boardModel
+    }
 
-      Board {
-        id: board
+    Board {
+      id: board
 
-        Layout.preferredHeight: gridSize * 8
-        Layout.preferredWidth: gridSize * 8
-        gridSize: root.gridSize
-        model: boardModel
-      }
-
-      SettingsPanel {
-        Layout.fillHeight: true
-        Layout.fillWidth: true
-        currentIndex: tabBar.currentIndex
-        model: boardModel
-      }
+      Layout.preferredHeight: gridSize * 8
+      Layout.preferredWidth: gridSize * 8
+      gridSize: root.gridSize
+      model: boardModel
     }
   }
 }

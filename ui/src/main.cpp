@@ -8,15 +8,18 @@ int main(int argc, char* argv[]) {
   QGuiApplication app(argc, argv);
   QQuickView view;
 
-  view.setMinimumSize(QSize(800, 640));
-  view.setBaseSize(QSize(800, 640));
+  const int minWidth = 800;
+  const int minHeight = 640;
+  view.setMinimumSize(QSize(minWidth, minHeight));
 
-  view.rootContext()->setContextProperty("boardModel", new Chess_UI::BoardModel(&view));
+  view.rootContext()->setContextProperties(
+      {{"boardModel", QVariant::fromValue(new Chess_UI::BoardModel(&view))},
+       {"minWidth", minWidth},
+       {"minHeight", minHeight}});
 
   const QUrl url("qrc:/qml/main.qml");
   view.setSource(url);
-  view.setResizeMode(QQuickView::SizeRootObjectToView);
-  view.show();
+  view.showMaximized();
 
   return QGuiApplication::exec();
 }

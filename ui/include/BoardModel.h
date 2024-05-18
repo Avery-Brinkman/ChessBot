@@ -11,7 +11,6 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
     ImageRole = Qt::UserRole + 1,
     ValidMoveRole,
     SelectedRole,
-    DebugInfoRole,
     RankAndFileRole,
     BoardIndexRole,
     TogglePieceRole,
@@ -35,8 +34,6 @@ public:
 
 private:
   QUrl pieceImage(const Engine_NS::Piece& piece) const;
-
-  Engine_NS::Bitboard getDebugInfo() const;
 
   Engine_NS::BoardIndex m_selectedIndex = {};
   Engine_NS::Bitboard m_currentValidMoves = {};

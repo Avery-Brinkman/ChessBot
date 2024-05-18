@@ -31,12 +31,6 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
       return false;
     return m_selectedIndex == bitIndex;
   }
-  case DebugInfoRole: {
-    if (!m_settingsPanel->getDebugEnabled())
-      return false;
-
-    return getDebugInfo().checkBit(bitIndex);
-  }
   case RankAndFileRole:
     return QString::fromStdString(getIndex(index.row(), index.column()).toString());
   case BoardIndexRole:
@@ -88,7 +82,6 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
   return {{static_cast<int>(ImageRole), "pieceImage"},
           {static_cast<int>(ValidMoveRole), "validMove"},
           {static_cast<int>(SelectedRole), "selected"},
-          {static_cast<int>(DebugInfoRole), "debugInfo"},
           {static_cast<int>(RankAndFileRole), "rankAndFile"},
           {static_cast<int>(BoardIndexRole), "boardIndex"},
           {static_cast<int>(TogglePieceRole), "togglePiece"}};
@@ -126,14 +119,6 @@ QUrl BoardModel::pieceImage(const Engine_NS::Piece& piece) const {
   default:
     return QUrl("");
   }
-}
-
-Engine_NS::Bitboard BoardModel::getDebugInfo() const {
-  Engine_NS::Bitboard debugInfo = 0;
-  if (m_settingsPanel->getEnPassant())
-    debugInfo.enableBits(getEnPassantMask());
-
-  return debugInfo;
 }
 
 } // namespace Chess_UI

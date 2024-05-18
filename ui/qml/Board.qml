@@ -34,8 +34,6 @@ TableView {
       color: {
         if (model.validMove)
           return "green";
-        if (boardModel.settingsPanel.debugEnabled && model.debugInfo)
-          return "purple";
         return "transparent";
       }
       radius: height / 2

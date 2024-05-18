@@ -9,8 +9,6 @@ Rectangle {
   property var model
 
   color: "grey"
-  implicitHeight: 400
-  implicitWidth: 400
 
   StackLayout {
     id: stackLayout
