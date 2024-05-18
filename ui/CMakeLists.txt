@@ -7,18 +7,18 @@ qt_standard_project_setup(REQUIRES 6.5)
 
 set(SRC_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/BoardModel.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/DebugPanel.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/SettingsPanel.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 )
 
 set(INCLUDE_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/include/BoardModel.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/DebugPanel.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/SettingsPanel.h
 )
 
 set(QML_FILES
   qml/Board.qml
-  qml/DebugPanel.qml
+  qml/SettingsPanel.qml
   qml/main.qml
 )
 

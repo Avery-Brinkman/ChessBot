@@ -5,7 +5,7 @@
 
 namespace Chess_UI {
 
-class DebugPanel : public QObject {
+class SettingsPanel : public QObject {
 
   Q_OBJECT
   Q_PROPERTY(bool showRankAndFile MEMBER m_showRankAndFile NOTIFY showRankAndFileChanged)
@@ -20,7 +20,7 @@ class DebugPanel : public QObject {
   Q_PROPERTY(int pieceType READ getPieceType_QML WRITE setPieceType NOTIFY pieceTypeChanged)
 
 public:
-  explicit DebugPanel(QObject* parent = nullptr);
+  explicit SettingsPanel(QObject* parent = nullptr);
 
   bool getShowRankAndFile() const;
   bool getShowIndex() const;

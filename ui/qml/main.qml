@@ -47,7 +47,7 @@ Rectangle {
         model: boardModel
       }
 
-      DebugPanel {
+      SettingsPanel {
         Layout.fillHeight: true
         Layout.fillWidth: true
         currentIndex: tabBar.currentIndex
@@ -59,7 +59,7 @@ Rectangle {
       id: bits
 
       Layout.fillWidth: true
-      Layout.preferredHeight: boardModel.debugPanel.showBits ? implicitHeight : 0
+      Layout.preferredHeight: boardModel.settingsPanel.showBits ? implicitHeight : 0
       color: "white"
       text: "Hello"
     }

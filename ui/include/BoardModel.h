@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Board.h"
-#include "DebugPanel.h"
+#include "SettingsPanel.h"
 
 #include <QAbstractTableModel>
 
@@ -19,7 +19,7 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
   };
 
   Q_OBJECT
-  Q_PROPERTY(DebugPanel* debugPanel READ getDebugPanel CONSTANT)
+  Q_PROPERTY(SettingsPanel* settingsPanel READ getSettingsPanel CONSTANT)
 
 public:
   explicit BoardModel(QObject* parent = nullptr);
@@ -32,7 +32,7 @@ public:
 
   QHash<int, QByteArray> roleNames() const override;
 
-  DebugPanel* getDebugPanel() const;
+  SettingsPanel* getSettingsPanel() const;
 
 private:
   QUrl pieceImage(const Engine_NS::Piece& piece) const;
@@ -42,7 +42,7 @@ private:
   Engine_NS::BoardIndex m_selectedIndex = {};
   Engine_NS::BitBoard m_currentValidMoves = {};
 
-  DebugPanel* m_debugPanel = new DebugPanel();
+  SettingsPanel* m_settingsPanel = new SettingsPanel();
 
   Engine_NS::BitBoard m_bitBoard = {};
 };

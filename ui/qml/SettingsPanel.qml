@@ -3,7 +3,7 @@ import QtQuick.Controls.Universal
 import QtQuick.Layouts
 
 Rectangle {
-  id: debugPanel
+  id: settingsPanel
 
   property alias currentIndex: stackLayout.currentIndex
   property var model
@@ -21,19 +21,19 @@ Rectangle {
       Layout.fillWidth: true
 
       Switch {
-        checked: model.debugPanel.showRankAndFile
+        checked: model.settingsPanel.showRankAndFile
         text: "Show Rank and File"
         width: parent.width
 
-        onCheckedChanged: model.debugPanel.showRankAndFile = checked
+        onCheckedChanged: model.settingsPanel.showRankAndFile = checked
       }
 
       Switch {
-        checked: model.debugPanel.showIndex
+        checked: model.settingsPanel.showIndex
         text: "Show Index"
         width: parent.width
 
-        onCheckedChanged: model.debugPanel.showIndex = checked
+        onCheckedChanged: model.settingsPanel.showIndex = checked
       }
     }
 
@@ -41,43 +41,43 @@ Rectangle {
       Layout.fillWidth: true
 
       Switch {
-        checked: model.debugPanel.debugEnabled
+        checked: model.settingsPanel.debugEnabled
         text: "Show debug info"
         width: parent.width
 
-        onCheckedChanged: model.debugPanel.debugEnabled = checked
+        onCheckedChanged: model.settingsPanel.debugEnabled = checked
       }
 
       Switch {
-        checked: model.debugPanel.showBits
+        checked: model.settingsPanel.showBits
         text: "Show bits"
         width: parent.width
 
-        onCheckedChanged: model.debugPanel.showBits = checked
+        onCheckedChanged: model.settingsPanel.showBits = checked
       }
 
       Switch {
-        checked: model.debugPanel.showWhite
+        checked: model.settingsPanel.showWhite
         text: "Show white"
         width: parent.width
 
-        onCheckedChanged: model.debugPanel.showWhite = checked
+        onCheckedChanged: model.settingsPanel.showWhite = checked
       }
 
       Switch {
-        checked: model.debugPanel.showBlack
+        checked: model.settingsPanel.showBlack
         text: "Show black"
         width: parent.width
 
-        onCheckedChanged: model.debugPanel.showBlack = checked
+        onCheckedChanged: model.settingsPanel.showBlack = checked
       }
 
       Switch {
-        checked: model.debugPanel.enPassant
+        checked: model.settingsPanel.enPassant
         text: "En passant"
         width: parent.width
 
-        onCheckedChanged: model.debugPanel.enPassant = checked
+        onCheckedChanged: model.settingsPanel.enPassant = checked
       }
     }
 
@@ -97,7 +97,7 @@ Rectangle {
           required property int index
           required property var modelData
 
-          checked: model.debugPanel.pieceType == index + 1
+          checked: model.settingsPanel.pieceType == index + 1
           text: `<font color='black'>${modelData}</font>`
           width: parent.width
 
@@ -107,7 +107,7 @@ Rectangle {
 
           onCheckedChanged: {
             if (checked)
-              model.debugPanel.pieceType = index + 1;
+              model.settingsPanel.pieceType = index + 1;
           }
         }
       }

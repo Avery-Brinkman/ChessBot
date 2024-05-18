@@ -11,7 +11,7 @@ TableView {
 
     Text {
       text: model.rankAndFile
-      visible: boardModel.debugPanel.showRankAndFile
+      visible: boardModel.settingsPanel.showRankAndFile
 
       anchors {
         fill: parent
@@ -22,7 +22,7 @@ TableView {
     Text {
       horizontalAlignment: Text.AlignRight
       text: model.boardIndex
-      visible: boardModel.debugPanel.showIndex
+      visible: boardModel.settingsPanel.showIndex
 
       anchors {
         fill: parent
@@ -34,7 +34,7 @@ TableView {
       color: {
         if (model.validMove)
           return "green";
-        if (boardModel.debugPanel.debugEnabled && model.debugInfo)
+        if (boardModel.settingsPanel.debugEnabled && model.debugInfo)
           return "purple";
         return "transparent";
       }

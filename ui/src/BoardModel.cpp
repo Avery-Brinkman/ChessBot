@@ -9,7 +9,7 @@ namespace Chess_UI {
 BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent) {
   setToStartPosition();
 
-  QObject::connect(m_debugPanel, &DebugPanel::updateBoard, this,
+  QObject::connect(m_settingsPanel, &SettingsPanel::updateBoard, this,
                    [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
 }
 
@@ -34,7 +34,7 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     return m_selectedIndex == bitIndex;
   }
   case DebugInfoRole: {
-    if (!m_debugPanel->getDebugEnabled())
+    if (!m_settingsPanel->getDebugEnabled())
       return false;
 
     return getDebugInfo().checkBit(bitIndex);
@@ -79,10 +79,10 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
   }
   case TogglePieceRole: {
     if (value.toBool()) {
-      togglePiece(Engine_NS::Piece(m_debugPanel->getPieceType() | Engine_NS::Color::White),
+      togglePiece(Engine_NS::Piece(m_settingsPanel->getPieceType() | Engine_NS::Color::White),
                   bitIndex);
     } else {
-      togglePiece(Engine_NS::Piece(m_debugPanel->getPieceType() | Engine_NS::Color::Black),
+      togglePiece(Engine_NS::Piece(m_settingsPanel->getPieceType() | Engine_NS::Color::Black),
                   bitIndex);
     }
     break;
@@ -108,7 +108,7 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
           {static_cast<int>(TogglePieceRole), "togglePiece"}};
 }
 
-DebugPanel* BoardModel::getDebugPanel() const { return m_debugPanel; }
+SettingsPanel* BoardModel::getSettingsPanel() const { return m_settingsPanel; }
 
 QUrl BoardModel::pieceImage(const Engine_NS::Piece& piece) const {
   using namespace Engine_NS;
@@ -144,7 +144,7 @@ QUrl BoardModel::pieceImage(const Engine_NS::Piece& piece) const {
 
 Engine_NS::BitBoard BoardModel::getDebugInfo() const {
   Engine_NS::BitBoard debugInfo = 0;
-  if (m_debugPanel->getEnPassant())
+  if (m_settingsPanel->getEnPassant())
     debugInfo.enableBits(getEnPassantMask());
 
   return debugInfo;
