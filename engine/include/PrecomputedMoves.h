@@ -1,13 +1,13 @@
 #pragma once
 
-#include "BitBoard.hpp"
+#include "Bitboard.hpp"
 #include <array>
 
 namespace Engine_NS::Precomputed {
 
 // Array[Color (Black, White)][Index (0, 1, ..., 62, 63)]
 
-const std::array<const std::array<const BitBoard, 64>, 2> PawnMoves = {{{0,
+const std::array<const std::array<const Bitboard, 64>, 2> PawnMoves = {{{0,
                                                                          0,
                                                                          0,
                                                                          0,
@@ -135,7 +135,7 @@ const std::array<const std::array<const BitBoard, 64>, 2> PawnMoves = {{{0,
                                                                          0,
                                                                          0,
                                                                          0}}};
-const std::array<const std::array<const BitBoard, 64>, 2> PawnAttacks = {{{0,
+const std::array<const std::array<const Bitboard, 64>, 2> PawnAttacks = {{{0,
                                                                            0,
                                                                            0,
                                                                            0,
@@ -266,7 +266,7 @@ const std::array<const std::array<const BitBoard, 64>, 2> PawnAttacks = {{{0,
 
 // Array[Index (0, 1, ..., 62, 63)]
 
-const std::array<const BitBoard, 64> KnightMoves = {132096,
+const std::array<const Bitboard, 64> KnightMoves = {132096,
                                                     329728,
                                                     659712,
                                                     1319424,
@@ -330,7 +330,7 @@ const std::array<const BitBoard, 64> KnightMoves = {132096,
                                                     38368557762871296,
                                                     4679521487814656,
                                                     9077567998918656};
-const std::array<const BitBoard, 64> BishopMoves = {
+const std::array<const Bitboard, 64> BishopMoves = {
     9241421688590303744, 36099303471056128,   141012904249856,      550848566272,
     6480472064,          1108177604608,       283691315142656,      72624976668147712,
     4620710844295151618, 9241421688590368773, 36099303487963146,    141017232965652,
@@ -347,7 +347,7 @@ const std::array<const BitBoard, 64> BishopMoves = {
     2882348036221108224, 5764696068147249408, 11529391036782871041, 4611756524879479810,
     567382630219904,     1416240237150208,    2833579985862656,     5667164249915392,
     11334324221640704,   22667548931719168,   45053622886727936,    18049651735527937};
-const std::array<const BitBoard, 64> RookMoves = {
+const std::array<const Bitboard, 64> RookMoves = {
     72340172838076926,    144680345676153597,   289360691352306939,   578721382704613623,
     1157442765409226991,  2314885530818453727,  4629771061636907199,  9259542123273814143,
     72340172838141441,    144680345676217602,   289360691352369924,   578721382704674568,
@@ -364,7 +364,7 @@ const std::array<const BitBoard, 64> RookMoves = {
     1220211685215703056,  2368647251370188832,  4665518383679160384,  9259260648297103488,
     18302911464433844481, 18231136449196065282, 18087586418720506884, 17800486357769390088,
     17226286235867156496, 16077885992062689312, 13781085504453754944, 9187484529235886208};
-const std::array<const BitBoard, 64> QueenMoves = {
+const std::array<const Bitboard, 64> QueenMoves = {
     9313761861428380670,  180779649147209725,   289501704256556795,   578721933553179895,
     1157442771889699055,  2314886638996058335,  4630054752952049855,  9332167099941961855,
     4693051017133293059,  9386102034266586375,  325459994840333070,   578862399937640220,
@@ -381,7 +381,7 @@ const std::array<const BitBoard, 64> QueenMoves = {
     4102559721436811280,  8133343319517438240,  16194909420462031425, 13871017173176583298,
     18303478847064064385, 18232552689433215490, 18090419998706369540, 17806153522019305480,
     17237620560088797200, 16100553540994408480, 13826139127340482880, 9205534180971414145};
-const std::array<const BitBoard, 64> KingMoves = {770,
+const std::array<const Bitboard, 64> KingMoves = {770,
                                                   1797,
                                                   3594,
                                                   7188,

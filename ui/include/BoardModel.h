@@ -12,7 +12,7 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
     ValidMoveRole,
     SelectedRole,
     DebugInfoRole,
-    BitBoardRole,
+    BitboardRole,
     RankAndFileRole,
     BoardIndexRole,
     TogglePieceRole,
@@ -37,13 +37,13 @@ public:
 private:
   QUrl pieceImage(const Engine_NS::Piece& piece) const;
 
-  Engine_NS::BitBoard getDebugInfo() const;
+  Engine_NS::Bitboard getDebugInfo() const;
 
   Engine_NS::BoardIndex m_selectedIndex = {};
-  Engine_NS::BitBoard m_currentValidMoves = {};
+  Engine_NS::Bitboard m_currentValidMoves = {};
 
   SettingsPanel* m_settingsPanel = new SettingsPanel();
 
-  Engine_NS::BitBoard m_bitBoard = {};
+  Engine_NS::Bitboard m_bitboard = {};
 };
 } // namespace Chess_UI

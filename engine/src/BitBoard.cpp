@@ -1,15 +1,15 @@
-#include "BitBoard.hpp"
+#include "Bitboard.hpp"
 
 namespace Engine_NS {
 
-BitBoard BitBoards::getWhitePieces() const {
+Bitboard Bitboards::getWhitePieces() const {
   return whitePawns | whiteRooks | whiteKnights | whiteBishops | whiteQueens | whiteKing;
 }
-BitBoard BitBoards::getBlackPieces() const {
+Bitboard Bitboards::getBlackPieces() const {
   return blackPawns | blackRooks | blackKnights | blackBishops | blackQueens | blackKing;
 }
 
-BoardInfo BitBoards::getInfo() const {
+BoardInfo Bitboards::getInfo() const {
   BoardInfo info = {};
   info.whitePieces = getWhitePieces();
   info.blackPieces = getBlackPieces();

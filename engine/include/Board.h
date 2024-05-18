@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitBoard.hpp"
+#include "Bitboard.hpp"
 #include "BoardIndicies.hpp"
 #include "Move.h"
 #include "Piece.hpp"
@@ -18,32 +18,32 @@ public:
   // Get the piece from the 1D index
   Piece getPiece(const BoardIndex& index) const;
 
-  BitBoard getValidMoves(const BoardIndex& index) const;
+  Bitboard getValidMoves(const BoardIndex& index) const;
 
   void movePiece(const BoardIndex& from, const BoardIndex& to);
 
 protected:
-  BitBoard getEnPassantMask() const;
+  Bitboard getEnPassantMask() const;
   void togglePiece(const Piece& piece, const BoardIndex& index);
 
 private:
-  BitBoard getWhitePieces() const;
-  BitBoard getBlackPieces() const;
+  Bitboard getWhitePieces() const;
+  Bitboard getBlackPieces() const;
 
-  BitBoard getValidPawnMoves(const BoardIndex& index) const;
-  BitBoard getValidKnightMoves(const BoardIndex& index) const;
-  BitBoard getValidBishopMoves(const BoardIndex& index) const;
-  BitBoard getValidRookMoves(const BoardIndex& index) const;
-  BitBoard getValidQueenMoves(const BoardIndex& index) const;
-  BitBoard getValidKingMoves(const BoardIndex& index) const;
+  Bitboard getValidPawnMoves(const BoardIndex& index) const;
+  Bitboard getValidKnightMoves(const BoardIndex& index) const;
+  Bitboard getValidBishopMoves(const BoardIndex& index) const;
+  Bitboard getValidRookMoves(const BoardIndex& index) const;
+  Bitboard getValidQueenMoves(const BoardIndex& index) const;
+  Bitboard getValidKingMoves(const BoardIndex& index) const;
 
-  BitBoard getCastlingMoves(const BoardIndex& index, bool isWhite) const;
+  Bitboard getCastlingMoves(const BoardIndex& index, bool isWhite) const;
 
   void addPiece(const Piece& piece, const BoardIndex& index);
   void removePiece(const Piece& piece, const BoardIndex& index);
 
-  void updateBitBoards(const Move& move);
+  void updateBitboards(const Move& move);
 
-  BitBoards m_bitBoards;
+  Bitboards m_bitboards;
 };
 } // namespace Engine_NS

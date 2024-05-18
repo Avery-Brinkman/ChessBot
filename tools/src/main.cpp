@@ -10,6 +10,7 @@ enum Option {
   RookMovements,
   QueenMovements,
   KingMovements,
+  MagicBits,
 
   Invalid,
   Quit = 'q',
@@ -36,6 +37,8 @@ static void printMenu() {
   std::cout << "| 5) Generate Queen Movements  |" << std::endl;
   std::cout << "| 6) Generate King Movements   |" << std::endl;
   std::cout << "|                              |" << std::endl;
+  std::cout << "| 7) Generate Magic Bits       |" << std::endl;
+  std::cout << "|                              |" << std::endl;
   std::cout << "| q) Quit                      |" << std::endl;
   std::cout << "+------------------------------+" << std::endl;
 }
@@ -61,55 +64,59 @@ static void runTool(Option option) {
   switch (option) {
   case PawnMovements: {
     std::cout << "White Pawn Moves:" << std::endl;
-    std::array<Engine_NS::BitBoard, 64> pawnMoves = Tools::generateMoves(Engine_NS::WhitePawn);
-    for (const Engine_NS::BitBoard& bitBoard : pawnMoves)
-      std::cout << bitBoard.bits << ", ";
+    std::array<Engine_NS::Bitboard, 64> pawnMoves = Tools::generateMoves(Engine_NS::WhitePawn);
+    for (const Engine_NS::Bitboard& bitboard : pawnMoves)
+      std::cout << bitboard.bits << ", ";
     std::cout << "\b\b  " << std::endl;
     std::cout << "White Pawn Attacks:" << std::endl;
     pawnMoves = Tools::generateAttacks(Engine_NS::WhitePawn);
-    for (const Engine_NS::BitBoard& bitBoard : pawnMoves)
-      std::cout << bitBoard.bits << ", ";
+    for (const Engine_NS::Bitboard& bitboard : pawnMoves)
+      std::cout << bitboard.bits << ", ";
     std::cout << "\b\b  " << std::endl;
     std::cout << std::endl;
     std::cout << "Black Pawn Moves:" << std::endl;
     pawnMoves = Tools::generateMoves(Engine_NS::BlackPawn);
-    for (const Engine_NS::BitBoard& bitBoard : pawnMoves)
-      std::cout << bitBoard.bits << ", ";
+    for (const Engine_NS::Bitboard& bitboard : pawnMoves)
+      std::cout << bitboard.bits << ", ";
     std::cout << "\b\b  " << std::endl;
     std::cout << "Black Pawn Attacks:" << std::endl;
     pawnMoves = Tools::generateAttacks(Engine_NS::BlackPawn);
-    for (const Engine_NS::BitBoard& bitBoard : pawnMoves)
-      std::cout << bitBoard.bits << ", ";
+    for (const Engine_NS::Bitboard& bitboard : pawnMoves)
+      std::cout << bitboard.bits << ", ";
     break;
   }
   case KnightMovements: {
     std::cout << "Knight Moves:" << std::endl;
-    for (const Engine_NS::BitBoard& bitBoard : Tools::generateMoves(Engine_NS::WhiteKnight))
-      std::cout << bitBoard.bits << ", ";
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteKnight))
+      std::cout << bitboard.bits << ", ";
     break;
   }
   case BishopMovements: {
     std::cout << "Bishop Moves:" << std::endl;
-    for (const Engine_NS::BitBoard& bitBoard : Tools::generateMoves(Engine_NS::WhiteBishop))
-      std::cout << bitBoard.bits << ", ";
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteBishop))
+      std::cout << bitboard.bits << ", ";
     break;
   }
   case RookMovements: {
     std::cout << "Rook Moves:" << std::endl;
-    for (const Engine_NS::BitBoard& bitBoard : Tools::generateMoves(Engine_NS::WhiteRook))
-      std::cout << bitBoard.bits << ", ";
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteRook))
+      std::cout << bitboard.bits << ", ";
     break;
   }
   case QueenMovements: {
     std::cout << "Queen Moves:" << std::endl;
-    for (const Engine_NS::BitBoard& bitBoard : Tools::generateMoves(Engine_NS::WhiteQueen))
-      std::cout << bitBoard.bits << ", ";
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteQueen))
+      std::cout << bitboard.bits << ", ";
     break;
   }
   case KingMovements: {
     std::cout << "King Moves:" << std::endl;
-    for (const Engine_NS::BitBoard& bitBoard : Tools::generateMoves(Engine_NS::WhiteKing))
-      std::cout << bitBoard.bits << ", ";
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteKing))
+      std::cout << bitboard.bits << ", ";
+    break;
+  }
+  case MagicBits: {
+    std::cout << "Unimplemented  ";
     break;
   }
   case Quit:

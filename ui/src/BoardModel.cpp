@@ -39,8 +39,8 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
 
     return getDebugInfo().checkBit(bitIndex);
   }
-  case BitBoardRole: {
-    return m_bitBoard.checkBit(bitIndex);
+  case BitboardRole: {
+    return m_bitboard.checkBit(bitIndex);
   }
   case RankAndFileRole:
     return QString::fromStdString(getIndex(index.row(), index.column()).toString());
@@ -69,11 +69,11 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     m_currentValidMoves = 0;
     break;
   }
-  case BitBoardRole: {
+  case BitboardRole: {
     // Toggle the bit
-    m_bitBoard.toggleBit(bitIndex);
+    m_bitboard.toggleBit(bitIndex);
 
-    std::cout << std::bitset<64>(m_bitBoard.bits) << std::endl;
+    std::cout << std::bitset<64>(m_bitboard.bits) << std::endl;
 
     break;
   }
@@ -102,7 +102,7 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
           {static_cast<int>(ValidMoveRole), "validMove"},
           {static_cast<int>(SelectedRole), "selected"},
           {static_cast<int>(DebugInfoRole), "debugInfo"},
-          {static_cast<int>(BitBoardRole), "bitBoard"},
+          {static_cast<int>(BitboardRole), "bitboard"},
           {static_cast<int>(RankAndFileRole), "rankAndFile"},
           {static_cast<int>(BoardIndexRole), "boardIndex"},
           {static_cast<int>(TogglePieceRole), "togglePiece"}};
@@ -142,8 +142,8 @@ QUrl BoardModel::pieceImage(const Engine_NS::Piece& piece) const {
   }
 }
 
-Engine_NS::BitBoard BoardModel::getDebugInfo() const {
-  Engine_NS::BitBoard debugInfo = 0;
+Engine_NS::Bitboard BoardModel::getDebugInfo() const {
+  Engine_NS::Bitboard debugInfo = 0;
   if (m_settingsPanel->getEnPassant())
     debugInfo.enableBits(getEnPassantMask());
 

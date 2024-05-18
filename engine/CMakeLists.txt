@@ -17,19 +17,18 @@ source_group("Definitions/Source Files" FILES ${DEFINITION_SOURCES})
 set(ENGINE_INCLUDES
   ${DEFINITION_INCLUDES}
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/BitBoard.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Bitboard.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Board.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Bot.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Engine.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Move.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/SlidingPieceBitBoards.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/UCICommands.h
 )
 
 set(ENGINE_SOURCES
   ${DEFINITION_SOURCES}
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/BitBoard.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Bitboard.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Board.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Bot.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine.cpp

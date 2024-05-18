@@ -5,7 +5,7 @@
 
 namespace Tools {
 
-std::array<Engine_NS::BitBoard, 64> generateMoves(const Engine_NS::Piece& piece) {
+std::array<Engine_NS::Bitboard, 64> generateMoves(const Engine_NS::Piece& piece) {
   using enum Engine_NS::PieceType;
   switch (piece.type()) {
   case Pawn:
@@ -23,18 +23,18 @@ std::array<Engine_NS::BitBoard, 64> generateMoves(const Engine_NS::Piece& piece)
   default:
     break;
   }
-  return std::array<Engine_NS::BitBoard, 64>();
+  return std::array<Engine_NS::Bitboard, 64>();
 }
-std::array<Engine_NS::BitBoard, 64> generateAttacks(const Engine_NS::Piece& piece) {
+std::array<Engine_NS::Bitboard, 64> generateAttacks(const Engine_NS::Piece& piece) {
   if (piece.type() == Engine_NS::PieceType::Pawn)
     return generatePawnAttacks(piece);
   return generateMoves(piece);
 }
 
-std::array<Engine_NS::BitBoard, 64> generatePawnMoves(const Engine_NS::Piece& piece) {
+std::array<Engine_NS::Bitboard, 64> generatePawnMoves(const Engine_NS::Piece& piece) {
   const bool isWhite = piece.isWhite();
 
-  std::array<Engine_NS::BitBoard, 64> moves = {};
+  std::array<Engine_NS::Bitboard, 64> moves = {};
   for (int i = 0; i < 64; i++) {
     const Engine_NS::BoardIndex index = Engine_NS::Index(i);
     // Check if piece can move forward
@@ -47,10 +47,10 @@ std::array<Engine_NS::BitBoard, 64> generatePawnMoves(const Engine_NS::Piece& pi
   }
   return moves;
 }
-std::array<Engine_NS::BitBoard, 64> generatePawnAttacks(const Engine_NS::Piece& piece) {
+std::array<Engine_NS::Bitboard, 64> generatePawnAttacks(const Engine_NS::Piece& piece) {
   const bool isWhite = piece.isWhite();
 
-  std::array<Engine_NS::BitBoard, 64> attacks = {};
+  std::array<Engine_NS::Bitboard, 64> attacks = {};
   for (int i = 0; i < 64; i++) {
     const Engine_NS::BoardIndex index = Engine_NS::Index(i);
     // Check if piece can move forward
@@ -67,10 +67,10 @@ std::array<Engine_NS::BitBoard, 64> generatePawnAttacks(const Engine_NS::Piece& 
   return attacks;
 }
 
-std::array<Engine_NS::BitBoard, 64> generateKnightMoves() {
+std::array<Engine_NS::Bitboard, 64> generateKnightMoves() {
   using namespace Engine_NS;
 
-  std::array<BitBoard, 64> moves = {};
+  std::array<Bitboard, 64> moves = {};
   for (int i = 0; i < 64; i++) {
     const BoardIndex index = Index(i);
 
@@ -108,10 +108,10 @@ std::array<Engine_NS::BitBoard, 64> generateKnightMoves() {
   return moves;
 }
 
-std::array<Engine_NS::BitBoard, 64> generateBishopMoves() {
+std::array<Engine_NS::Bitboard, 64> generateBishopMoves() {
   using namespace Engine_NS;
 
-  std::array<BitBoard, 64> moves = {};
+  std::array<Bitboard, 64> moves = {};
   for (int i = 0; i < 64; i++) {
     const BoardIndex index = Index(i);
 
@@ -146,8 +146,8 @@ std::array<Engine_NS::BitBoard, 64> generateBishopMoves() {
   return moves;
 }
 
-std::array<Engine_NS::BitBoard, 64> generateRookMoves() {
-  std::array<Engine_NS::BitBoard, 64> moves = {};
+std::array<Engine_NS::Bitboard, 64> generateRookMoves() {
+  std::array<Engine_NS::Bitboard, 64> moves = {};
 
   for (int i = 0; i < 64; i++) {
     const Engine_NS::BoardIndex index = Engine_NS::Index(i);
@@ -162,17 +162,17 @@ std::array<Engine_NS::BitBoard, 64> generateRookMoves() {
   return moves;
 }
 
-std::array<Engine_NS::BitBoard, 64> generateQueenMoves() {
-  std::array<Engine_NS::BitBoard, 64> moves = {};
-  const std::array<Engine_NS::BitBoard, 64> bishopMoves = generateBishopMoves();
-  const std::array<Engine_NS::BitBoard, 64> rookMoves = generateRookMoves();
+std::array<Engine_NS::Bitboard, 64> generateQueenMoves() {
+  std::array<Engine_NS::Bitboard, 64> moves = {};
+  const std::array<Engine_NS::Bitboard, 64> bishopMoves = generateBishopMoves();
+  const std::array<Engine_NS::Bitboard, 64> rookMoves = generateRookMoves();
   for (int i = 0; i < 64; i++)
     moves.at(i).enableBits(bishopMoves.at(i) | rookMoves.at(i));
   return moves;
 }
 
-std::array<Engine_NS::BitBoard, 64> generateKingMoves() {
-  std::array<Engine_NS::BitBoard, 64> moves = {};
+std::array<Engine_NS::Bitboard, 64> generateKingMoves() {
+  std::array<Engine_NS::Bitboard, 64> moves = {};
 
   for (int i = 0; i < 64; i++) {
     const Engine_NS::BoardIndex index = Engine_NS::Index(i);

@@ -3,66 +3,66 @@
 #include "BoardIndicies.hpp"
 
 namespace Engine_NS {
-using BitBoardBits = uint_fast64_t;
+using BitboardBits = uint_fast64_t;
 
-struct BitBoard {
+struct Bitboard {
 public:
-  BitBoard(BoardIndex index) : BitBoard(1ULL << index.index) {}
-  BitBoard(BitBoardBits bits) : bits(bits) {}
-  BitBoard() = default;
+  Bitboard(BoardIndex index) : Bitboard(1ULL << index.index) {}
+  Bitboard(BitboardBits bits) : bits(bits) {}
+  Bitboard() = default;
 
-  BitBoardBits bits = 0;
+  BitboardBits bits = 0;
 
-  void enableBit(const BoardIndex& index) { enableBits(BitBoard(index)); };
-  void disableBit(const BoardIndex& index) { disableBits(BitBoard(index)); };
-  void toggleBit(const BoardIndex& index) { toggleBits(BitBoard(index)); };
-  bool checkBit(const BoardIndex& index) const { return checkBits(BitBoard(index)); };
+  void enableBit(const BoardIndex& index) { enableBits(Bitboard(index)); };
+  void disableBit(const BoardIndex& index) { disableBits(Bitboard(index)); };
+  void toggleBit(const BoardIndex& index) { toggleBits(Bitboard(index)); };
+  bool checkBit(const BoardIndex& index) const { return checkBits(Bitboard(index)); };
 
-  void enableBits(const BitBoard& bits) { this->bits |= bits.bits; };
-  void disableBits(const BitBoard& bits) { this->bits &= ~(bits.bits); };
-  void toggleBits(const BitBoard& bits) { this->bits ^= bits.bits; };
-  bool checkBits(const BitBoard& bits) const { return this->bits & bits.bits; };
+  void enableBits(const Bitboard& bits) { this->bits |= bits.bits; };
+  void disableBits(const Bitboard& bits) { this->bits &= ~(bits.bits); };
+  void toggleBits(const Bitboard& bits) { this->bits ^= bits.bits; };
+  bool checkBits(const Bitboard& bits) const { return this->bits & bits.bits; };
 
-  BitBoard operator&(const BitBoard& other) const { return bits & other.bits; }
-  BitBoard operator|(const BitBoard& other) const { return bits | other.bits; }
-  BitBoard operator^(const BitBoard& other) const { return bits ^ other.bits; }
-  BitBoard operator~() const { return ~bits; }
-  BitBoard operator<<(int value) const { return bits << value; }
-  BitBoard operator>>(int value) const { return bits >> value; }
+  Bitboard operator&(const Bitboard& other) const { return bits & other.bits; }
+  Bitboard operator|(const Bitboard& other) const { return bits | other.bits; }
+  Bitboard operator^(const Bitboard& other) const { return bits ^ other.bits; }
+  Bitboard operator~() const { return ~bits; }
+  Bitboard operator<<(int value) const { return bits << value; }
+  Bitboard operator>>(int value) const { return bits >> value; }
 };
 
 struct BoardInfo {
-  BitBoard whitePieces = 0;
-  BitBoard blackPieces = 0;
-  BitBoard allPieces = 0;
-  BitBoard emptySquares = 0;
+  Bitboard whitePieces = 0;
+  Bitboard blackPieces = 0;
+  Bitboard allPieces = 0;
+  Bitboard emptySquares = 0;
 };
 
-struct BitBoards {
-  BitBoard getWhitePieces() const;
-  BitBoard getBlackPieces() const;
+struct Bitboards {
+  Bitboard getWhitePieces() const;
+  Bitboard getBlackPieces() const;
 
   BoardInfo getInfo() const;
 
-  BitBoard whitePawns = 0;
-  BitBoard whiteKnights = 0;
-  BitBoard whiteBishops = 0;
-  BitBoard whiteRooks = 0;
-  BitBoard whiteQueens = 0;
-  BitBoard whiteKing = 0;
+  Bitboard whitePawns = 0;
+  Bitboard whiteKnights = 0;
+  Bitboard whiteBishops = 0;
+  Bitboard whiteRooks = 0;
+  Bitboard whiteQueens = 0;
+  Bitboard whiteKing = 0;
 
-  BitBoard blackPawns = 0;
-  BitBoard blackKnights = 0;
-  BitBoard blackBishops = 0;
-  BitBoard blackRooks = 0;
-  BitBoard blackQueens = 0;
-  BitBoard blackKing = 0;
+  Bitboard blackPawns = 0;
+  Bitboard blackKnights = 0;
+  Bitboard blackBishops = 0;
+  Bitboard blackRooks = 0;
+  Bitboard blackQueens = 0;
+  Bitboard blackKing = 0;
 
   // [0 Rook King Rook], [0 Black | 0 White]
   int_fast8_t castlingRights = 0b01110111;
 
-  BitBoard whiteEnPassant = 0;
-  BitBoard blackEnPassant = 0;
+  Bitboard whiteEnPassant = 0;
+  Bitboard blackEnPassant = 0;
 };
 
 } // namespace Engine_NS
