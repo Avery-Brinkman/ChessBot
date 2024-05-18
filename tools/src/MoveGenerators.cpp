@@ -109,9 +109,39 @@ std::array<Engine_NS::BitBoard, 64> generateKnightMoves() {
 }
 
 std::array<Engine_NS::BitBoard, 64> generateBishopMoves() {
-  std::array<Engine_NS::BitBoard, 64> moves = {};
+  using namespace Engine_NS;
+
+  std::array<BitBoard, 64> moves = {};
   for (int i = 0; i < 64; i++) {
-    const Engine_NS::BoardIndex index = Engine_NS::Index(i);
+    const BoardIndex index = Index(i);
+
+    // NorthEast
+    BoardIndex diagIndex = index;
+    while (diagIndex.rank() < 8 && diagIndex.file() < File::H) {
+      diagIndex = diagIndex + NorthEast;
+      moves.at(i).enableBit(diagIndex);
+    }
+
+    // SouthEast
+    diagIndex = index;
+    while (diagIndex.rank() > 1 && diagIndex.file() < File::H) {
+      diagIndex = diagIndex + SouthEast;
+      moves.at(i).enableBit(diagIndex);
+    }
+
+    // SouthWest
+    diagIndex = index;
+    while (diagIndex.rank() > 1 && diagIndex.file() > File::A) {
+      diagIndex = diagIndex + SouthWest;
+      moves.at(i).enableBit(diagIndex);
+    }
+
+    // NorthWest
+    diagIndex = index;
+    while (diagIndex.rank() < 8 && diagIndex.file() > File::A) {
+      diagIndex = diagIndex + NorthWest;
+      moves.at(i).enableBit(diagIndex);
+    }
   }
   return moves;
 }
