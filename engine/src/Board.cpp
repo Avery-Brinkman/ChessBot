@@ -25,19 +25,19 @@ bool canMoveRight(const Engine_NS::BoardIndex& index, bool isWhite, int times = 
 namespace Engine_NS {
 
 void Board::setToStartPosition() {
-  m_bitBoards.whiteRooks = 1ULL << 37;
-  m_bitBoards.whiteKnights = 0;
-  m_bitBoards.whiteBishops = 0;
-  m_bitBoards.whiteQueens = 0;
-  m_bitBoards.whiteKing = 0;
-  m_bitBoards.whitePawns = 0;
+  m_bitBoards.whitePawns = 0b0000000000000000000000000000000000000000000000001111111100000000;
+  m_bitBoards.whiteRooks = 0b0000000000000000000000000000000000000000000000000000000010000001;
+  m_bitBoards.whiteKnights = 0b0000000000000000000000000000000000000000000000000000000001000010;
+  m_bitBoards.whiteBishops = 0b0000000000000000000000000000000000000000000000000000000000100100;
+  m_bitBoards.whiteQueens = 0b0000000000000000000000000000000000000000000000000000000000001000;
+  m_bitBoards.whiteKing = 0b0000000000000000000000000000000000000000000000000000000000010000;
 
-  m_bitBoards.blackRooks = 0;
-  m_bitBoards.blackKnights = 0;
-  m_bitBoards.blackBishops = 0;
-  m_bitBoards.blackQueens = 0;
-  m_bitBoards.blackKing = 0;
-  m_bitBoards.blackPawns = 0;
+  m_bitBoards.blackPawns = 0b0000000011111111000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackRooks = 0b1000000100000000000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackKnights = 0b0100001000000000000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackBishops = 0b0010010000000000000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackQueens = 0b0000100000000000000000000000000000000000000000000000000000000000;
+  m_bitBoards.blackKing = 0b0001000000000000000000000000000000000000000000000000000000000000;
 }
 
 BoardIndex Board::getIndex(size_t row, size_t col) const { return Index((7 - row) * 8 + col); }
@@ -86,6 +86,12 @@ BitBoard Board::getValidMoves(const BoardIndex& index) const {
     return getValidKnightMoves(index);
   case Bishop:
     return getValidBishopMoves(index);
+  case Rook:
+    return getValidRookMoves(index);
+  case Queen:
+    return getValidQueenMoves(index);
+  case King:
+    return getValidKingMoves(index);
   default:
     return 0;
   }
@@ -200,34 +206,19 @@ BitBoard Board::getValidKnightMoves(const BoardIndex& index) const {
   const BitBoard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
   const BitBoard validSquares = opponentPieces | boardInfo.emptySquares;
 
-  const Rank rank = index.rank();
-  const File file = index.file();
-
-  const BitBoard one = (rank < 7) && (file > File::A) ? index.index + 17 : 0;
-  // const BitBoard two = (row < 6) && (col > 0) ? index + 15 : 0;
-  // const BitBoard three = (row < 7) && (col < 6) ? index + 10 : 0;
-  // const BitBoard four = (row < 7) && (col > 1) ? index + 6 : 0;
-  // const BitBoard five = (row > 0) && (col < 6) ? index - 6 : 0;
-  // const BitBoard six = (row > 0) && (col > 1) ? index - 10 : 0;
-  // const BitBoard seven = (row > 1) && (col < 7) ? index - 15 : 0;
-  // const BitBoard eight = (row > 1) && (col > 0) ? index - 17 : 0;
-
-  return one & validSquares;
-  // return (one | two | three | four | five | six | seven | eight) & validSquares;
+  return Precomputed::KnightMoves.at(index.index) & validSquares;
 }
 
-BitBoard Board::getValidBishopMoves(const BoardIndex& index) const { return 0xFFFFFFFFFFFFFFFF; }
-
-BitBoard Board::getValidWhiteRookMoves(const BoardIndex& index) const { return 0xFFFFFFFFFFFFFFFF; }
-
-BitBoard Board::getValidBlackRookMoves(const BoardIndex& index) const { return 0xFFFFFFFFFFFFFFFF; }
-
-BitBoard Board::getValidWhiteQueenMoves(const BoardIndex& index) const {
-  return 0xFFFFFFFFFFFFFFFF;
+BitBoard Board::getValidBishopMoves(const BoardIndex& index) const {
+  return Precomputed::BishopMoves.at(index.index);
 }
 
-BitBoard Board::getValidBlackQueenMoves(const BoardIndex& index) const {
-  return 0xFFFFFFFFFFFFFFFF;
+BitBoard Board::getValidRookMoves(const BoardIndex& index) const {
+  return Precomputed::RookMoves.at(index.index);
+}
+
+BitBoard Board::getValidQueenMoves(const BoardIndex& index) const {
+  return Precomputed::QueenMoves.at(index.index);
 }
 
 BitBoard Board::getValidKingMoves(const BoardIndex& index) const {
@@ -239,20 +230,12 @@ BitBoard Board::getValidKingMoves(const BoardIndex& index) const {
   // const size_t row = index / 8;
   // const size_t col = index % 8;
 
-  // const BitBoard up = (row < 7) ? index + 8 : 0;
-  // const BitBoard down = (row > 0) ? index - 8 : 0;
-  // const BitBoard left = (col < 7) ? index + 1 : 0;
-  // const BitBoard right = (col > 0) ? index - 1 : 0;
-  // const BitBoard upLeft = (row < 7) && (col < 7) ? up << 1 : 0;
-  // const BitBoard upRight = (row < 7) && (col > 0) ? up >> 1 : 0;
-  // const BitBoard downLeft = (row > 0) && (col < 7) ? down << 1 : 0;
-  // const BitBoard downRight = (row > 0) && (col > 0) ? down >> 1 : 0;
+  return Precomputed::KingMoves.at(index.index);
 
   // const BitBoard castling = getCastlingMoves(index, isWhite);
 
   // return ((up | down | left | right | upLeft | upRight | downLeft | downRight) & validSquares) |
   //        castling;
-  return 0;
 }
 
 BitBoard Board::getCastlingMoves(const BoardIndex& index, bool isWhite) const {

@@ -33,10 +33,8 @@ private:
   BitBoard getValidPawnMoves(const BoardIndex& index) const;
   BitBoard getValidKnightMoves(const BoardIndex& index) const;
   BitBoard getValidBishopMoves(const BoardIndex& index) const;
-  BitBoard getValidWhiteRookMoves(const BoardIndex& index) const;
-  BitBoard getValidBlackRookMoves(const BoardIndex& index) const;
-  BitBoard getValidWhiteQueenMoves(const BoardIndex& index) const;
-  BitBoard getValidBlackQueenMoves(const BoardIndex& index) const;
+  BitBoard getValidRookMoves(const BoardIndex& index) const;
+  BitBoard getValidQueenMoves(const BoardIndex& index) const;
   BitBoard getValidKingMoves(const BoardIndex& index) const;
 
   BitBoard getCastlingMoves(const BoardIndex& index, bool isWhite) const;
