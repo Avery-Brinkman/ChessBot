@@ -3,10 +3,10 @@
 namespace Engine_NS {
 
 Bitboard Bitboards::getWhitePieces() const {
-  return whitePawns | whiteRooks | whiteKnights | whiteBishops | whiteQueens | whiteKing;
+  return pawns[1] | rooks[1] | knights[1] | bishops[1] | queens[1] | kings[1]
 }
 Bitboard Bitboards::getBlackPieces() const {
-  return blackPawns | blackRooks | blackKnights | blackBishops | blackQueens | blackKing;
+  return pawns[0] | rooks[0] | knights[0] | bishops[0] | queens[0] | kings[0];
 }
 
 BoardInfo Bitboards::getInfo() const {

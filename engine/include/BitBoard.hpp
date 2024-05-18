@@ -44,25 +44,17 @@ struct Bitboards {
 
   BoardInfo getInfo() const;
 
-  Bitboard whitePawns = 0;
-  Bitboard whiteKnights = 0;
-  Bitboard whiteBishops = 0;
-  Bitboard whiteRooks = 0;
-  Bitboard whiteQueens = 0;
-  Bitboard whiteKing = 0;
-
-  Bitboard blackPawns = 0;
-  Bitboard blackKnights = 0;
-  Bitboard blackBishops = 0;
-  Bitboard blackRooks = 0;
-  Bitboard blackQueens = 0;
-  Bitboard blackKing = 0;
+  Bitboard pawns[2] = {0, 0};
+  Bitboard knights[2] = {0, 0};
+  Bitboard bishops[2] = {0, 0};
+  Bitboard rooks[2] = {0, 0};
+  Bitboard queens[2] = {0, 0};
+  Bitboard kings[2] = {0, 0};
 
   // [0 Rook King Rook], [0 Black | 0 White]
   int_fast8_t castlingRights = 0b01110111;
 
-  Bitboard whiteEnPassant = 0;
-  Bitboard blackEnPassant = 0;
+  Bitboard enPassant[2] = {0, 0};
 };
 
 } // namespace Engine_NS

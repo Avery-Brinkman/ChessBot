@@ -25,19 +25,21 @@ bool canMoveRight(const Engine_NS::BoardIndex& index, bool isWhite, int times = 
 namespace Engine_NS {
 
 void Board::setToStartPosition() {
-  m_bitboards.whitePawns = 0b0000000000000000000000000000000000000000000000001111111100000000;
-  m_bitboards.whiteRooks = 0b0000000000000000000000000000000000000000000000000000000010000001;
-  m_bitboards.whiteKnights = 0b0000000000000000000000000000000000000000000000000000000001000010;
-  m_bitboards.whiteBishops = 0b0000000000000000000000000000000000000000000000000000000000100100;
-  m_bitboards.whiteQueens = 0b0000000000000000000000000000000000000000000000000000000000001000;
-  m_bitboards.whiteKing = 0b0000000000000000000000000000000000000000000000000000000000010000;
+  // White
+  m_bitboards.pawns[1] = 0b0000000000000000000000000000000000000000000000001111111100000000;
+  m_bitboards.rooks[1] = 0b0000000000000000000000000000000000000000000000000000000010000001;
+  m_bitboards.knights[1] = 0b0000000000000000000000000000000000000000000000000000000001000010;
+  m_bitboards.bishops[1] = 0b0000000000000000000000000000000000000000000000000000000000100100;
+  m_bitboards.queens[1] = 0b0000000000000000000000000000000000000000000000000000000000001000;
+  m_bitboards.kings[1] = 0b0000000000000000000000000000000000000000000000000000000000010000;
 
-  m_bitboards.blackPawns = 0b0000000011111111000000000000000000000000000000000000000000000000;
-  m_bitboards.blackRooks = 0b1000000100000000000000000000000000000000000000000000000000000000;
-  m_bitboards.blackKnights = 0b0100001000000000000000000000000000000000000000000000000000000000;
-  m_bitboards.blackBishops = 0b0010010000000000000000000000000000000000000000000000000000000000;
-  m_bitboards.blackQueens = 0b0000100000000000000000000000000000000000000000000000000000000000;
-  m_bitboards.blackKing = 0b0001000000000000000000000000000000000000000000000000000000000000;
+  // Black
+  m_bitboards.pawns[0] = 0b0000000011111111000000000000000000000000000000000000000000000000;
+  m_bitboards.rooks[0] = 0b1000000100000000000000000000000000000000000000000000000000000000;
+  m_bitboards.knights[0] = 0b0100001000000000000000000000000000000000000000000000000000000000;
+  m_bitboards.bishops[0] = 0b0010010000000000000000000000000000000000000000000000000000000000;
+  m_bitboards.queens[0] = 0b0000100000000000000000000000000000000000000000000000000000000000;
+  m_bitboards.kings[0] = 0b0001000000000000000000000000000000000000000000000000000000000000;
 }
 
 BoardIndex Board::getIndex(size_t row, size_t col) const { return Index((7 - row) * 8 + col); }
@@ -48,29 +50,29 @@ Piece Board::getPiece(size_t row, size_t col) const {
   return getPiece(getIndex(row, col));
 }
 Piece Board::getPiece(const BoardIndex& index) const {
-  if (m_bitboards.whitePawns.checkBit(index))
+  if (m_bitboards.pawns[1].checkBit(index))
     return WhitePawn;
-  if (m_bitboards.whiteRooks.checkBit(index))
+  if (m_bitboards.rooks[1].checkBit(index))
     return WhiteRook;
-  if (m_bitboards.whiteKnights.checkBit(index))
+  if (m_bitboards.knights[1].checkBit(index))
     return WhiteKnight;
-  if (m_bitboards.whiteBishops.checkBit(index))
+  if (m_bitboards.bishops[1].checkBit(index))
     return WhiteBishop;
-  if (m_bitboards.whiteQueens.checkBit(index))
+  if (m_bitboards.queens[1].checkBit(index))
     return WhiteQueen;
-  if (m_bitboards.whiteKing.checkBit(index))
+  if (m_bitboards.kings[1].checkBit(index))
     return WhiteKing;
-  if (m_bitboards.blackPawns.checkBit(index))
+  if (m_bitboards.pawns[0].checkBit(index))
     return BlackPawn;
-  if (m_bitboards.blackRooks.checkBit(index))
+  if (m_bitboards.rooks[0].checkBit(index))
     return BlackRook;
-  if (m_bitboards.blackKnights.checkBit(index))
+  if (m_bitboards.knights[0].checkBit(index))
     return BlackKnight;
-  if (m_bitboards.blackBishops.checkBit(index))
+  if (m_bitboards.bishops[0].checkBit(index))
     return BlackBishop;
-  if (m_bitboards.blackQueens.checkBit(index))
+  if (m_bitboards.queens[0].checkBit(index))
     return BlackQueen;
-  if (m_bitboards.blackKing.checkBit(index))
+  if (m_bitboards.kings[0].checkBit(index))
     return BlackKing;
 
   return None;
@@ -112,8 +114,7 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
 
   if (move.movedPiece.type() == Pawn) {
     const bool isWhite = move.movedPiece.isWhite();
-    const Bitboard& opponentEnPassant =
-        isWhite ? m_bitboards.blackEnPassant : m_bitboards.whiteEnPassant;
+    const Bitboard& opponentEnPassant = m_bitboards.enPassant[!isWhite];
 
     // Double pawn push
     if (abs(from.rank() - to.rank()) > 1) {
@@ -140,46 +141,28 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
 // Protected Functions
 
 Bitboard Board::getEnPassantMask() const {
-  return m_bitboards.whiteEnPassant | m_bitboards.blackEnPassant;
+  return m_bitboards.enPassant[0] | m_bitboards.enPassant[1];
 }
 
 void Board::togglePiece(const Piece& piece, const BoardIndex& index) {
-  switch (piece.bits) {
-  case WhitePawn.bits:
-    m_bitboards.whitePawns.toggleBit(index);
+  switch (piece.type()) {
+  case Pawn:
+    m_bitboards.pawns[piece.isWhite()].toggleBit(index);
     break;
-  case BlackPawn.bits:
-    m_bitboards.blackPawns.toggleBit(index);
+  case Knight:
+    m_bitboards.knights[piece.isWhite()].toggleBit(index);
     break;
-  case WhiteKnight.bits:
-    m_bitboards.whiteKnights.toggleBit(index);
+  case Bishop:
+    m_bitboards.bishops[piece.isWhite()].toggleBit(index);
     break;
-  case BlackKnight.bits:
-    m_bitboards.blackKnights.toggleBit(index);
+  case Rook:
+    m_bitboards.rooks[piece.isWhite()].toggleBit(index);
     break;
-  case WhiteBishop.bits:
-    m_bitboards.whiteBishops.toggleBit(index);
+  case Queen:
+    m_bitboards.queens[piece.isWhite()].toggleBit(index);
     break;
-  case BlackBishop.bits:
-    m_bitboards.blackBishops.toggleBit(index);
-    break;
-  case WhiteRook.bits:
-    m_bitboards.whiteRooks.toggleBit(index);
-    break;
-  case BlackRook.bits:
-    m_bitboards.blackRooks.toggleBit(index);
-    break;
-  case WhiteQueen.bits:
-    m_bitboards.whiteQueens.toggleBit(index);
-    break;
-  case BlackQueen.bits:
-    m_bitboards.blackQueens.toggleBit(index);
-    break;
-  case WhiteKing.bits:
-    m_bitboards.whiteKing.toggleBit(index);
-    break;
-  case BlackKing.bits:
-    m_bitboards.blackKing.toggleBit(index);
+  case King:
+    m_bitboards.kings[piece.isWhite()].toggleBit(index);
     break;
   default:
     return;
@@ -198,12 +181,12 @@ Bitboard Board::getValidPawnMoves(const BoardIndex& index) const {
   const Piece piece = getPiece(index);
   const bool isWhite = piece.isWhite();
   const Bitboard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
-  const Bitboard enPassant = isWhite ? m_bitboards.blackEnPassant : m_bitboards.whiteEnPassant;
 
   const Bitboard moves = Engine_NS::Precomputed::PawnMoves.at(isWhite).at(index.index);
   const Bitboard attacks = Engine_NS::Precomputed::PawnAttacks.at(isWhite).at(index.index);
 
-  return (moves & boardInfo.emptySquares) | (attacks & (opponentPieces | enPassant));
+  return (moves & boardInfo.emptySquares) |
+         (attacks & (opponentPieces | m_bitboards.enPassant[!isWhite]));
 }
 
 Bitboard Board::getValidKnightMoves(const BoardIndex& index) const {
@@ -266,42 +249,24 @@ Bitboard Board::getCastlingMoves(const BoardIndex& index, bool isWhite) const {
 }
 
 void Board::addPiece(const Piece& piece, const BoardIndex& index) {
-  switch (piece.bits) {
-  case WhitePawn.bits:
-    m_bitboards.whitePawns.enableBit(index);
+  switch (piece.type()) {
+  case Pawn:
+    m_bitboards.pawns[piece.isWhite()].enableBit(index);
     break;
-  case BlackPawn.bits:
-    m_bitboards.blackPawns.enableBit(index);
+  case Knight:
+    m_bitboards.knights[piece.isWhite()].enableBit(index);
     break;
-  case WhiteKnight.bits:
-    m_bitboards.whiteKnights.enableBit(index);
+  case Bishop:
+    m_bitboards.bishops[piece.isWhite()].enableBit(index);
     break;
-  case BlackKnight.bits:
-    m_bitboards.blackKnights.enableBit(index);
+  case Rook:
+    m_bitboards.rooks[piece.isWhite()].enableBit(index);
     break;
-  case WhiteBishop.bits:
-    m_bitboards.whiteBishops.enableBit(index);
+  case Queen:
+    m_bitboards.queens[piece.isWhite()].enableBit(index);
     break;
-  case BlackBishop.bits:
-    m_bitboards.blackBishops.enableBit(index);
-    break;
-  case WhiteRook.bits:
-    m_bitboards.whiteRooks.enableBit(index);
-    break;
-  case BlackRook.bits:
-    m_bitboards.blackRooks.enableBit(index);
-    break;
-  case WhiteQueen.bits:
-    m_bitboards.whiteQueens.enableBit(index);
-    break;
-  case BlackQueen.bits:
-    m_bitboards.blackQueens.enableBit(index);
-    break;
-  case WhiteKing.bits:
-    m_bitboards.whiteKing.enableBit(index);
-    break;
-  case BlackKing.bits:
-    m_bitboards.blackKing.enableBit(index);
+  case King:
+    m_bitboards.kings[piece.isWhite()].enableBit(index);
     break;
   default:
     return;
@@ -309,42 +274,24 @@ void Board::addPiece(const Piece& piece, const BoardIndex& index) {
 }
 
 void Board::removePiece(const Piece& piece, const BoardIndex& index) {
-  switch (piece.bits) {
-  case WhitePawn.bits:
-    m_bitboards.whitePawns.disableBit(index);
+  switch (piece.type()) {
+  case Pawn:
+    m_bitboards.pawns[piece.isWhite()].disableBit(index);
     break;
-  case BlackPawn.bits:
-    m_bitboards.blackPawns.disableBit(index);
+  case Knight:
+    m_bitboards.knights[piece.isWhite()].disableBit(index);
     break;
-  case WhiteKnight.bits:
-    m_bitboards.whiteKnights.disableBit(index);
+  case Bishop:
+    m_bitboards.bishops[piece.isWhite()].disableBit(index);
     break;
-  case BlackKnight.bits:
-    m_bitboards.blackKnights.disableBit(index);
+  case Rook:
+    m_bitboards.rooks[piece.isWhite()].disableBit(index);
     break;
-  case WhiteBishop.bits:
-    m_bitboards.whiteBishops.disableBit(index);
+  case Queen:
+    m_bitboards.queens[piece.isWhite()].disableBit(index);
     break;
-  case BlackBishop.bits:
-    m_bitboards.blackBishops.disableBit(index);
-    break;
-  case WhiteRook.bits:
-    m_bitboards.whiteRooks.disableBit(index);
-    break;
-  case BlackRook.bits:
-    m_bitboards.blackRooks.disableBit(index);
-    break;
-  case WhiteQueen.bits:
-    m_bitboards.whiteQueens.disableBit(index);
-    break;
-  case BlackQueen.bits:
-    m_bitboards.blackQueens.disableBit(index);
-    break;
-  case WhiteKing.bits:
-    m_bitboards.whiteKing.disableBit(index);
-    break;
-  case BlackKing.bits:
-    m_bitboards.blackKing.disableBit(index);
+  case King:
+    m_bitboards.kings[piece.isWhite()].disableBit(index);
     break;
   default:
     return;
@@ -359,7 +306,7 @@ void Board::updateBitboards(const Move& move) {
 
   // Pawn moves
   if (move.movedPiece.type() == Pawn) {
-    Bitboard& enPassant = isWhite ? m_bitboards.whiteEnPassant : m_bitboards.blackEnPassant;
+    Bitboard& enPassant = m_bitboards.enPassant[isWhite];
 
     // Moved two steps
     if (move.flags == DoublePawnPush) {
@@ -383,8 +330,7 @@ void Board::updateBitboards(const Move& move) {
   // Remove En Passant when a pawn is captured
   if (move.capturedPiece.type() == Pawn) {
     if (move.capturedPos.rank() == 4 || move.capturedPos.rank() == 5) {
-      Bitboard& opponentEnPassant =
-          isWhite ? m_bitboards.blackEnPassant : m_bitboards.whiteEnPassant;
+      Bitboard& opponentEnPassant = m_bitboards.enPassant[!isWhite];
 
       opponentEnPassant.disableBit(Index(move.capturedPos.index + move.capturedPiece.backward()));
     }
