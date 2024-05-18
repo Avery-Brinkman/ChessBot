@@ -35,49 +35,13 @@ Rectangle {
 
         onCheckedChanged: model.settingsPanel.showIndex = checked
       }
-    }
-
-    Column {
-      Layout.fillWidth: true
 
       Switch {
-        checked: model.settingsPanel.debugEnabled
-        text: "Show debug info"
+        checked: model.settingsPanel.showBitboards
+        text: "Show Bitboards"
         width: parent.width
 
-        onCheckedChanged: model.settingsPanel.debugEnabled = checked
-      }
-
-      Switch {
-        checked: model.settingsPanel.showBits
-        text: "Show bits"
-        width: parent.width
-
-        onCheckedChanged: model.settingsPanel.showBits = checked
-      }
-
-      Switch {
-        checked: model.settingsPanel.showWhite
-        text: "Show white"
-        width: parent.width
-
-        onCheckedChanged: model.settingsPanel.showWhite = checked
-      }
-
-      Switch {
-        checked: model.settingsPanel.showBlack
-        text: "Show black"
-        width: parent.width
-
-        onCheckedChanged: model.settingsPanel.showBlack = checked
-      }
-
-      Switch {
-        checked: model.settingsPanel.enPassant
-        text: "En passant"
-        width: parent.width
-
-        onCheckedChanged: model.settingsPanel.enPassant = checked
+        onCheckedChanged: model.settingsPanel.showBitboards = checked
       }
     }
 

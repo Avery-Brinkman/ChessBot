@@ -5,7 +5,7 @@ import QtQuick.Layouts
 Rectangle {
   id: root
 
-  property int gridSize: Math.min(root.width, root.height - tabBar.height - bits.height) / 8
+  property int gridSize: Math.min(root.width, root.height - tabBar.height) / 8
 
   color: "black"
 
@@ -15,7 +15,7 @@ Rectangle {
     width: parent.width
 
     Repeater {
-      model: ["General", "Bitboards", "Add/Remove Pieces"]
+      model: ["General", "Add/Remove Pieces"]
 
       TabButton {
         text: modelData
@@ -53,15 +53,6 @@ Rectangle {
         currentIndex: tabBar.currentIndex
         model: boardModel
       }
-    }
-
-    Text {
-      id: bits
-
-      Layout.fillWidth: true
-      Layout.preferredHeight: boardModel.settingsPanel.showBits ? implicitHeight : 0
-      color: "white"
-      text: "Hello"
     }
   }
 }

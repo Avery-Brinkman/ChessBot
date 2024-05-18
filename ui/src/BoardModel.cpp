@@ -2,8 +2,6 @@
 
 #include <QColor>
 #include <QUrl>
-#include <bitset>
-#include <iostream>
 
 namespace Chess_UI {
 BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent) {
@@ -39,9 +37,6 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
 
     return getDebugInfo().checkBit(bitIndex);
   }
-  case BitboardRole: {
-    return m_bitboard.checkBit(bitIndex);
-  }
   case RankAndFileRole:
     return QString::fromStdString(getIndex(index.row(), index.column()).toString());
   case BoardIndexRole:
@@ -69,14 +64,6 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     m_currentValidMoves = 0;
     break;
   }
-  case BitboardRole: {
-    // Toggle the bit
-    m_bitboard.toggleBit(bitIndex);
-
-    std::cout << std::bitset<64>(m_bitboard.bits) << std::endl;
-
-    break;
-  }
   case TogglePieceRole: {
     if (value.toBool()) {
       togglePiece(Engine_NS::Piece(m_settingsPanel->getPieceType() | Engine_NS::Color::White),
@@ -102,7 +89,6 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
           {static_cast<int>(ValidMoveRole), "validMove"},
           {static_cast<int>(SelectedRole), "selected"},
           {static_cast<int>(DebugInfoRole), "debugInfo"},
-          {static_cast<int>(BitboardRole), "bitboard"},
           {static_cast<int>(RankAndFileRole), "rankAndFile"},
           {static_cast<int>(BoardIndexRole), "boardIndex"},
           {static_cast<int>(TogglePieceRole), "togglePiece"}};

@@ -12,7 +12,6 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
     ValidMoveRole,
     SelectedRole,
     DebugInfoRole,
-    BitboardRole,
     RankAndFileRole,
     BoardIndexRole,
     TogglePieceRole,
