@@ -2,8 +2,6 @@ set(UI_NAME ${PROJECT_NAME}_UI)
 
 cmake_policy(SET CMP0071 NEW)
 
-set(CMAKE_PREFIX_PATH "C:/Qt/6.6.2/msvc2019_64")
-
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick)
 qt_standard_project_setup(REQUIRES 6.5)
 
