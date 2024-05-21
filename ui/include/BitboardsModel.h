@@ -2,28 +2,36 @@
 
 #include "Bitboard.hpp"
 
-#include <QObject>
+#include <QAbstractListModel>
 #include <QString>
 
 namespace Chess_UI {
 
-class BitboardsModel : public QObject {
-  Q_OBJECT
+class BitboardsModel : public QAbstractListModel {
+  enum class BitboardsRoles {
+    NameRole = Qt::UserRole + 1,
+    BitsRole,
+  };
 
-  Q_PROPERTY(QString whitePawns READ getWhitePawns NOTIFY dataChanged)
-  Q_PROPERTY(QString whiteKnights READ getWhiteKnights NOTIFY dataChanged)
-  Q_PROPERTY(QString whiteBishops READ getWhiteBishops NOTIFY dataChanged)
-  Q_PROPERTY(QString whiteRooks READ getWhiteRooks NOTIFY dataChanged)
-  Q_PROPERTY(QString whiteQueens READ getWhiteQueens NOTIFY dataChanged)
-  Q_PROPERTY(QString whiteKing READ getWhiteKing NOTIFY dataChanged)
-  Q_PROPERTY(QString blackPawns READ getBlackPawns NOTIFY dataChanged)
-  Q_PROPERTY(QString blackKnights READ getBlackKnights NOTIFY dataChanged)
-  Q_PROPERTY(QString blackBishops READ getBlackBishops NOTIFY dataChanged)
-  Q_PROPERTY(QString blackRooks READ getBlackRooks NOTIFY dataChanged)
-  Q_PROPERTY(QString blackQueens READ getBlackQueens NOTIFY dataChanged)
-  Q_PROPERTY(QString blackKing READ getBlackKing NOTIFY dataChanged)
-  Q_PROPERTY(QString whiteEnPassant READ getWhiteEnPassant NOTIFY dataChanged)
-  Q_PROPERTY(QString blackEnPassant READ getBlackEnPassant NOTIFY dataChanged)
+  enum BitboardRows {
+    WhitePawns,
+    WhiteKnights,
+    WhiteBishops,
+    WhiteRooks,
+    WhiteQueens,
+    WhiteKing,
+    BlackPawns,
+    BlackKnights,
+    BlackBishops,
+    BlackRooks,
+    BlackQueens,
+    BlackKing,
+
+    WhiteEnPassant,
+    BlackEnPassant,
+  };
+
+  Q_OBJECT
 
   Q_PROPERTY(bool whitePawnsEnabled MEMBER m_whitePawnsEnabled NOTIFY enabledChanged)
   Q_PROPERTY(bool whiteKnightsEnabled MEMBER m_whiteKnightsEnabled NOTIFY enabledChanged)
@@ -45,27 +53,18 @@ public:
 
   void updateBoards(const Engine_NS::Bitboards& newBoards);
 
-  QString getWhitePawns() const;
-  QString getWhiteKnights() const;
-  QString getWhiteBishops() const;
-  QString getWhiteRooks() const;
-  QString getWhiteQueens() const;
-  QString getWhiteKing() const;
-  QString getBlackPawns() const;
-  QString getBlackKnights() const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
-  QString getBlackBishops() const;
-  QString getBlackRooks() const;
-  QString getBlackQueens() const;
-  QString getBlackKing() const;
-  QString getWhiteEnPassant() const;
-  QString getBlackEnPassant() const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+
+  QHash<int, QByteArray> roleNames() const override;
 
 signals:
-  void dataChanged();
   void enabledChanged();
 
 private:
+  Engine_NS::Bitboard getBits(int row) const;
+
   static QString format(const Engine_NS::Bitboard& bits);
 
   bool m_whitePawnsEnabled = false;
@@ -85,6 +84,8 @@ private:
   bool m_blackEnPassantEnabled = false;
 
   Engine_NS::Bitboards m_boards = {};
+
+  QHash<int, QString> m_names = {};
 };
 
 } // namespace Chess_UI

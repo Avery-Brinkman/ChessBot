@@ -1,23 +1,24 @@
 import QtQuick
 import QtQuick.Controls.Universal
+import QtQuick.Layouts
 
-Column {
+ColumnLayout {
   readonly property var bitboards: model.bitboards
   readonly property var settingsPanel: model.settingsPanel
 
   spacing: 2
 
   Switch {
+    Layout.fillWidth: true
     checked: settingsPanel.showBitboards
     text: "Show Bitboards"
-    width: parent.width
 
     onCheckedChanged: settingsPanel.showBitboards = checked
   }
 
   Item {
-    height: 10
-    width: parent.width
+    Layout.fillWidth: true
+    Layout.preferredHeight: 10
 
     Rectangle {
       anchors.centerIn: parent
@@ -27,227 +28,39 @@ Column {
     }
   }
 
-  Button {
-    checkable: true
-    text: "White Pawns"
-    width: 150
-  }
+  ScrollView {
+    Layout.fillHeight: true
+    Layout.fillWidth: true
+    clip: true
 
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.whitePawns
-    width: parent.width
-  }
+    ListView {
+      model: bitboards
 
-  Button {
-    checkable: true
-    text: "White Knights"
-    width: 150
-  }
+      delegate: Item {
+        height: childrenRect.height
+        width: parent.width
 
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.whiteKnights
-    width: parent.width
-  }
+        Button {
+          id: enableButton
 
-  Button {
-    checkable: true
-    text: "White Bishops"
-    width: 150
-  }
+          checkable: true
+          text: name
+          width: 150
+        }
 
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.whiteBishops
-    width: parent.width
-  }
+        Text {
+          id: bitboardText
 
-  Button {
-    checkable: true
-    text: "White Rooks"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.whiteRooks
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "White Queens"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.whiteQueens
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "White King"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.whiteKing
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "Black Pawns"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.blackPawns
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "Black Knights"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.blackKnights
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "Black Bishops"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.blackBishops
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "Black Rooks"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.blackRooks
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "Black Queens"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.blackQueens
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "Black King"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.blackKing
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "White En Passant"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.whiteEnPassant
-    width: parent.width
-  }
-
-  Button {
-    checkable: true
-    text: "Black En Passant"
-    width: 150
-  }
-
-  Text {
-    font.bold: true
-    font.pointSize: 120
-    fontSizeMode: Text.HorizontalFit
-    height: contentHeight
-    minimumPointSize: 1
-    text: bitboards.blackEnPassant
-    width: parent.width
+          anchors.top: enableButton.bottom
+          font.bold: true
+          font.pointSize: 120
+          fontSizeMode: Text.HorizontalFit
+          height: contentHeight
+          minimumPointSize: 1
+          text: bits
+          width: parent.width
+        }
+      }
+    }
   }
 }

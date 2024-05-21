@@ -36,6 +36,7 @@ Rectangle {
     }
 
     BitboardDisplays {
+      Layout.fillHeight: true
       Layout.fillWidth: true
     }
 

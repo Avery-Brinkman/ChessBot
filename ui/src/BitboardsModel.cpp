@@ -2,28 +2,85 @@
 
 namespace Chess_UI {
 
-BitboardsModel::BitboardsModel(QObject* parent) : QObject(parent) {}
+BitboardsModel::BitboardsModel(QObject* parent) : QAbstractListModel(parent) {
+  m_names = {
+      {WhitePawns, "White Pawns"},          {WhiteKnights, "White Knights"},
+      {WhiteBishops, "White Bishops"},      {WhiteRooks, "White Rooks"},
+      {WhiteQueens, "White Queens"},        {WhiteKing, "White King"},
+      {BlackPawns, "Black Pawns"},          {BlackKnights, "Black Knights"},
+      {BlackBishops, "Black Bishops"},      {BlackRooks, "Black Rooks"},
+      {BlackQueens, "Black Queens"},        {BlackKing, "Black King"},
+      {WhiteEnPassant, "White En Passant"}, {BlackEnPassant, "Black En Passant"},
+  };
+}
 
 void BitboardsModel::updateBoards(const Engine_NS::Bitboards& newBoards) {
   m_boards = newBoards;
-  emit dataChanged();
+  emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
+                   {static_cast<int>(BitboardsRoles::BitsRole)});
 }
 
-QString BitboardsModel::getWhitePawns() const { return format(m_boards.pawns[1]); }
-QString BitboardsModel::getWhiteKnights() const { return format(m_boards.knights[1]); }
-QString BitboardsModel::getWhiteBishops() const { return format(m_boards.bishops[1]); }
-QString BitboardsModel::getWhiteRooks() const { return format(m_boards.rooks[1]); }
-QString BitboardsModel::getWhiteQueens() const { return format(m_boards.queens[1]); }
-QString BitboardsModel::getWhiteKing() const { return format(m_boards.kings[1]); }
-QString BitboardsModel::getBlackPawns() const { return format(m_boards.pawns[0]); }
-QString BitboardsModel::getBlackKnights() const { return format(m_boards.knights[0]); }
-QString BitboardsModel::getBlackBishops() const { return format(m_boards.bishops[0]); }
-QString BitboardsModel::getBlackRooks() const { return format(m_boards.rooks[0]); }
-QString BitboardsModel::getBlackQueens() const { return format(m_boards.queens[0]); }
-QString BitboardsModel::getBlackKing() const { return format(m_boards.kings[0]); }
+int BitboardsModel::rowCount(const QModelIndex& parent) const { return m_names.size(); }
 
-QString BitboardsModel::getWhiteEnPassant() const { return format(m_boards.enPassant[1]); }
-QString BitboardsModel::getBlackEnPassant() const { return format(m_boards.enPassant[0]); }
+QVariant BitboardsModel::data(const QModelIndex& index, int role) const {
+  using enum Chess_UI::BitboardsModel::BitboardsRoles;
+
+  if (!checkIndex(index))
+    return QVariant();
+
+  if (role == static_cast<int>(NameRole)) {
+    return m_names.value(index.row());
+  } else if (role == static_cast<int>(BitsRole)) {
+    return format(getBits(index.row()));
+  }
+
+  return QVariant();
+}
+
+QHash<int, QByteArray> BitboardsModel::roleNames() const {
+  using enum Chess_UI::BitboardsModel::BitboardsRoles;
+  return {
+      {static_cast<int>(NameRole), "name"},
+      {static_cast<int>(BitsRole), "bits"},
+  };
+}
+
+Engine_NS::Bitboard BitboardsModel::getBits(int row) const {
+  using enum BitboardRows;
+
+  switch (BitboardRows(row)) {
+  case WhitePawns:
+    return m_boards.pawns[1];
+  case WhiteKnights:
+    return m_boards.knights[1];
+  case WhiteBishops:
+    return m_boards.bishops[1];
+  case WhiteRooks:
+    return m_boards.rooks[1];
+  case WhiteQueens:
+    return m_boards.queens[1];
+  case WhiteKing:
+    return m_boards.kings[1];
+  case BlackPawns:
+    return m_boards.pawns[0];
+  case BlackKnights:
+    return m_boards.knights[0];
+  case BlackBishops:
+    return m_boards.bishops[0];
+  case BlackRooks:
+    return m_boards.rooks[0];
+  case BlackQueens:
+    return m_boards.queens[0];
+  case BlackKing:
+    return m_boards.kings[0];
+  case WhiteEnPassant:
+    return m_boards.enPassant[1];
+  case BlackEnPassant:
+    return m_boards.enPassant[0];
+  default:
+    return 0;
+  }
+}
 
 QString BitboardsModel::format(const Engine_NS::Bitboard& bits) {
   QString out = "";
