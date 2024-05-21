@@ -44,8 +44,11 @@ ColumnLayout {
           id: enableButton
 
           checkable: true
+          checked: isEnabled
           text: name
           width: 150
+
+          onCheckedChanged: isEnabled = checked
         }
 
         Text {

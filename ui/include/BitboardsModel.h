@@ -3,6 +3,7 @@
 #include "Bitboard.hpp"
 
 #include <QAbstractListModel>
+#include <QList>
 #include <QString>
 
 namespace Chess_UI {
@@ -11,6 +12,7 @@ class BitboardsModel : public QAbstractListModel {
   enum class BitboardsRoles {
     NameRole = Qt::UserRole + 1,
     BitsRole,
+    EnabledRole,
   };
 
   enum BitboardRows {
@@ -33,21 +35,6 @@ class BitboardsModel : public QAbstractListModel {
 
   Q_OBJECT
 
-  Q_PROPERTY(bool whitePawnsEnabled MEMBER m_whitePawnsEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool whiteKnightsEnabled MEMBER m_whiteKnightsEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool whiteBishopsEnabled MEMBER m_whiteBishopsEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool whiteRooksEnabled MEMBER m_whiteRooksEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool whiteQueensEnabled MEMBER m_whiteQueensEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool whiteKingEnabled MEMBER m_whiteKingEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool blackPawnsEnabled MEMBER m_blackPawnsEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool blackKnightsEnabled MEMBER m_blackKnightsEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool blackBishopsEnabled MEMBER m_blackBishopsEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool blackRooksEnabled MEMBER m_blackRooksEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool blackQueensEnabled MEMBER m_blackQueensEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool blackKingEnabled MEMBER m_blackKingEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool whiteEnPassantEnabled MEMBER m_whiteEnPassantEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(bool blackEnPassantEnabled MEMBER m_blackEnPassantEnabled NOTIFY enabledChanged)
-
 public:
   BitboardsModel(QObject* parent = nullptr);
 
@@ -56,11 +43,17 @@ public:
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
   QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+  bool setData(const QModelIndex& index, const QVariant& value, int role) override;
 
   QHash<int, QByteArray> roleNames() const override;
 
+  Engine_NS::Bitboard getDebugBits() const;
+
+  void updateDebugBits();
+
 signals:
   void enabledChanged();
+  void debugBitsChanged();
 
 private:
   Engine_NS::Bitboard getBits(int row) const;
@@ -86,6 +79,9 @@ private:
   Engine_NS::Bitboards m_boards = {};
 
   QHash<int, QString> m_names = {};
+  QList<bool> m_enabled = {};
+
+  Engine_NS::Bitboard m_debugBits = {};
 };
 
 } // namespace Chess_UI

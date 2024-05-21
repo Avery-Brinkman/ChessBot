@@ -9,6 +9,7 @@ TableView {
     implicitHeight: gridSize
     implicitWidth: gridSize
 
+    // Rank and File
     Text {
       text: model.rankAndFile
       visible: boardModel.settingsPanel.showRankAndFile
@@ -19,6 +20,7 @@ TableView {
       }
     }
 
+    // Index
     Text {
       horizontalAlignment: Text.AlignRight
       text: model.boardIndex
@@ -30,6 +32,7 @@ TableView {
       }
     }
 
+    // Move indicator
     Rectangle {
       color: {
         if (model.validMove)
@@ -44,9 +47,33 @@ TableView {
       }
     }
 
+    // Image
     Image {
       anchors.fill: parent
       source: model.pieceImage
+    }
+
+    // Debug Bits
+    Text {
+      anchors.fill: parent
+      color: "white"
+      fontSizeMode: Text.Fit
+      horizontalAlignment: Text.AlignHCenter
+      text: model.bitboard ? "1" : "0"
+      verticalAlignment: Text.AlignVCenter
+      visible: boardModel.settingsPanel.showBitboards
+
+      font {
+        bold: true
+        pointSize: 1200
+      }
+
+      Rectangle {
+        anchors.fill: parent
+        color: model.bitboard ? "blue" : "grey"
+        opacity: 0.5
+        z: -1
+      }
     }
 
     MouseArea {

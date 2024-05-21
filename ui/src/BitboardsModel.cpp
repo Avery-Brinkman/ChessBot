@@ -12,6 +12,8 @@ BitboardsModel::BitboardsModel(QObject* parent) : QAbstractListModel(parent) {
       {BlackQueens, "Black Queens"},        {BlackKing, "Black King"},
       {WhiteEnPassant, "White En Passant"}, {BlackEnPassant, "Black En Passant"},
   };
+
+  m_enabled = QList<bool>(rowCount(), false);
 }
 
 void BitboardsModel::updateBoards(const Engine_NS::Bitboards& newBoards) {
@@ -32,9 +34,33 @@ QVariant BitboardsModel::data(const QModelIndex& index, int role) const {
     return m_names.value(index.row());
   } else if (role == static_cast<int>(BitsRole)) {
     return format(getBits(index.row()));
+  } else if (role == static_cast<int>(EnabledRole)) {
+    return m_enabled.at(index.row());
   }
 
   return QVariant();
+}
+
+bool BitboardsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+  using enum Chess_UI::BitboardsModel::BitboardsRoles;
+  if (!checkIndex(index))
+    return false;
+
+  if (role == static_cast<int>(EnabledRole)) {
+    const bool currentVal = m_enabled.at(index.row());
+    const bool newVal = value.toBool();
+
+    if (currentVal != newVal) {
+      m_enabled[index.row()] = newVal;
+      emit dataChanged(index, index, {static_cast<int>(EnabledRole)});
+
+      updateDebugBits();
+
+      return true;
+    }
+  }
+
+  return false;
 }
 
 QHash<int, QByteArray> BitboardsModel::roleNames() const {
@@ -42,7 +68,23 @@ QHash<int, QByteArray> BitboardsModel::roleNames() const {
   return {
       {static_cast<int>(NameRole), "name"},
       {static_cast<int>(BitsRole), "bits"},
+      {static_cast<int>(EnabledRole), "isEnabled"},
   };
+}
+
+Engine_NS::Bitboard BitboardsModel::getDebugBits() const { return m_debugBits; }
+
+void BitboardsModel::updateDebugBits() {
+  const Engine_NS::Bitboard initialVal = m_debugBits;
+  m_debugBits = 0;
+
+  for (int row = 0; row < rowCount(); row++) {
+    if (m_enabled.at(row))
+      m_debugBits.enableBits(getBits(row));
+  }
+
+  if (m_debugBits.bits != initialVal.bits)
+    emit debugBitsChanged();
 }
 
 Engine_NS::Bitboard BitboardsModel::getBits(int row) const {

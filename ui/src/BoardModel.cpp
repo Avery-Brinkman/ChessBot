@@ -13,10 +13,14 @@ BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent), Engine_NS
   QObject::connect(m_settingsPanel.get(), &SettingsPanel::updateBoard, this,
                    [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
 
-  QObject::connect(m_bitboardsModel.get(), &BitboardsModel::dataChanged, this,
-                   [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
-  QObject::connect(m_bitboardsModel.get(), &BitboardsModel::enabledChanged, this,
-                   [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
+  QObject::connect(m_bitboardsModel.get(), &BitboardsModel::debugBitsChanged, this, [this]() {
+    emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+                     {static_cast<int>(BoardRoles::BitboardRole)});
+  });
+  QObject::connect(m_bitboardsModel.get(), &BitboardsModel::enabledChanged, this, [this]() {
+    emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+                     {static_cast<int>(BoardRoles::BitboardRole)});
+  });
 }
 
 int BoardModel::rowCount(const QModelIndex& parent) const { return 8; }
@@ -43,6 +47,8 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     return QString::fromStdString(getIndex(index.row(), index.column()).toString());
   case BoardIndexRole:
     return bitIndex.index;
+  case BitboardRole:
+    return m_bitboardsModel->getDebugBits().checkBit(bitIndex);
   default:
     return QVariant();
   }
@@ -64,6 +70,7 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     }
     m_selectedIndex = {};
     m_currentValidMoves = 0;
+
     break;
   }
   case TogglePieceRole: {
@@ -81,6 +88,8 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
   }
 
   m_bitboardsModel->updateBoards(getBitboards());
+  m_bitboardsModel->updateDebugBits();
+
   emit dataChanged(createIndex(0, 0), createIndex(7, 7));
 
   return true;
