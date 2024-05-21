@@ -34,6 +34,12 @@ class BitboardsModel : public QAbstractListModel {
   };
 
   Q_OBJECT
+  Q_PROPERTY(bool showAsBin MEMBER m_showAsBin NOTIFY showAsBinChanged)
+  Q_PROPERTY(bool showAsDec MEMBER m_showAsDec NOTIFY showAsDecChanged)
+  Q_PROPERTY(bool showAsHex MEMBER m_showAsHex NOTIFY showAsHexChanged)
+
+  Q_PROPERTY(bool useCustomValue MEMBER m_useCustomValue NOTIFY useCustomValueChanged)
+  Q_PROPERTY(QString customValue READ getCustomValue WRITE setCustomValue NOTIFY customValueChanged)
 
 public:
   BitboardsModel(QObject* parent = nullptr);
@@ -49,16 +55,38 @@ public:
 
   Engine_NS::Bitboard getDebugBits() const;
 
+  Engine_NS::Bitboard getCustomBits() const;
+  QString getCustomValue() const;
+
+  void setCustomValue(const QString& customVal);
+
   void updateDebugBits();
 
 signals:
   void enabledChanged();
   void debugBitsChanged();
 
+  void showAsBinChanged();
+  void showAsDecChanged();
+  void showAsHexChanged();
+
+  void useCustomValueChanged();
+  void customValueChanged();
+
 private:
   Engine_NS::Bitboard getBits(int row) const;
 
-  static QString format(const Engine_NS::Bitboard& bits);
+  // Converts number strings to Bitboards
+
+  Engine_NS::Bitboard format(const QString& bits) const;
+  static Engine_NS::Bitboard binFormat(const QString& bits);
+  static Engine_NS::Bitboard hexFormat(const QString& bits);
+
+  // Converts Bitboards to QStr
+
+  QString format(const Engine_NS::Bitboard& bits, bool colors = true) const;
+  static QString binFormat(const Engine_NS::Bitboard& bits, bool colors);
+  static QString hexFormat(const Engine_NS::Bitboard& bits);
 
   bool m_whitePawnsEnabled = false;
   bool m_whiteKnightsEnabled = false;
@@ -82,6 +110,13 @@ private:
   QList<bool> m_enabled = {};
 
   Engine_NS::Bitboard m_debugBits = {};
+
+  bool m_showAsBin = true;
+  bool m_showAsDec = false;
+  bool m_showAsHex = false;
+
+  bool m_useCustomValue = false;
+  Engine_NS::Bitboard m_customBits = 0;
 };
 
 } // namespace Chess_UI

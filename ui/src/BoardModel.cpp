@@ -21,6 +21,10 @@ BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent), Engine_NS
     emit dataChanged(createIndex(0, 0), createIndex(7, 7),
                      {static_cast<int>(BoardRoles::BitboardRole)});
   });
+  QObject::connect(m_bitboardsModel.get(), &BitboardsModel::customValueChanged, this, [this]() {
+    emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+                     {static_cast<int>(BoardRoles::BitboardRole)});
+  });
 }
 
 int BoardModel::rowCount(const QModelIndex& parent) const { return 8; }

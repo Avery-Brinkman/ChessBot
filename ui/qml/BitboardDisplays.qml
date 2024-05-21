@@ -16,6 +16,46 @@ ColumnLayout {
     onCheckedChanged: settingsPanel.showBitboards = checked
   }
 
+  Switch {
+    id: customValueSwitch
+
+    Layout.fillWidth: true
+    checked: bitboards.useCustomValue
+    text: "Use Custom Value"
+
+    onCheckedChanged: bitboards.useCustomValue = checked
+  }
+
+  Text {
+    Layout.fillWidth: true
+    font.pointSize: 12
+    text: "Number Mode"
+  }
+
+  RadioButton {
+    Layout.fillWidth: true
+    checked: bitboards.showAsBin
+    text: "Binary"
+
+    onCheckedChanged: bitboards.showAsBin = checked
+  }
+
+  RadioButton {
+    Layout.fillWidth: true
+    checked: bitboards.showAsDec
+    text: "Decimal"
+
+    onCheckedChanged: bitboards.showAsDec = checked
+  }
+
+  RadioButton {
+    Layout.fillWidth: true
+    checked: bitboards.showAsHex
+    text: "Hexadecimal"
+
+    onCheckedChanged: bitboards.showAsHex = checked
+  }
+
   Item {
     Layout.fillWidth: true
     Layout.preferredHeight: 10
@@ -28,13 +68,26 @@ ColumnLayout {
     }
   }
 
+  TextField {
+    Layout.fillWidth: true
+    text: bitboards.customValue
+    visible: customValueSwitch.checked
+
+    onEditingFinished: {
+      bitboards.customValue = text;
+      focus = false;
+    }
+  }
+
   ScrollView {
     Layout.fillHeight: true
     Layout.fillWidth: true
     clip: true
+    visible: !customValueSwitch.checked
 
     ListView {
       model: bitboards
+      width: parent.width
 
       delegate: Item {
         height: childrenRect.height
@@ -55,9 +108,10 @@ ColumnLayout {
           id: bitboardText
 
           anchors.top: enableButton.bottom
+          color: "white"
           font.bold: true
-          font.pointSize: 120
-          fontSizeMode: Text.HorizontalFit
+          font.pointSize: !bitboards.showAsBin ? 12 : 120
+          fontSizeMode: !bitboards.showAsBin ? Text.FixedSize : Text.HorizontalFit
           height: contentHeight
           minimumPointSize: 1
           text: bits

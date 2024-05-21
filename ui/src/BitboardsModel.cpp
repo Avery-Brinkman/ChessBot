@@ -1,8 +1,34 @@
 #include "BitboardsModel.h"
+#include <iostream>
 
 namespace Chess_UI {
 
 BitboardsModel::BitboardsModel(QObject* parent) : QAbstractListModel(parent) {
+  QObject::connect(this, &BitboardsModel::showAsBinChanged, this, [this]() {
+    if (!m_showAsBin)
+      return;
+
+    emit customValueChanged();
+    emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
+                     {static_cast<int>(BitboardsRoles::BitsRole)});
+  });
+  QObject::connect(this, &BitboardsModel::showAsDecChanged, this, [this]() {
+    if (!m_showAsDec)
+      return;
+
+    emit customValueChanged();
+    emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
+                     {static_cast<int>(BitboardsRoles::BitsRole)});
+  });
+  QObject::connect(this, &BitboardsModel::showAsHexChanged, this, [this]() {
+    if (!m_showAsHex)
+      return;
+
+    emit customValueChanged();
+    emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
+                     {static_cast<int>(BitboardsRoles::BitsRole)});
+  });
+
   m_names = {
       {WhitePawns, "White Pawns"},          {WhiteKnights, "White Knights"},
       {WhiteBishops, "White Bishops"},      {WhiteRooks, "White Rooks"},
@@ -72,9 +98,29 @@ QHash<int, QByteArray> BitboardsModel::roleNames() const {
   };
 }
 
-Engine_NS::Bitboard BitboardsModel::getDebugBits() const { return m_debugBits; }
+Engine_NS::Bitboard BitboardsModel::getDebugBits() const {
+  if (m_useCustomValue)
+    return getCustomBits();
+
+  return m_debugBits;
+}
+
+Engine_NS::Bitboard BitboardsModel::getCustomBits() const { return m_customBits; }
+
+QString BitboardsModel::getCustomValue() const { return format(getCustomBits(), false); }
+
+void BitboardsModel::setCustomValue(const QString& customVal) {
+  Engine_NS::Bitboard newBoard = format(customVal);
+  if (m_customBits.bits != newBoard.bits) {
+    m_customBits = newBoard;
+    emit customValueChanged();
+  }
+}
 
 void BitboardsModel::updateDebugBits() {
+  if (m_useCustomValue)
+    return;
+
   const Engine_NS::Bitboard initialVal = m_debugBits;
   m_debugBits = 0;
 
@@ -124,7 +170,36 @@ Engine_NS::Bitboard BitboardsModel::getBits(int row) const {
   }
 }
 
-QString BitboardsModel::format(const Engine_NS::Bitboard& bits) {
+Engine_NS::Bitboard BitboardsModel::format(const QString& bits) const {
+  if (m_showAsBin)
+    return binFormat(bits);
+  if (m_showAsHex)
+    return hexFormat(bits);
+
+  return bits.toULongLong();
+}
+
+Engine_NS::Bitboard BitboardsModel::binFormat(const QString& bits) {
+  return bits.toULongLong(nullptr, 2);
+}
+
+Engine_NS::Bitboard BitboardsModel::hexFormat(const QString& bits) {
+  return bits.sliced(2).toULongLong(nullptr, 16);
+}
+
+QString BitboardsModel::format(const Engine_NS::Bitboard& bits, bool colors) const {
+  if (m_showAsBin)
+    return binFormat(bits, colors);
+  if (m_showAsHex)
+    return hexFormat(bits);
+
+  return QString::number(bits.bits);
+}
+
+QString BitboardsModel::binFormat(const Engine_NS::Bitboard& bits, bool colors) {
+  if (!colors)
+    return QString("%1").arg(bits.bits, 64, 2, QChar('0'));
+
   QString out = "";
   for (const QChar& c : QString("%1").arg(bits.bits, 64, 2, QChar('0'))) {
     if (c == '0')
@@ -135,6 +210,10 @@ QString BitboardsModel::format(const Engine_NS::Bitboard& bits) {
     out += "</font>";
   }
   return out;
+}
+
+QString BitboardsModel::hexFormat(const Engine_NS::Bitboard& bits) {
+  return "0x" + QString("%1").arg(bits.bits, 16, 16, QChar('0'));
 }
 
 } // namespace Chess_UI
