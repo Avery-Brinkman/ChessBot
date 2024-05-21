@@ -1,12 +1,14 @@
 set(TOOLS_NAME ${PROJECT_NAME}_Tools)
 
 set(TOOL_INCLUDES
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/MagicGenerators.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/MoveGenerators.h
 )
 
 set(TOOL_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/MagicGenerators.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/MoveGenerators.cpp
 )
 

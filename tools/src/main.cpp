@@ -3,7 +3,8 @@
 #include <iostream>
 
 namespace ToolMenu {
-enum Option {
+
+enum class Option {
   PawnMovements = '1',
   KnightMovements,
   BishopMovements,
@@ -15,6 +16,8 @@ enum Option {
   Invalid,
   Quit = 'q',
 };
+
+enum class MagicOption { BishopBits = '1', RookBits, QueenBits, Back, Invalid, Quit = 'q' };
 
 static void clearScreen() {
 #if defined _WIN32
@@ -43,6 +46,20 @@ static void printMenu() {
   std::cout << "+------------------------------+" << std::endl;
 }
 
+static void magicMenu() {
+  std::cout << "+------------------------------+" << std::endl;
+  std::cout << "| Magic Bits                   |" << std::endl;
+  std::cout << "+------------------------------+" << std::endl;
+  std::cout << "| 1) Generate Bishop Bits      |" << std::endl;
+  std::cout << "| 2) Generate Rook Bits        |" << std::endl;
+  std::cout << "| 3) Generate Queen Bits       |" << std::endl;
+  std::cout << "|                              |" << std::endl;
+  std::cout << "| 4) Back                      |" << std::endl;
+  std::cout << "|                              |" << std::endl;
+  std::cout << "| q) Quit                      |" << std::endl;
+  std::cout << "+------------------------------+" << std::endl;
+}
+
 static Option getInput() {
   using enum Option;
   char input;
@@ -53,6 +70,21 @@ static Option getInput() {
   Option option = Option(input);
 
   if (option < PawnMovements || option > Quit || (option >= Invalid && option < Quit))
+    return Invalid;
+
+  return option;
+}
+
+static MagicOption getMagicInput() {
+  using enum MagicOption;
+  char input;
+
+  std::cout << "> ";
+  std::cin >> input;
+
+  MagicOption option = MagicOption(input);
+
+  if (option < BishopBits || option > Quit || (option >= Invalid && option < Quit))
     return Invalid;
 
   return option;
@@ -130,18 +162,64 @@ static void runTool(Option option) {
   std::cout << std::endl;
 }
 
+static void runMagicTool(MagicOption option) {
+  using enum MagicOption;
+  switch (option) {
+  case BishopBits:
+    std::cout << "Bishop" << std::endl;
+    break;
+  case RookBits:
+    std::cout << "Rook" << std::endl;
+    break;
+  case QueenBits:
+    std::cout << "Queen" << std::endl;
+    break;
+  case Back:
+    break;
+  case Quit:
+    std::cout << "Goodbye!" << std::endl;
+    break;
+  default:
+    std::cout << "Invalid option!" << std::endl;
+    break;
+  }
+}
+
 } // namespace ToolMenu
+
+bool magicMain() {
+  using namespace ToolMenu;
+
+  MagicOption option = MagicOption::Invalid;
+
+  while (option != MagicOption::Quit && option != MagicOption::Back) {
+    magicMenu();
+    option = getMagicInput();
+    clearScreen();
+    runMagicTool(option);
+  }
+
+  return option == MagicOption::Quit;
+};
 
 int main() {
   using namespace ToolMenu;
 
   Option option = Option::Invalid;
+  bool quit = false;
 
   while (option != Option::Quit) {
     printMenu();
     option = getInput();
     clearScreen();
-    runTool(option);
+    if (option == Option::MagicBits) {
+      quit = magicMain();
+    } else {
+      runTool(option);
+    }
+
+    if (quit)
+      break;
   }
 
   return 0;
