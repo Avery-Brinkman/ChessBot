@@ -1,3 +1,4 @@
+#include "MagicGenerators.h"
 #include "MoveGenerators.h"
 #include "Piece.hpp"
 #include <iostream>
@@ -170,6 +171,7 @@ static void runMagicTool(MagicOption option) {
     break;
   case RookBits:
     std::cout << "Rook" << std::endl;
+    Tools::generateRookMagics();
     break;
   case QueenBits:
     std::cout << "Queen" << std::endl;
