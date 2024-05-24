@@ -186,32 +186,33 @@ generateValidRookMoves(const Engine_NS::Bitboard& allowedMoves,
 void generateRookMagics() {
   using namespace Engine_NS;
 
-  // for (int i = 0; i < 64; i++) {
-  int i = 0;
-  const BoardIndex index = Index(i);
+  for (int i = 0; i < 64; i++) {
+    const BoardIndex index = Index(i);
 
-  // Get the allowed moves for a rook at the given index
-  Bitboard currentMoves = Precomputed::RookMoves.at(index);
-  // Don't care about edges
-  if (index.rank() < Rank(8))
-    currentMoves.disableBits(TopEdge);
-  if (index.rank() > Rank(1))
-    currentMoves.disableBits(BottomEdge);
-  if (index.file() > File::A)
-    currentMoves.disableBits(LeftEdge);
-  if (index.file() < File::H)
-    currentMoves.disableBits(RightEdge);
+    // Get the allowed moves for a rook at the given index
+    Bitboard currentMoves = Precomputed::RookMoves.at(index);
+    // Don't care about edges
+    if (index.rank() < Rank(8))
+      currentMoves.disableBits(TopEdge);
+    if (index.rank() > Rank(1))
+      currentMoves.disableBits(BottomEdge);
+    if (index.file() > File::A)
+      currentMoves.disableBits(LeftEdge);
+    if (index.file() < File::H)
+      currentMoves.disableBits(RightEdge);
 
-  // Generate all the possible blocker layouts
-  std::vector<Bitboard> blockerBoards = generateAllBlockers(currentMoves);
-  // Determine what the valid moves are for each of those blocker layouts
-  std::vector<Bitboard> validMoves = generateValidRookMoves(currentMoves, blockerBoards, index);
+    // Generate all the possible blocker layouts
+    std::vector<Bitboard> blockerBoards = generateAllBlockers(currentMoves);
+    // Determine what the valid moves are for each of those blocker layouts
+    std::vector<Bitboard> validMoves = generateValidRookMoves(currentMoves, blockerBoards, index);
 
-  // MAGIC!!!
+    // MAGIC!!!
 
-  const MagicValues magicVals = generateMagicValues(blockerBoards);
+    const MagicValues magicVals = generateMagicValues(blockerBoards);
 
-  //}
+    std::cout << i + 1 << "/64: Magic Num = " << magicVals.first
+              << " | Shift = " << magicVals.second << "\n";
+  }
 }
 
 } // namespace Tools
