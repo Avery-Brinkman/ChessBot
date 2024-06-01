@@ -223,19 +223,21 @@ QString BitboardsModel::format(const Engine_NS::Bitboard& bits, bool colors) con
 }
 
 QString BitboardsModel::binFormat(const Engine_NS::Bitboard& bits, bool colors) {
-  if (!colors)
-    return QString("%1").arg(bits.bits, 64, 2, QChar('0'));
+  QString formatted = QString("%1").arg(bits.bits, 64, 2, QChar('0'));
 
-  QString out = "";
-  for (const QChar& c : QString("%1").arg(bits.bits, 64, 2, QChar('0'))) {
-    if (c == '0')
-      out += "<font color='blue'>";
+  if (colors) {
+    if (formatted.startsWith('0'))
+      formatted.prepend("<font color='blue'>");
     else
-      out += "<font color='red'>";
-    out += c;
-    out += "</font>";
+      formatted.prepend("<font color='red'>");
+
+    formatted.replace("01", "0</font><font color='red'>1");
+    formatted.replace("10", "1</font><font color='blue'>0");
+
+    formatted.append("</font>");
   }
-  return out;
+
+  return formatted;
 }
 
 QString BitboardsModel::hexFormat(const Engine_NS::Bitboard& bits) {
