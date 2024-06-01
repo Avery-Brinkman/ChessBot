@@ -7,29 +7,39 @@
 namespace Chess_UI {
 
 BitboardsModel::BitboardsModel(QObject* parent) : QAbstractListModel(parent) {
+  // If the value changed, so did the text
+  QObject::connect(this, &BitboardsModel::customValueChanged, this,
+                   &BitboardsModel::customValueTextChanged);
+
   QObject::connect(this, &BitboardsModel::showAsBinChanged, this, [this]() {
     if (!m_showAsBin)
       return;
 
-    emit customValueChanged();
-    emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
-                     {static_cast<int>(BitboardsRoles::BitsRole)});
+    if (m_useCustomValue)
+      emit customValueTextChanged();
+    else
+      emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
+                       {static_cast<int>(BitboardsRoles::BitsRole)});
   });
   QObject::connect(this, &BitboardsModel::showAsDecChanged, this, [this]() {
     if (!m_showAsDec)
       return;
 
-    emit customValueChanged();
-    emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
-                     {static_cast<int>(BitboardsRoles::BitsRole)});
+    if (m_useCustomValue)
+      emit customValueTextChanged();
+    else
+      emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
+                       {static_cast<int>(BitboardsRoles::BitsRole)});
   });
   QObject::connect(this, &BitboardsModel::showAsHexChanged, this, [this]() {
     if (!m_showAsHex)
       return;
 
-    emit customValueChanged();
-    emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
-                     {static_cast<int>(BitboardsRoles::BitsRole)});
+    if (m_useCustomValue)
+      emit customValueTextChanged();
+    else
+      emit dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0),
+                       {static_cast<int>(BitboardsRoles::BitsRole)});
   });
 
   m_names = {

@@ -10,10 +10,10 @@ ColumnLayout {
 
   Switch {
     Layout.fillWidth: true
-    checked: settingsPanel.showBitboards
+    checked: bitboards.showBitboards
     text: "Show Bitboards"
 
-    onCheckedChanged: settingsPanel.showBitboards = checked
+    onCheckedChanged: bitboards.showBitboards = checked
   }
 
   Switch {
@@ -98,7 +98,7 @@ ColumnLayout {
 
           checkable: true
           checked: isEnabled
-          enabled: settingsPanel.showBitboards
+          enabled: bitboards.showBitboards
           text: name
           width: 130
 

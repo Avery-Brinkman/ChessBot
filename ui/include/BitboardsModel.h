@@ -34,16 +34,20 @@ class BitboardsModel : public QAbstractListModel {
   };
 
   Q_OBJECT
+  Q_PROPERTY(bool useCustomValue MEMBER m_useCustomValue NOTIFY useCustomValueChanged)
+  Q_PROPERTY(bool showBitboards MEMBER m_showBitboards NOTIFY showBitboardsChanged)
+
   Q_PROPERTY(bool showAsBin MEMBER m_showAsBin NOTIFY showAsBinChanged)
   Q_PROPERTY(bool showAsDec MEMBER m_showAsDec NOTIFY showAsDecChanged)
   Q_PROPERTY(bool showAsHex MEMBER m_showAsHex NOTIFY showAsHexChanged)
 
-  Q_PROPERTY(bool useCustomValue MEMBER m_useCustomValue NOTIFY useCustomValueChanged)
-  Q_PROPERTY(QString customValue READ getCustomValue WRITE setCustomValue NOTIFY customValueChanged)
+  Q_PROPERTY(
+      QString customValue READ getCustomValue WRITE setCustomValue NOTIFY customValueTextChanged)
 
 public:
   BitboardsModel(QObject* parent = nullptr);
 
+  // Sets the set of bitboards to whatever is given
   void updateBoards(const Engine_NS::Bitboards& newBoards);
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;
@@ -53,9 +57,12 @@ public:
 
   QHash<int, QByteArray> roleNames() const override;
 
+  // Gets the bits to show over the board
   Engine_NS::Bitboard getDebugBits() const;
 
+  // Gets the bits that were manually set by the user
   Engine_NS::Bitboard getCustomBits() const;
+  // Gets the string version of the custom bits
   QString getCustomValue() const;
 
   void setCustomValue(const QString& customVal);
@@ -69,16 +76,20 @@ public:
 
 signals:
   // Emitted when we show/hide the bitboard overlay
-  void enabledChanged();
+  void showBitboardsChanged();
   // Emitted when the bits that are shown change
   void debugBitsChanged();
+
+  void useCustomValueChanged();
 
   void showAsBinChanged();
   void showAsDecChanged();
   void showAsHexChanged();
 
-  void useCustomValueChanged();
+  // Emitted when the actual custom value has changed
   void customValueChanged();
+  // Emitted when QML should update what is shown for custom value (format or value change)
+  void customValueTextChanged();
 
 private:
   Engine_NS::Bitboard getBits(int row) const;
@@ -95,26 +106,12 @@ private:
   static QString binFormat(const Engine_NS::Bitboard& bits, bool colors);
   static QString hexFormat(const Engine_NS::Bitboard& bits);
 
-  bool m_whitePawnsEnabled = false;
-  bool m_whiteKnightsEnabled = false;
-  bool m_whiteBishopsEnabled = false;
-  bool m_whiteRooksEnabled = false;
-  bool m_whiteQueensEnabled = false;
-  bool m_whiteKingEnabled = false;
-  bool m_blackPawnsEnabled = false;
-  bool m_blackKnightsEnabled = false;
-  bool m_blackBishopsEnabled = false;
-
-  bool m_blackRooksEnabled = false;
-  bool m_blackQueensEnabled = false;
-  bool m_blackKingEnabled = false;
-  bool m_whiteEnPassantEnabled = false;
-  bool m_blackEnPassantEnabled = false;
-
   Engine_NS::Bitboards m_boards = {};
 
   QHash<int, QString> m_names = {};
   QList<bool> m_enabled = {};
+
+  bool m_showBitboards = false;
 
   Engine_NS::Bitboard m_debugBits = {};
 

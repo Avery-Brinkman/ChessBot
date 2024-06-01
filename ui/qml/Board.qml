@@ -63,7 +63,7 @@ TableView {
       horizontalAlignment: Text.AlignHCenter
       text: model.bitboard ? "1" : "0"
       verticalAlignment: Text.AlignVCenter
-      visible: boardModel.settingsPanel.showBitboards
+      visible: boardModel.bitboards.showBitboards
 
       font {
         bold: true
@@ -109,7 +109,7 @@ TableView {
 
         // Set Custom Bits
         State {
-          when: tabBar.currentIndex == 1 && boardModel.settingsPanel.showBitboards && boardModel.bitboards.useCustomValue
+          when: tabBar.currentIndex == 1 && boardModel.bitboards.showBitboards && boardModel.bitboards.useCustomValue
 
           PropertyChanges {
             target: mouseArea

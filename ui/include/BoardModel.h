@@ -51,6 +51,15 @@ private:
 
   bool makeValidMove(const Engine_NS::BoardIndex& bitIndex);
 
+  bool addRemovePiece(const Engine_NS::BoardIndex& bitIndex, bool isWhite);
+
+  void emitDataChangeSignals(const Engine_NS::BoardIndex& bitIndex,
+                             const std::vector<BoardRoles>& roles) {
+    emitDataChangeSignals(getQModelIndex(bitIndex), roles);
+  }
+  void emitDataChangeSignals(const QModelIndex& index, const std::vector<BoardRoles>& roles);
+  void emitDataChangeSignals(const std::vector<BoardRoles>& roles);
+
   Engine_NS::BoardIndex m_selectedIndex = {};
   Engine_NS::Bitboard m_currentValidMoves = {};
 
