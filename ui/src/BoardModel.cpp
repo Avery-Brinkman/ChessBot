@@ -11,8 +11,8 @@ BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent), Engine_NS
   m_bitboardsModel = std::make_unique<BitboardsModel>();
   m_bitboardsModel->updateBoards(getBitboards());
 
-  QObject::connect(m_settingsPanel.get(), &SettingsPanel::updateBoard, this,
-                   [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
+  // QObject::connect(m_settingsPanel.get(), &SettingsPanel::updateBoard, this,
+  //                  [this]() { emit dataChanged(createIndex(0, 0), createIndex(7, 7)); });
 
   QObject::connect(m_bitboardsModel.get(), &BitboardsModel::debugBitsChanged, this, [this]() {
     emit dataChanged(createIndex(0, 0), createIndex(7, 7),
@@ -22,10 +22,10 @@ BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent), Engine_NS
     emit dataChanged(createIndex(0, 0), createIndex(7, 7),
                      {static_cast<int>(BoardRoles::BitboardRole)});
   });
-  QObject::connect(m_bitboardsModel.get(), &BitboardsModel::customValueChanged, this, [this]() {
-    emit dataChanged(createIndex(0, 0), createIndex(7, 7),
-                     {static_cast<int>(BoardRoles::BitboardRole)});
-  });
+  // QObject::connect(m_bitboardsModel.get(), &BitboardsModel::customValueChanged, this, [this]() {
+  //   emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+  //                    {static_cast<int>(BoardRoles::BitboardRole)});
+  // });
 }
 
 int BoardModel::rowCount(const QModelIndex& parent) const { return 8; }
@@ -66,59 +66,32 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
   const Engine_NS::BoardIndex bitIndex = getIndex(index.row(), index.column());
   switch (BoardRoles(role)) {
-  case SelectedRole: {
-    const Engine_NS::BoardIndex prevIndex = m_selectedIndex;
-    m_selectedIndex = bitIndex;
-    m_currentValidMoves = getValidMoves(bitIndex);
-    if (prevIndex != Engine_NS::Index::INVALID) {
-      emit dataChanged(createIndex(8 - prevIndex.rank(), prevIndex.file()),
-                       createIndex(8 - prevIndex.rank(), prevIndex.file()),
-                       {static_cast<int>(SelectedRole)});
-    }
-    emit dataChanged(index, index, {static_cast<int>(SelectedRole)});
-    emit dataChanged(createIndex(0, 0), createIndex(7, 7), {static_cast<int>(ValidMoveRole)});
-    return true;
-  }
-  case ValidMoveRole: {
-    const Engine_NS::BoardIndex prevIndex = m_selectedIndex;
-    if (m_currentValidMoves.checkBit(bitIndex)) {
-      movePiece(m_selectedIndex, bitIndex);
-    }
-    m_selectedIndex = {};
-    m_currentValidMoves = 0;
-
-    emit dataChanged(createIndex(8 - prevIndex.rank(), prevIndex.file()),
-                     createIndex(8 - prevIndex.rank(), prevIndex.file()),
-                     {static_cast<int>(SelectedRole), static_cast<int>(ImageRole)});
-    emit dataChanged(createIndex(8 - bitIndex.rank(), bitIndex.file()),
-                     createIndex(8 - bitIndex.rank(), bitIndex.file()),
-                     {static_cast<int>(ImageRole)});
-    emit dataChanged(createIndex(0, 0), createIndex(7, 7), {static_cast<int>(ValidMoveRole)});
-    return true;
-  }
-  case TogglePieceRole: {
-    if (value.toBool()) {
-      togglePiece(Engine_NS::Piece(m_settingsPanel->getPieceType() | Engine_NS::Color::White),
-                  bitIndex);
-    } else {
-      togglePiece(Engine_NS::Piece(m_settingsPanel->getPieceType() | Engine_NS::Color::Black),
-                  bitIndex);
-    }
-    break;
-  }
-  case ToggleCustomBitRole: {
-    m_bitboardsModel->toggleCustomBit(bitIndex);
-  }
+  case SelectedRole:
+    return setSelected(index, bitIndex);
+  case ValidMoveRole:
+    return makeValidMove(bitIndex);
+  // case TogglePieceRole: {
+  //   if (value.toBool()) {
+  //     togglePiece(Engine_NS::Piece(m_settingsPanel->getPieceType() | Engine_NS::Color::White),
+  //                 bitIndex);
+  //   } else {
+  //     togglePiece(Engine_NS::Piece(m_settingsPanel->getPieceType() | Engine_NS::Color::Black),
+  //                 bitIndex);
+  //   }
+  //   break;
+  // }
+  // case ToggleCustomBitRole: {
+  //   m_bitboardsModel->toggleCustomBit(bitIndex);
+  //   break;
+  // }
   default:
-    return false;
+    break;
   }
 
   // m_bitboardsModel->updateBoards(getBitboards());
   // m_bitboardsModel->updateDebugBits();
 
-  // emit dataChanged(createIndex(0, 0), createIndex(7, 7));
-
-  return true;
+  return false;
 }
 
 QHash<int, QByteArray> BoardModel::roleNames() const {
@@ -170,6 +143,51 @@ QUrl BoardModel::pieceImage(const Engine_NS::Piece& piece) const {
   default:
     return QUrl("");
   }
+}
+
+QModelIndex BoardModel::getQModelIndex(const Engine_NS::BoardIndex& index) const {
+  return createIndex(8 - index.rank(), index.file());
+}
+
+// Set data handlers
+
+bool BoardModel::setSelected(const QModelIndex& qIndex, const Engine_NS::BoardIndex& bitIndex) {
+  using enum Chess_UI::BoardModel::BoardRoles;
+
+  const Engine_NS::BoardIndex prevIndex = m_selectedIndex;
+  m_selectedIndex = bitIndex;
+  m_currentValidMoves = getValidMoves(bitIndex);
+  if (prevIndex != Engine_NS::Index::INVALID)
+    emit dataChanged(getQModelIndex(prevIndex), getQModelIndex(prevIndex),
+                     {static_cast<int>(SelectedRole)});
+
+  emit dataChanged(qIndex, qIndex, {static_cast<int>(SelectedRole)});
+  emit dataChanged(createIndex(0, 0), createIndex(7, 7), {static_cast<int>(ValidMoveRole)});
+  return true;
+}
+
+bool BoardModel::makeValidMove(const Engine_NS::BoardIndex& bitIndex) {
+  using enum Chess_UI::BoardModel::BoardRoles;
+
+  const Engine_NS::BoardIndex prevIndex = m_selectedIndex;
+  if (!m_currentValidMoves.checkBit(bitIndex))
+    return false;
+
+  movePiece(m_selectedIndex, bitIndex);
+  m_selectedIndex = {};
+  m_currentValidMoves = 0;
+
+  m_bitboardsModel->updateBoards(getBitboards());
+  m_bitboardsModel->updateDebugBits();
+
+  emit dataChanged(getQModelIndex(prevIndex), getQModelIndex(prevIndex),
+                   {static_cast<int>(SelectedRole), static_cast<int>(ImageRole)});
+  emit dataChanged(getQModelIndex(bitIndex), getQModelIndex(bitIndex),
+                   {static_cast<int>(ImageRole)});
+  emit dataChanged(createIndex(0, 0), createIndex(7, 7),
+                   {static_cast<int>(ValidMoveRole), static_cast<int>(BitboardRole)});
+
+  return true;
 }
 
 } // namespace Chess_UI

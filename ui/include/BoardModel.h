@@ -43,6 +43,14 @@ private:
 
   QUrl pieceImage(const Engine_NS::Piece& piece) const;
 
+  QModelIndex getQModelIndex(const Engine_NS::BoardIndex& index) const;
+
+  // Set data handlers
+
+  bool setSelected(const QModelIndex& qIndex, const Engine_NS::BoardIndex& bitIndex);
+
+  bool makeValidMove(const Engine_NS::BoardIndex& bitIndex);
+
   Engine_NS::BoardIndex m_selectedIndex = {};
   Engine_NS::Bitboard m_currentValidMoves = {};
 

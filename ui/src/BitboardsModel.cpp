@@ -51,7 +51,9 @@ void BitboardsModel::updateBoards(const Engine_NS::Bitboards& newBoards) {
                    {static_cast<int>(BitboardsRoles::BitsRole)});
 }
 
-int BitboardsModel::rowCount(const QModelIndex& parent) const { return m_names.size(); }
+int BitboardsModel::rowCount(const QModelIndex& parent) const {
+  return static_cast<int>(m_names.size());
+}
 
 QVariant BitboardsModel::data(const QModelIndex& index, int role) const {
   using enum Chess_UI::BitboardsModel::BitboardsRoles;
@@ -84,6 +86,7 @@ bool BitboardsModel::setData(const QModelIndex& index, const QVariant& value, in
       emit dataChanged(index, index, {static_cast<int>(EnabledRole)});
 
       updateDebugBits();
+      emit debugBitsChanged();
 
       return true;
     }
@@ -131,9 +134,6 @@ void BitboardsModel::updateDebugBits() {
     if (m_enabled.at(row))
       m_debugBits.enableBits(getBits(row));
   }
-
-  if (m_debugBits.bits != initialVal.bits)
-    emit debugBitsChanged();
 }
 
 void BitboardsModel::copyBitsToClipboard(int row) const {

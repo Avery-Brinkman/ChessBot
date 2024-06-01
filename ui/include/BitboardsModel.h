@@ -68,7 +68,9 @@ public:
   void toggleCustomBit(Engine_NS::BoardIndex index);
 
 signals:
+  // Emitted when we show/hide the bitboard overlay
   void enabledChanged();
+  // Emitted when the bits that are shown change
   void debugBitsChanged();
 
   void showAsBinChanged();
