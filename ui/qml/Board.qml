@@ -83,19 +83,14 @@ TableView {
       anchors.fill: parent
       hoverEnabled: true
 
-      ToolTip {
-        id: toolTip
-
-        delay: 600
-        visible: mouseArea.containsMouse && text !== ""
-      }
-
       states: [
         // Add/Remove Pieces
         State {
           when: tabBar.currentIndex == 2
+
           PropertyChanges {
             target: mouseArea
+
             onClicked: mouse => {
               if (mouse.button == Qt.RightButton)
                 model.togglePiece = false;
@@ -103,6 +98,7 @@ TableView {
                 model.togglePiece = true;
             }
           }
+
           PropertyChanges {
             target: toolTip
             text: "Add or Remove Piece"
@@ -112,12 +108,15 @@ TableView {
         // Set Custom Bits
         State {
           when: tabBar.currentIndex == 1 && boardModel.settingsPanel.showBitboards && boardModel.bitboards.useCustomValue
+
           PropertyChanges {
             target: mouseArea
+
             onClicked: mouse => {
               model.toggleCustomBit = true;
             }
           }
+
           PropertyChanges {
             target: toolTip
             text: "Toggle Custom Bit"
@@ -127,15 +126,18 @@ TableView {
         // Valid Move
         State {
           when: model.validMove
+
           PropertyChanges {
             target: mouseArea
+
             onClicked: mouse => {
               model.validMove = true;
             }
           }
+
           PropertyChanges {
-            target: toolTip
             delay: 1000
+            target: toolTip
             text: "Move to this Square"
           }
         },
@@ -143,19 +145,36 @@ TableView {
         // Select Piece
         State {
           when: model.hasPiece
+
           PropertyChanges {
             target: mouseArea
+
             onClicked: mouse => {
               model.selected = true;
             }
           }
+
           PropertyChanges {
-            target: toolTip
             delay: 1000
+            target: toolTip
             text: "Select Piece"
           }
         }
       ]
+
+      ToolTip {
+        id: toolTip
+
+        delay: 600
+        opacity: visible ? 1 : 0
+        visible: mouseArea.containsMouse && text !== ""
+
+        Behavior on opacity {
+          NumberAnimation {
+            duration: 100
+          }
+        }
+      }
     }
   }
 }

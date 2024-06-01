@@ -105,8 +105,8 @@ ColumnLayout {
           onCheckedChanged: isEnabled = checked
 
           ToolTip {
-            visible: parent.hovered
             text: `${parent.checked ? "Hide" : "Show"} ${parent.text} on the board`
+            visible: parent.hovered
           }
         }
 
@@ -121,23 +121,23 @@ ColumnLayout {
           }
 
           ToolTip {
-            visible: parent.hovered
             text: `Copy ${name} bits`
+            visible: parent.hovered
           }
         }
 
         Button {
           anchors.left: copyButton.right
-          icon.source: "qrc:images/paste-icon.svg"
           enabled: false
+          icon.source: "qrc:images/paste-icon.svg"
 
           onClicked: {
             bitboards.pasteBitsFromClipboard(index);
           }
 
           ToolTip {
-            visible: parent.hovered
             text: `Paste bits to ${name}`
+            visible: parent.hovered
           }
         }
 

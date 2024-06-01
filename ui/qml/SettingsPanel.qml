@@ -44,9 +44,9 @@ Rectangle {
       Layout.fillWidth: true
 
       Text {
+        font.pointSize: 12
         text: "Click to toggle white, right click to toggle black"
         width: parent.width
-        font.pointSize: 12
         wrapMode: Text.WordWrap
       }
 
