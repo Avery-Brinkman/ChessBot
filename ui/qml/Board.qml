@@ -86,6 +86,8 @@ TableView {
             model.togglePiece = false;
           else
             model.togglePiece = true;
+        } else if (tabBar.currentIndex == 1 && boardModel.settingsPanel.showBitboards && boardModel.bitboards.useCustomValue) {
+          model.toggleCustomBit = true;
         } else if (model.validMove)
           model.validMove = true;
         else

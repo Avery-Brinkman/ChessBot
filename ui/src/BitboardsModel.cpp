@@ -144,6 +144,11 @@ void BitboardsModel::pasteBitsFromClipboard(int row) {
   // TODO: Support pasting
 }
 
+void BitboardsModel::toggleCustomBit(Engine_NS::BoardIndex index) {
+  m_customBits.toggleBit(index);
+  emit customValueChanged();
+}
+
 Engine_NS::Bitboard BitboardsModel::getBits(int row) const {
   using enum BitboardRows;
 

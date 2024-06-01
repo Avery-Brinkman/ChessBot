@@ -17,6 +17,7 @@ class BoardModel : public QAbstractTableModel, public Engine_NS::Board {
     BoardIndexRole,
     TogglePieceRole,
     BitboardRole,
+    ToggleCustomBitRole,
   };
 
   Q_OBJECT

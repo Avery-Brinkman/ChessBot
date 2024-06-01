@@ -87,6 +87,9 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     }
     break;
   }
+  case ToggleCustomBitRole: {
+    m_bitboardsModel->toggleCustomBit(bitIndex);
+  }
   default:
     return false;
   }
@@ -109,6 +112,7 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
       {static_cast<int>(BoardIndexRole), "boardIndex"},
       {static_cast<int>(TogglePieceRole), "togglePiece"},
       {static_cast<int>(BitboardRole), "bitboard"},
+      {static_cast<int>(ToggleCustomBitRole), "toggleCustomBit"},
   };
 }
 

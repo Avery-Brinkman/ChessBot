@@ -65,6 +65,8 @@ public:
   Q_INVOKABLE void copyBitsToClipboard(int row) const;
   Q_INVOKABLE void pasteBitsFromClipboard(int row);
 
+  void toggleCustomBit(Engine_NS::BoardIndex index);
+
 signals:
   void enabledChanged();
   void debugBitsChanged();
