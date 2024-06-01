@@ -2,6 +2,7 @@
 
 #include <QColor>
 #include <QUrl>
+#include <iostream>
 
 namespace Chess_UI {
 BoardModel::BoardModel(QObject* parent) : QAbstractTableModel(parent), Engine_NS::Board() {
@@ -66,18 +67,34 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
   const Engine_NS::BoardIndex bitIndex = getIndex(index.row(), index.column());
   switch (BoardRoles(role)) {
   case SelectedRole: {
+    const Engine_NS::BoardIndex prevIndex = m_selectedIndex;
     m_selectedIndex = bitIndex;
     m_currentValidMoves = getValidMoves(bitIndex);
-    break;
+    if (prevIndex != Engine_NS::Index::INVALID) {
+      emit dataChanged(createIndex(8 - prevIndex.rank(), prevIndex.file()),
+                       createIndex(8 - prevIndex.rank(), prevIndex.file()),
+                       {static_cast<int>(SelectedRole)});
+    }
+    emit dataChanged(index, index, {static_cast<int>(SelectedRole)});
+    emit dataChanged(createIndex(0, 0), createIndex(7, 7), {static_cast<int>(ValidMoveRole)});
+    return true;
   }
   case ValidMoveRole: {
+    const Engine_NS::BoardIndex prevIndex = m_selectedIndex;
     if (m_currentValidMoves.checkBit(bitIndex)) {
       movePiece(m_selectedIndex, bitIndex);
     }
     m_selectedIndex = {};
     m_currentValidMoves = 0;
 
-    break;
+    emit dataChanged(createIndex(8 - prevIndex.rank(), prevIndex.file()),
+                     createIndex(8 - prevIndex.rank(), prevIndex.file()),
+                     {static_cast<int>(SelectedRole), static_cast<int>(ImageRole)});
+    emit dataChanged(createIndex(8 - bitIndex.rank(), bitIndex.file()),
+                     createIndex(8 - bitIndex.rank(), bitIndex.file()),
+                     {static_cast<int>(ImageRole)});
+    emit dataChanged(createIndex(0, 0), createIndex(7, 7), {static_cast<int>(ValidMoveRole)});
+    return true;
   }
   case TogglePieceRole: {
     if (value.toBool()) {
@@ -96,10 +113,10 @@ bool BoardModel::setData(const QModelIndex& index, const QVariant& value, int ro
     return false;
   }
 
-  m_bitboardsModel->updateBoards(getBitboards());
-  m_bitboardsModel->updateDebugBits();
+  // m_bitboardsModel->updateBoards(getBitboards());
+  // m_bitboardsModel->updateDebugBits();
 
-  emit dataChanged(createIndex(0, 0), createIndex(7, 7));
+  // emit dataChanged(createIndex(0, 0), createIndex(7, 7));
 
   return true;
 }

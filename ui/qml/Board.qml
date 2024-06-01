@@ -32,11 +32,13 @@ TableView {
       }
     }
 
-    // Move indicator
+    // Move/Selected indicator
     Rectangle {
       color: {
         if (model.validMove)
           return "green";
+        else if (model.selected)
+          return "yellow";
         return "transparent";
       }
       radius: height / 2
