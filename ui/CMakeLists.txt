@@ -40,6 +40,11 @@ set(IMAGES
   images/whiteRook.png
 )
 
+set(ICONS
+  images/copy-icon.svg
+  images/paste-icon.svg
+)
+
 add_executable(${UI_NAME} ${SRC_FILES} ${INCLUDE_FILES})
 
 target_link_libraries(${UI_NAME} PRIVATE
@@ -60,4 +65,5 @@ qt_add_resources(${UI_NAME} "qml"
   FILES
     ${QML_FILES}
     ${IMAGES}
+    ${ICONS}
 )

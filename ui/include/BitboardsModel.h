@@ -62,6 +62,9 @@ public:
 
   void updateDebugBits();
 
+  Q_INVOKABLE void copyBitsToClipboard(int row) const;
+  Q_INVOKABLE void pasteBitsFromClipboard(int row);
+
 signals:
   void enabledChanged();
   void debugBitsChanged();

@@ -98,10 +98,47 @@ ColumnLayout {
 
           checkable: true
           checked: isEnabled
+          enabled: settingsPanel.showBitboards
           text: name
-          width: 150
+          width: 130
 
           onCheckedChanged: isEnabled = checked
+
+          ToolTip {
+            visible: parent.hovered
+            text: `${parent.checked ? "Hide" : "Show"} ${parent.text} on the board`
+          }
+        }
+
+        Button {
+          id: copyButton
+
+          anchors.left: enableButton.right
+          icon.source: "qrc:images/copy-icon.svg"
+
+          onClicked: {
+            bitboards.copyBitsToClipboard(index);
+          }
+
+          ToolTip {
+            visible: parent.hovered
+            text: `Copy ${name} bits`
+          }
+        }
+
+        Button {
+          anchors.left: copyButton.right
+          icon.source: "qrc:images/paste-icon.svg"
+          enabled: false
+
+          onClicked: {
+            bitboards.pasteBitsFromClipboard(index);
+          }
+
+          ToolTip {
+            visible: parent.hovered
+            text: `Paste bits to ${name}`
+          }
         }
 
         Text {

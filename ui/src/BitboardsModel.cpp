@@ -1,4 +1,7 @@
 #include "BitboardsModel.h"
+
+#include <QClipboard>
+#include <QGuiApplication>
 #include <iostream>
 
 namespace Chess_UI {
@@ -131,6 +134,14 @@ void BitboardsModel::updateDebugBits() {
 
   if (m_debugBits.bits != initialVal.bits)
     emit debugBitsChanged();
+}
+
+void BitboardsModel::copyBitsToClipboard(int row) const {
+  QGuiApplication::clipboard()->setText(format(getBits(row), false));
+}
+
+void BitboardsModel::pasteBitsFromClipboard(int row) {
+  // TODO: Support pasting
 }
 
 Engine_NS::Bitboard BitboardsModel::getBits(int row) const {
