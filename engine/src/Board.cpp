@@ -1,5 +1,7 @@
 #include "Board.h"
+
 #include "PrecomputedMoves.h"
+
 #include <iostream>
 #include <numeric>
 
@@ -128,7 +130,7 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
       move.capturedPiece = getPiece(move.capturedPos);
     }
     // Promotion
-    else if (to.rank() == 0 || to.rank() == 7) {
+    else if (to.rank() == Rank(1) || to.rank() == Rank(8)) {
       flags = QueenPromotion;
     }
   }
@@ -321,7 +323,7 @@ void Board::updateBitboards(const Move& move) {
     // Check for promotion
     if (move.flags & QueenPromotion) {
       // TODO: This gets triggered for a promotion of any type
-      pieceToAdd = WhiteQueen;
+      pieceToAdd = Piece(Queen | pieceToAdd.color());
     }
   }
 

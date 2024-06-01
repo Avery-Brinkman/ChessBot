@@ -9,8 +9,6 @@
 namespace Engine_NS {
 class Bot {
 public:
-  void startNewGame();
-
   void setToStartPosition();
 
   void setPosition(std::string_view position);

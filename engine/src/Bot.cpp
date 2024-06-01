@@ -10,8 +10,6 @@ uint16_t indexFromName(std::string_view move) {
 
 namespace Engine_NS {
 
-void Bot::startNewGame() {}
-
 void Bot::setToStartPosition() { m_board.setToStartPosition(); }
 
 void Bot::setPosition(std::string_view position) {}

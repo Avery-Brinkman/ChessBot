@@ -13,7 +13,7 @@ void Engine::receiveCommand(std::string_view command) const {
   } else if (command == IS_READY) {
     std::cout << READY_OK << std::endl;
   } else if (command == UCI_NEW_GAME) {
-    m_bot->startNewGame();
+    // Do nothing
   } else if (command.starts_with(POSITION)) {
     if (command.length() < 10)
       throw std::invalid_argument("Invalid position command");
