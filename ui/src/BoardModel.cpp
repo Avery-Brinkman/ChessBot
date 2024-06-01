@@ -53,6 +53,8 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     return bitIndex.index;
   case BitboardRole:
     return m_bitboardsModel->getDebugBits().checkBit(bitIndex);
+  case HasPieceRole:
+    return getBitboards().getInfo().allPieces.checkBit(bitIndex);
   default:
     return QVariant();
   }
@@ -113,6 +115,7 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
       {static_cast<int>(TogglePieceRole), "togglePiece"},
       {static_cast<int>(BitboardRole), "bitboard"},
       {static_cast<int>(ToggleCustomBitRole), "toggleCustomBit"},
+      {static_cast<int>(HasPieceRole), "hasPiece"},
   };
 }
 

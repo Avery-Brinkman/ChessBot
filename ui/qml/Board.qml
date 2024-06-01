@@ -77,22 +77,82 @@ TableView {
     }
 
     MouseArea {
+      id: mouseArea
+
       acceptedButtons: Qt.LeftButton | Qt.RightButton
       anchors.fill: parent
+      hoverEnabled: true
 
-      onClicked: mouse => {
-        if (tabBar.currentIndex == 2) {
-          if (mouse.button == Qt.RightButton)
-            model.togglePiece = false;
-          else
-            model.togglePiece = true;
-        } else if (tabBar.currentIndex == 1 && boardModel.settingsPanel.showBitboards && boardModel.bitboards.useCustomValue) {
-          model.toggleCustomBit = true;
-        } else if (model.validMove)
-          model.validMove = true;
-        else
-          model.selected = true;
+      ToolTip {
+        id: toolTip
+
+        visible: mouseArea.containsMouse && text !== ""
       }
+
+      states: [
+        // Add/Remove Pieces
+        State {
+          when: tabBar.currentIndex == 2
+          PropertyChanges {
+            target: mouseArea
+            onClicked: mouse => {
+              if (mouse.button == Qt.RightButton)
+                model.togglePiece = false;
+              else
+                model.togglePiece = true;
+            }
+          }
+          PropertyChanges {
+            target: toolTip
+            text: "Add or Remove Piece"
+          }
+        },
+
+        // Set Custom Bits
+        State {
+          when: tabBar.currentIndex == 1 && boardModel.settingsPanel.showBitboards && boardModel.bitboards.useCustomValue
+          PropertyChanges {
+            target: mouseArea
+            onClicked: mouse => {
+              model.toggleCustomBit = true;
+            }
+          }
+          PropertyChanges {
+            target: toolTip
+            text: "Toggle Custom Bit"
+          }
+        },
+
+        // Valid Move
+        State {
+          when: model.validMove
+          PropertyChanges {
+            target: mouseArea
+            onClicked: mouse => {
+              model.validMove = true;
+            }
+          }
+          PropertyChanges {
+            target: toolTip
+            text: "Move to this Square"
+          }
+        },
+
+        // Select Piece
+        State {
+          when: model.hasPiece
+          PropertyChanges {
+            target: mouseArea
+            onClicked: mouse => {
+              model.selected = true;
+            }
+          }
+          PropertyChanges {
+            target: toolTip
+            text: "Select Piece"
+          }
+        }
+      ]
     }
   }
 }
