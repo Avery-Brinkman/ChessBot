@@ -5,16 +5,16 @@
 
 namespace {
 
-int findMagicNumber(const std::vector<Engine_NS::Bitboard>& blockers) {
+size_t findMagicNumber(const std::vector<Engine_NS::Bitboard>& blockers) {
   using namespace Engine_NS;
 
   std::random_device rd;
   std::mt19937 rng(rd());
-  std::uniform_int_distribution<int> uni(1, 999999);
+  std::uniform_int_distribution<size_t> uni(1, 999999);
 
   while (true) {
     std::unordered_set<BitboardBits> generatedIndicies = {};
-    int possibleMagic = uni(rng) * uni(rng);
+    size_t possibleMagic = uni(rng) * uni(rng);
 
     for (const Bitboard& currentBoard : blockers) {
       BitboardBits key = currentBoard.bits * possibleMagic;
@@ -30,16 +30,16 @@ int findMagicNumber(const std::vector<Engine_NS::Bitboard>& blockers) {
   }
 }
 
-int findMaximumShift(const std::vector<Engine_NS::Bitboard>& blockers, int magicNum) {
+size_t findMaximumShift(const std::vector<Engine_NS::Bitboard>& blockers, size_t magicNum) {
   using namespace Engine_NS;
 
-  int maxShift = 0;
+  size_t maxShift = 0;
 
   while (true) {
     std::unordered_set<BitboardBits> generatedKeys = {};
-    const int currentShift = maxShift + 1;
+    const size_t currentShift = maxShift + 1;
     if (currentShift > 57)
-      throw std::exception("SHIFT TOO BIG!!! AHHH!!!");
+      return maxShift;
 
     for (const Bitboard& blocker : blockers) {
       const BitboardBits currentKey = (blocker.bits * magicNum) >> currentShift;
@@ -54,14 +54,10 @@ int findMaximumShift(const std::vector<Engine_NS::Bitboard>& blockers, int magic
   }
 }
 
-} // namespace
+Tools::MagicValues generateMagicValues(const std::vector<Engine_NS::Bitboard>& blockers) {
 
-namespace Tools {
-
-MagicValues generateMagicValues(const std::vector<Engine_NS::Bitboard>& blockers) {
-
-  int magicNum = findMagicNumber(blockers);
-  int shift = findMaximumShift(blockers, magicNum);
+  size_t magicNum = findMagicNumber(blockers);
+  size_t shift = findMaximumShift(blockers, magicNum);
 
   return {magicNum, shift};
 }
@@ -130,9 +126,9 @@ generateValidRookMoves(const Engine_NS::Bitboard& allowedMoves,
     Bitboard currentValidMoves = allowedMoves;
 
     // Up
+    bool blocked = false;
     for (BoardIndex currentIndex = position; currentIndex.rank() < Rank(8);
          currentIndex = currentIndex + CompassDirection::North) {
-      bool blocked = false;
 
       if (blocked) {
         currentValidMoves.disableBit(currentIndex);
@@ -142,9 +138,9 @@ generateValidRookMoves(const Engine_NS::Bitboard& allowedMoves,
     }
 
     // Down
+    blocked = false;
     for (BoardIndex currentIndex = position; currentIndex.rank() > Rank(1);
          currentIndex = currentIndex + CompassDirection::South) {
-      bool blocked = false;
 
       if (blocked) {
         currentValidMoves.disableBit(currentIndex);
@@ -154,9 +150,9 @@ generateValidRookMoves(const Engine_NS::Bitboard& allowedMoves,
     }
 
     // Left
+    blocked = false;
     for (BoardIndex currentIndex = position; currentIndex.file() > File::A;
          currentIndex = currentIndex + CompassDirection::West) {
-      bool blocked = false;
 
       if (blocked) {
         currentValidMoves.disableBit(currentIndex);
@@ -166,9 +162,9 @@ generateValidRookMoves(const Engine_NS::Bitboard& allowedMoves,
     }
 
     // Right
+    blocked = false;
     for (BoardIndex currentIndex = position; currentIndex.file() < File::H;
          currentIndex = currentIndex + CompassDirection::East) {
-      bool blocked = false;
 
       if (blocked) {
         currentValidMoves.disableBit(currentIndex);
@@ -183,8 +179,87 @@ generateValidRookMoves(const Engine_NS::Bitboard& allowedMoves,
   return validMoves;
 }
 
+std::vector<Engine_NS::Bitboard>
+generateValidBishopMoves(const Engine_NS::Bitboard& allowedMoves,
+                         const std::vector<Engine_NS::Bitboard>& blockers,
+                         Engine_NS::BoardIndex position) {
+  using namespace Engine_NS;
+
+  std::vector<Bitboard> validMoves(blockers.size());
+
+  // Loop thru each of the blocker combinations
+  for (int boardIndex = 0; boardIndex < blockers.size(); boardIndex++) {
+    const Bitboard& blockerBoard = blockers.at(boardIndex);
+
+    // Valid moves starts with whatever the piece can do on an empty board
+    Bitboard currentValidMoves = allowedMoves;
+
+    // UpRight
+    bool blocked = false;
+    for (BoardIndex currentIndex = position;
+         (currentIndex.rank() < Rank(8)) && (currentIndex.file() < File::H);
+         currentIndex = currentIndex + CompassDirection::NorthEast) {
+
+      if (blocked) {
+        currentValidMoves.disableBit(currentIndex);
+      } else {
+        blocked = blockerBoard.checkBit(currentIndex);
+      }
+    }
+
+    // DownRight
+    blocked = false;
+    for (BoardIndex currentIndex = position;
+         (currentIndex.rank() > Rank(1)) && (currentIndex.file() < File::H);
+         currentIndex = currentIndex + CompassDirection::SouthEast) {
+
+      if (blocked) {
+        currentValidMoves.disableBit(currentIndex);
+      } else {
+        blocked = blockerBoard.checkBit(currentIndex);
+      }
+    }
+
+    // DownLeft
+    blocked = false;
+    for (BoardIndex currentIndex = position;
+         (currentIndex.rank() > Rank(1)) && (currentIndex.file() > File::A);
+         currentIndex = currentIndex + CompassDirection::SouthWest) {
+
+      if (blocked) {
+        currentValidMoves.disableBit(currentIndex);
+      } else {
+        blocked = blockerBoard.checkBit(currentIndex);
+      }
+    }
+
+    // UpLeft
+    blocked = false;
+    for (BoardIndex currentIndex = position;
+         (currentIndex.rank() < Rank(8)) && (currentIndex.file() > File::A);
+         currentIndex = currentIndex + CompassDirection::NorthWest) {
+
+      if (blocked) {
+        currentValidMoves.disableBit(currentIndex);
+      } else {
+        blocked = blockerBoard.checkBit(currentIndex);
+      }
+    }
+
+    validMoves.at(boardIndex) = currentValidMoves;
+  }
+
+  return validMoves;
+}
+
+} // namespace
+
+namespace Tools {
+
 void generateRookMagics() {
   using namespace Engine_NS;
+
+  int max = 0;
 
   for (int i = 0; i < 64; i++) {
     const BoardIndex index = Index(i);
@@ -203,8 +278,59 @@ void generateRookMagics() {
 
     // Generate all the possible blocker layouts
     std::vector<Bitboard> blockerBoards = generateAllBlockers(currentMoves);
+
+    max = std::max(max, (int)blockerBoards.size());
+
     // Determine what the valid moves are for each of those blocker layouts
     std::vector<Bitboard> validMoves = generateValidRookMoves(currentMoves, blockerBoards, index);
+
+    // MAGIC!!!
+
+    const MagicValues magicVals = generateMagicValues(blockerBoards);
+
+    size_t lowestIndex = 0 - 1;
+    size_t highestIndex = 0;
+    for (const Bitboard& validMove : validMoves) {
+      size_t currentIndex = (validMove.bits * magicVals.first) >> magicVals.second;
+      lowestIndex = std::min(lowestIndex, currentIndex);
+      highestIndex = std::max(highestIndex, currentIndex);
+    }
+
+    std::cout << i + 1 << "/64: Magic Num = " << magicVals.first
+              << " | Shift = " << magicVals.second << "\n";
+    std::cout << "  Lowest Index: " << lowestIndex << " | Highest Index: " << highestIndex << "\n";
+  }
+
+  std::cout << "Max: " << max << std::endl;
+}
+
+void generateBishopMagics() {
+  using namespace Engine_NS;
+
+  int max = 0;
+
+  for (int i = 0; i < 64; i++) {
+    const BoardIndex index = Index(i);
+
+    // Get the allowed moves for a bishop at the given index
+    Bitboard currentMoves = Precomputed::BishopMoves.at(index);
+    // Don't care about edges
+    if (index.rank() < Rank(8))
+      currentMoves.disableBits(TopEdge);
+    if (index.rank() > Rank(1))
+      currentMoves.disableBits(BottomEdge);
+    if (index.file() > File::A)
+      currentMoves.disableBits(LeftEdge);
+    if (index.file() < File::H)
+      currentMoves.disableBits(RightEdge);
+
+    // Generate all the possible blocker layouts
+    std::vector<Bitboard> blockerBoards = generateAllBlockers(currentMoves);
+
+    max = std::max(max, (int)blockerBoards.size());
+
+    // Determine what the valid moves are for each of those blocker layouts
+    std::vector<Bitboard> validMoves = generateValidBishopMoves(currentMoves, blockerBoards, index);
 
     // MAGIC!!!
 
@@ -213,6 +339,7 @@ void generateRookMagics() {
     std::cout << i + 1 << "/64: Magic Num = " << magicVals.first
               << " | Shift = " << magicVals.second << "\n";
   }
+  std::cout << "Max: " << max << std::endl;
 }
 
 } // namespace Tools

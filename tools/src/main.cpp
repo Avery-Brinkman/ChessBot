@@ -68,7 +68,7 @@ static Option getInput() {
   std::cout << "> ";
   std::cin >> input;
 
-  Option option = Option(input);
+  auto option = Option(input);
 
   if (option < PawnMovements || option > Quit || (option >= Invalid && option < Quit))
     return Invalid;
@@ -83,7 +83,7 @@ static MagicOption getMagicInput() {
   std::cout << "> ";
   std::cin >> input;
 
-  MagicOption option = MagicOption(input);
+  auto option = MagicOption(input);
 
   if (option < BishopBits || option > Quit || (option >= Invalid && option < Quit))
     return Invalid;
@@ -168,6 +168,7 @@ static void runMagicTool(MagicOption option) {
   switch (option) {
   case BishopBits:
     std::cout << "Bishop" << std::endl;
+    Tools::generateBishopMagics();
     break;
   case RookBits:
     std::cout << "Rook" << std::endl;
@@ -189,19 +190,20 @@ static void runMagicTool(MagicOption option) {
 
 } // namespace ToolMenu
 
-bool magicMain() {
+static bool magicMain() {
+  using enum ToolMenu::MagicOption;
   using namespace ToolMenu;
 
-  MagicOption option = MagicOption::Invalid;
+  MagicOption option = Invalid;
 
-  while (option != MagicOption::Quit && option != MagicOption::Back) {
+  while (option != Quit && option != Back) {
     magicMenu();
     option = getMagicInput();
     clearScreen();
     runMagicTool(option);
   }
 
-  return option == MagicOption::Quit;
+  return option == Quit;
 };
 
 int main() {
