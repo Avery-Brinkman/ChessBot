@@ -86,6 +86,7 @@ TableView {
       ToolTip {
         id: toolTip
 
+        delay: 600
         visible: mouseArea.containsMouse && text !== ""
       }
 
@@ -134,6 +135,7 @@ TableView {
           }
           PropertyChanges {
             target: toolTip
+            delay: 1000
             text: "Move to this Square"
           }
         },
@@ -149,6 +151,7 @@ TableView {
           }
           PropertyChanges {
             target: toolTip
+            delay: 1000
             text: "Select Piece"
           }
         }
