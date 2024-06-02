@@ -44,6 +44,9 @@ private:
 
   void updateBitboards(const Move& move);
 
+  void rayCast(const Engine_NS::BoardIndex& index, Engine_NS::Bitboard& moves,
+               Engine_NS::CompassDirection direction) const;
+
   Bitboards m_bitboards;
 };
 } // namespace Engine_NS

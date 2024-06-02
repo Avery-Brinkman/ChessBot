@@ -200,20 +200,33 @@ Bitboard Board::getValidKnightMoves(const BoardIndex& index) const {
 }
 
 Bitboard Board::getValidBishopMoves(const BoardIndex& index) const {
-  return Precomputed::BishopMoves.at(index.index);
+  Bitboard validMoves = {};
+  rayCast(index, validMoves, NorthEast);
+  rayCast(index, validMoves, SouthEast);
+  rayCast(index, validMoves, SouthWest);
+  rayCast(index, validMoves, NorthWest);
+
+  validMoves.disableBits(getPiece(index).isWhite() ? m_bitboards.getWhitePieces()
+                                                   : m_bitboards.getBlackPieces());
+
+  return validMoves;
 }
 
 Bitboard Board::getValidRookMoves(const BoardIndex& index) const {
-  return Precomputed::RookMoves.at(index.index);
+  Bitboard validMoves = {};
+  rayCast(index, validMoves, North);
+  rayCast(index, validMoves, East);
+  rayCast(index, validMoves, South);
+  rayCast(index, validMoves, West);
+
+  validMoves.disableBits(getPiece(index).isWhite() ? m_bitboards.getWhitePieces()
+                                                   : m_bitboards.getBlackPieces());
+
+  return validMoves;
 }
 
 Bitboard Board::getValidQueenMoves(const BoardIndex& index) const {
-  const BoardInfo boardInfo = m_bitboards.getInfo();
-  const bool isWhite = boardInfo.whitePieces.checkBit(index);
-  const Bitboard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
-  const Bitboard validSquares = opponentPieces | boardInfo.emptySquares;
-
-  return Precomputed::QueenMoves.at(index.index) & validSquares;
+  return getValidBishopMoves(index) | getValidRookMoves(index);
 }
 
 Bitboard Board::getValidKingMoves(const BoardIndex& index) const {
@@ -341,6 +354,31 @@ void Board::updateBitboards(const Move& move) {
 
   if (move.capturedPiece != None) {
     removePiece(move.capturedPiece, move.capturedPos);
+  }
+}
+
+void Board::rayCast(const Engine_NS::BoardIndex& index, Engine_NS::Bitboard& moves,
+                    Engine_NS::CompassDirection direction) const {
+  BoardIndex currentIndex = index;
+
+  while (true) {
+    if (direction == North || direction == NorthEast || direction == NorthWest)
+      if (currentIndex.rank() >= 8)
+        return;
+    if (direction == East || direction == NorthEast || direction == SouthEast)
+      if (currentIndex.file() >= File::H)
+        return;
+    if (direction == South || direction == SouthEast || direction == SouthWest)
+      if (currentIndex.rank() <= 1)
+        return;
+    if (direction == West || direction == NorthWest || direction == SouthWest)
+      if (currentIndex.file() <= File::A)
+        return;
+    currentIndex = currentIndex + direction;
+    moves.enableBit(currentIndex);
+
+    if (m_bitboards.getInfo().allPieces.checkBit(currentIndex))
+      return;
   }
 }
 
