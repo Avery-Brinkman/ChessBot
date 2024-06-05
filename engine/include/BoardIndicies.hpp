@@ -28,8 +28,8 @@ enum File : unsigned char { A, B, C, D, E, F, G, H };
 static constexpr std::array<char, 8> FileToString = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
 
 struct BoardIndex {
-  BoardIndex(int index) : BoardIndex(Index(index)){};
-  BoardIndex(Index index) : index(index){};
+  explicit BoardIndex(const size_t& index) : BoardIndex(Index(index)){};
+  explicit BoardIndex(const Index& index) : index(index){};
   BoardIndex() = default;
 
   std::string toString() const { return std::format("{}{}", FileToString.at(file()), rank()); }
@@ -40,7 +40,6 @@ struct BoardIndex {
 
   Index index = INVALID;
 
-  operator Index() const { return index; }
   BoardIndex operator+(const CompassDirection& direction) const {
     return BoardIndex(index + direction);
   }

@@ -46,9 +46,11 @@ void Board::setToStartPosition() {
   m_boardInfo = m_bitboards.getInfo();
 }
 
-BoardIndex Board::getIndex(size_t row, size_t col) const { return Index((7 - row) * 8 + col); }
+BoardIndex Board::getIndex(const size_t& row, const size_t& col) const {
+  return BoardIndex((7 - row) * 8 + col);
+}
 
-Piece Board::getPiece(size_t row, size_t col) const {
+Piece Board::getPiece(const size_t& row, const size_t& col) const {
   if (row > 7 || col > 7)
     return None;
   return getPiece(getIndex(row, col));
@@ -99,7 +101,7 @@ Bitboard Board::getValidMoves(const BoardIndex& index) const {
   case King:
     return getValidKingMoves(index);
   default:
-    return 0;
+    return {};
   }
 }
 
@@ -114,7 +116,7 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
     move.capturedPos = to;
   }
 
-  MoveFlags flags = 0;
+  MoveFlags flags{};
 
   if (move.movedPiece.type() == Pawn) {
     const bool isWhite = move.movedPiece.isWhite();
@@ -128,7 +130,7 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
     else if (opponentEnPassant.checkBit(to)) {
       flags = EnPassant;
 
-      move.capturedPos = Index(to.index + move.movedPiece.backward());
+      move.capturedPos = to + move.movedPiece.backward();
       move.capturedPiece = getPiece(move.capturedPos);
     }
     // Promotion
@@ -235,12 +237,12 @@ Bitboard Board::getValidKingMoves(const BoardIndex& index) const {
   const Bitboard moves = Precomputed::KingMoves.at(index.index);
 
   // const Bitboard castling = getCastlingMoves(index, isWhite);
-  const Bitboard castling = 0;
+  const Bitboard castling{};
 
   return (moves & validSquares) | castling;
 }
 
-Bitboard Board::getCastlingMoves(const BoardIndex& index, bool isWhite) const {
+Bitboard Board::getCastlingMoves(const BoardIndex& index, const bool& isWhite) const {
   // const Bitboard whitePieces = getWhitePieces();
   // const Bitboard blackPieces = getBlackPieces();
   // const Bitboard allPieces = whitePieces | blackPieces;
@@ -255,7 +257,7 @@ Bitboard Board::getCastlingMoves(const BoardIndex& index, bool isWhite) const {
   // const Bitboard rightMustBeFree = isWhite ? 6ULL : 6ULL << (8 * 7);
 
   // return leftMustBeFree | rightMustBeFree;
-  return 0;
+  return {};
 }
 
 void Board::addPiece(const Piece& piece, const BoardIndex& index) {
@@ -324,8 +326,8 @@ void Board::updateBitboards(const Move& move) {
 
     // Moved two steps
     if (move.flags == DoublePawnPush) {
-      enPassant.enableBit(Index(std::midpoint(static_cast<unsigned char>(move.startPos),
-                                              static_cast<unsigned char>(move.endPos))));
+      enPassant.enableBit(BoardIndex(std::midpoint(static_cast<unsigned char>(move.startPos.index),
+                                                   static_cast<unsigned char>(move.endPos.index))));
     }
     // Clear en passant
     else {
@@ -334,20 +336,19 @@ void Board::updateBitboards(const Move& move) {
       enPassant.disableBit(clearLoc);
     }
 
+    // TODO: Allow for promotion to other pieces
     // Check for promotion
-    if (move.flags & QueenPromotion) {
-      // TODO: This gets triggered for a promotion of any type
-      pieceToAdd = Piece(Queen | pieceToAdd.color());
+    if ((move.flags & QueenPromotion) == QueenPromotion) {
+      pieceToAdd = Piece({Queen | pieceToAdd.color()});
     }
   }
 
   // Remove En Passant when a pawn is captured
-  if (move.capturedPiece.type() == Pawn) {
-    if (move.capturedPos.rank() == 4 || move.capturedPos.rank() == 5) {
-      Bitboard& opponentEnPassant = m_bitboards.enPassant[!isWhite];
+  if ((move.capturedPiece.type() == Pawn) &&
+      (move.capturedPos.rank() == 4 || move.capturedPos.rank() == 5)) {
+    Bitboard& opponentEnPassant = m_bitboards.enPassant[!isWhite];
 
-      opponentEnPassant.disableBit(Index(move.capturedPos.index + move.capturedPiece.backward()));
-    }
+    opponentEnPassant.disableBit(move.capturedPos + move.capturedPiece.backward());
   }
 
   addPiece(pieceToAdd, move.endPos);
@@ -361,11 +362,10 @@ void Board::updateBitboards(const Move& move) {
 }
 
 void Board::rayCast(const Engine_NS::BoardIndex& index, Engine_NS::Bitboard& moves,
-                    Engine_NS::CompassDirection direction) const {
+                    const Engine_NS::CompassDirection& direction) const {
   BoardIndex currentIndex = index;
 
   while (true) {
-
     if ((direction == North || direction == NorthEast || direction == NorthWest) &&
         (currentIndex.rank() >= 8))
       return;

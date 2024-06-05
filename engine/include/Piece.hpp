@@ -40,20 +40,20 @@ struct Piece {
 
 // Pieces
 
-constexpr Piece None = {};
+constexpr Piece None{};
 
-constexpr Piece WhitePawn(White | Pawn);
-constexpr Piece WhiteKnight(Knight | White);
-constexpr Piece WhiteBishop(Bishop | White);
-constexpr Piece WhiteRook(Rook | White);
-constexpr Piece WhiteQueen(Queen | White);
-constexpr Piece WhiteKing(King | White);
+constexpr Piece WhitePawn{White | Pawn};
+constexpr Piece WhiteKnight{Knight | White};
+constexpr Piece WhiteBishop{Bishop | White};
+constexpr Piece WhiteRook{Rook | White};
+constexpr Piece WhiteQueen{Queen | White};
+constexpr Piece WhiteKing{King | White};
 
-constexpr Piece BlackPawn(Pawn | Black);
-constexpr Piece BlackKnight(Knight | Black);
-constexpr Piece BlackBishop(Bishop | Black);
-constexpr Piece BlackRook(Rook | Black);
-constexpr Piece BlackQueen(Queen | Black);
-constexpr Piece BlackKing(King | Black);
+constexpr Piece BlackPawn{Pawn | Black};
+constexpr Piece BlackKnight{Knight | Black};
+constexpr Piece BlackBishop{Bishop | Black};
+constexpr Piece BlackRook{Rook | Black};
+constexpr Piece BlackQueen{Queen | Black};
+constexpr Piece BlackKing{King | Black};
 
 } // namespace Engine_NS

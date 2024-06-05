@@ -11,10 +11,10 @@ public:
   void setToStartPosition();
 
   // Gets 1D index based on row col (where 0,0 is top left)
-  BoardIndex getIndex(size_t row, size_t col) const;
+  BoardIndex getIndex(const size_t& row, const size_t& col) const;
 
   // Gets the piece from the TL row col
-  Piece getPiece(size_t row, size_t col) const;
+  Piece getPiece(const size_t& row, const size_t& col) const;
   // Get the piece from the 1D index
   Piece getPiece(const BoardIndex& index) const;
 
@@ -37,7 +37,7 @@ private:
   Bitboard getValidQueenMoves(const BoardIndex& index) const;
   Bitboard getValidKingMoves(const BoardIndex& index) const;
 
-  Bitboard getCastlingMoves(const BoardIndex& index, bool isWhite) const;
+  Bitboard getCastlingMoves(const BoardIndex& index, const bool& isWhite) const;
 
   void addPiece(const Piece& piece, const BoardIndex& index);
   void removePiece(const Piece& piece, const BoardIndex& index);
@@ -45,9 +45,9 @@ private:
   void updateBitboards(const Move& move);
 
   void rayCast(const Engine_NS::BoardIndex& index, Engine_NS::Bitboard& moves,
-               Engine_NS::CompassDirection direction) const;
+               const Engine_NS::CompassDirection& direction) const;
 
-  Bitboards m_bitboards;
-  BoardInfo m_boardInfo;
+  Bitboards m_bitboards{};
+  BoardInfo m_boardInfo{};
 };
 } // namespace Engine_NS
