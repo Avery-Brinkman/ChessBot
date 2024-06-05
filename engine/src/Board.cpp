@@ -42,6 +42,8 @@ void Board::setToStartPosition() {
   m_bitboards.bishops[0] = 0b0010010000000000000000000000000000000000000000000000000000000000;
   m_bitboards.queens[0] = 0b0000100000000000000000000000000000000000000000000000000000000000;
   m_bitboards.kings[0] = 0b0001000000000000000000000000000000000000000000000000000000000000;
+
+  m_boardInfo = m_bitboards.getInfo();
 }
 
 BoardIndex Board::getIndex(size_t row, size_t col) const { return Index((7 - row) * 8 + col); }
@@ -176,25 +178,21 @@ Bitboard Board::getWhitePieces() const { return m_bitboards.getWhitePieces(); }
 Bitboard Board::getBlackPieces() const { return m_bitboards.getBlackPieces(); }
 
 Bitboard Board::getValidPawnMoves(const BoardIndex& index) const {
-  // TODO: This only needs to be calculated once per move
-  const BoardInfo boardInfo = m_bitboards.getInfo();
   const Piece piece = getPiece(index);
   const bool isWhite = piece.isWhite();
-  const Bitboard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
+  const Bitboard opponentPieces = isWhite ? m_boardInfo.blackPieces : m_boardInfo.whitePieces;
 
   const Bitboard moves = Engine_NS::Precomputed::PawnMoves.at(isWhite).at(index.index);
   const Bitboard attacks = Engine_NS::Precomputed::PawnAttacks.at(isWhite).at(index.index);
 
-  return (moves & boardInfo.emptySquares) |
+  return (moves & m_boardInfo.emptySquares) |
          (attacks & (opponentPieces | m_bitboards.enPassant[!isWhite]));
 }
 
 Bitboard Board::getValidKnightMoves(const BoardIndex& index) const {
-  // TODO: This only needs to be calculated once per move
-  const BoardInfo boardInfo = m_bitboards.getInfo();
-  const bool isWhite = boardInfo.whitePieces.checkBit(index);
-  const Bitboard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
-  const Bitboard validSquares = opponentPieces | boardInfo.emptySquares;
+  const bool isWhite = m_boardInfo.whitePieces.checkBit(index);
+  const Bitboard opponentPieces = isWhite ? m_boardInfo.blackPieces : m_boardInfo.whitePieces;
+  const Bitboard validSquares = opponentPieces | m_boardInfo.emptySquares;
 
   return Precomputed::KnightMoves.at(index.index) & validSquares;
 }
@@ -230,10 +228,9 @@ Bitboard Board::getValidQueenMoves(const BoardIndex& index) const {
 }
 
 Bitboard Board::getValidKingMoves(const BoardIndex& index) const {
-  const BoardInfo boardInfo = m_bitboards.getInfo();
-  const bool isWhite = boardInfo.whitePieces.checkBit(index);
-  const Bitboard opponentPieces = isWhite ? boardInfo.blackPieces : boardInfo.whitePieces;
-  const Bitboard validSquares = opponentPieces | boardInfo.emptySquares;
+  const bool isWhite = m_boardInfo.whitePieces.checkBit(index);
+  const Bitboard opponentPieces = isWhite ? m_boardInfo.blackPieces : m_boardInfo.whitePieces;
+  const Bitboard validSquares = opponentPieces | m_boardInfo.emptySquares;
 
   const Bitboard moves = Precomputed::KingMoves.at(index.index);
 
@@ -284,6 +281,8 @@ void Board::addPiece(const Piece& piece, const BoardIndex& index) {
   default:
     return;
   }
+
+  m_boardInfo = m_bitboards.getInfo();
 }
 
 void Board::removePiece(const Piece& piece, const BoardIndex& index) {
@@ -309,6 +308,8 @@ void Board::removePiece(const Piece& piece, const BoardIndex& index) {
   default:
     return;
   }
+
+  m_boardInfo = m_bitboards.getInfo();
 }
 
 void Board::updateBitboards(const Move& move) {
@@ -355,6 +356,8 @@ void Board::updateBitboards(const Move& move) {
   if (move.capturedPiece != None) {
     removePiece(move.capturedPiece, move.capturedPos);
   }
+
+  m_boardInfo = m_bitboards.getInfo();
 }
 
 void Board::rayCast(const Engine_NS::BoardIndex& index, Engine_NS::Bitboard& moves,
@@ -362,22 +365,23 @@ void Board::rayCast(const Engine_NS::BoardIndex& index, Engine_NS::Bitboard& mov
   BoardIndex currentIndex = index;
 
   while (true) {
-    if (direction == North || direction == NorthEast || direction == NorthWest)
-      if (currentIndex.rank() >= 8)
-        return;
-    if (direction == East || direction == NorthEast || direction == SouthEast)
-      if (currentIndex.file() >= File::H)
-        return;
-    if (direction == South || direction == SouthEast || direction == SouthWest)
-      if (currentIndex.rank() <= 1)
-        return;
-    if (direction == West || direction == NorthWest || direction == SouthWest)
-      if (currentIndex.file() <= File::A)
-        return;
+
+    if ((direction == North || direction == NorthEast || direction == NorthWest) &&
+        (currentIndex.rank() >= 8))
+      return;
+    if ((direction == East || direction == NorthEast || direction == SouthEast) &&
+        (currentIndex.file() >= File::H))
+      return;
+    if ((direction == South || direction == SouthEast || direction == SouthWest) &&
+        (currentIndex.rank() <= 1))
+      return;
+    if ((direction == West || direction == NorthWest || direction == SouthWest) &&
+        (currentIndex.file() <= File::A))
+      return;
     currentIndex = currentIndex + direction;
     moves.enableBit(currentIndex);
 
-    if (m_bitboards.getInfo().allPieces.checkBit(currentIndex))
+    if (m_boardInfo.allPieces.checkBit(currentIndex))
       return;
   }
 }

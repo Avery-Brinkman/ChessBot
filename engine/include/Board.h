@@ -48,5 +48,6 @@ private:
                Engine_NS::CompassDirection direction) const;
 
   Bitboards m_bitboards;
+  BoardInfo m_boardInfo;
 };
 } // namespace Engine_NS
