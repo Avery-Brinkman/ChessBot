@@ -6,7 +6,6 @@ namespace Engine_NS {
 using BitboardBits = uint_fast64_t;
 
 struct Bitboard {
-public:
   explicit Bitboard(const BoardIndex& index) { enableBit(index); }
   explicit(false) Bitboard(const BitboardBits& bits) : bits(bits) {}
   Bitboard() = default;
@@ -31,6 +30,9 @@ public:
   Bitboard operator~() const { return ~bits; }
   Bitboard operator<<(const int& value) const { return bits << value; }
   Bitboard operator>>(const int& value) const { return bits >> value; }
+
+  std::array<BoardIndex, 64>::const_iterator begin() const { return IndexList.begin(); }
+  std::array<BoardIndex, 64>::const_iterator end() const { return IndexList.end(); }
 };
 
 struct BoardInfo {
