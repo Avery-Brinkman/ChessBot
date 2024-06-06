@@ -52,10 +52,12 @@ BoardIndex Board::getIndex(const size_t& row, const size_t& col) const {
 
 Piece Board::getPiece(const size_t& row, const size_t& col) const {
   if (row > 7 || col > 7)
-    return None;
+    return Pieces::None;
   return getPiece(getIndex(row, col));
 }
 Piece Board::getPiece(const BoardIndex& index) const {
+  using namespace Engine_NS::Pieces;
+
   if (m_bitboards.pawns[1].checkBit(index))
     return WhitePawn;
   if (m_bitboards.rooks[1].checkBit(index))
@@ -112,7 +114,7 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
   move.movedPiece = getPiece(from);
 
   move.capturedPiece = getPiece(to);
-  if (move.capturedPiece != None) {
+  if (move.capturedPiece != Pieces::None) {
     move.capturedPos = to;
   }
 
@@ -354,7 +356,7 @@ void Board::updateBitboards(const Move& move) {
   addPiece(pieceToAdd, move.endPos);
   removePiece(pieceToRemove, move.startPos);
 
-  if (move.capturedPiece != None) {
+  if (move.capturedPiece != Pieces::None) {
     removePiece(move.capturedPiece, move.capturedPos);
   }
 

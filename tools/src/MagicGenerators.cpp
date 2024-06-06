@@ -66,8 +66,8 @@ std::vector<Engine_NS::Bitboard> generateAllBlockers(const Engine_NS::Bitboard& 
   using namespace Engine_NS;
 
   // Get the indexes of the bits that are enabled for the current allowed moves
-  std::vector<int> enabledIndexes = {};
-  for (int b = 0; b < 64; b++)
+  std::vector<BoardIndex> enabledIndexes = {};
+  for (const BoardIndex& b : IndexList)
     if (allowedMoves.checkBit(b))
       enabledIndexes.push_back(b);
 
@@ -86,7 +86,7 @@ std::vector<Engine_NS::Bitboard> generateAllBlockers(const Engine_NS::Bitboard& 
 
   while (bitIndex < enabledIndexes.size()) {
     // We're lookin at the bit right here
-    int bitLocation = enabledIndexes.at(bitIndex);
+    BoardIndex bitLocation = enabledIndexes.at(bitIndex);
 
     // If bit is 0, set to 1
     if (!workingBoard.checkBit(bitLocation)) {
@@ -265,7 +265,7 @@ void generateRookMagics() {
     const BoardIndex index = Index(i);
 
     // Get the allowed moves for a rook at the given index
-    Bitboard currentMoves = Precomputed::RookMoves.at(index);
+    Bitboard currentMoves = Precomputed::RookMoves.at(index.index);
     // Don't care about edges
     if (index.rank() < Rank(8))
       currentMoves.disableBits(TopEdge);
@@ -313,7 +313,7 @@ void generateBishopMagics() {
     const BoardIndex index = Index(i);
 
     // Get the allowed moves for a bishop at the given index
-    Bitboard currentMoves = Precomputed::BishopMoves.at(index);
+    Bitboard currentMoves = Precomputed::BishopMoves.at(index.index);
     // Don't care about edges
     if (index.rank() < Rank(8))
       currentMoves.disableBits(TopEdge);

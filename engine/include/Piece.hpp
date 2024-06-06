@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Directions.h"
+
+#include <compare>
 #include <cstdint>
 
 namespace Engine_NS {
@@ -39,11 +41,10 @@ struct Piece {
 
   PieceBits bits = Color::White | PieceType::NoneType;
 
-  bool operator!=(const Piece& other) const { return bits != other.bits; };
-  bool operator!=(const Piece& other) { return bits != other.bits; }
+  std::strong_ordering operator<=>(const Piece& other) const = default;
 };
 
-// Pieces
+namespace Pieces {
 
 constexpr Piece None{};
 
@@ -60,5 +61,7 @@ constexpr Piece BlackBishop(Black, Bishop);
 constexpr Piece BlackRook(Black, Rook);
 constexpr Piece BlackQueen(Black, Queen);
 constexpr Piece BlackKing(Black, King);
+
+} // namespace Pieces
 
 } // namespace Engine_NS

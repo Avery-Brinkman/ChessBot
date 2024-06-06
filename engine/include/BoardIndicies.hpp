@@ -39,6 +39,8 @@ struct BoardIndex {
 
   Index index = INVALID;
 
+  std::strong_ordering operator<=>(const BoardIndex& other) const = default;
+
   BoardIndex operator+(const CompassDirection& direction) const {
     return BoardIndex(index + direction);
   }

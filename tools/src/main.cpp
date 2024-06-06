@@ -93,58 +93,59 @@ static MagicOption getMagicInput() {
 
 static void runTool(Option option) {
   using enum Option;
+  using namespace Engine_NS::Pieces;
 
   switch (option) {
   case PawnMovements: {
     std::cout << "White Pawn Moves:" << std::endl;
-    std::array<Engine_NS::Bitboard, 64> pawnMoves = Tools::generateMoves(Engine_NS::WhitePawn);
+    std::array<Engine_NS::Bitboard, 64> pawnMoves = Tools::generateMoves(WhitePawn);
     for (const Engine_NS::Bitboard& bitboard : pawnMoves)
       std::cout << bitboard.bits << ", ";
     std::cout << "\b\b  " << std::endl;
     std::cout << "White Pawn Attacks:" << std::endl;
-    pawnMoves = Tools::generateAttacks(Engine_NS::WhitePawn);
+    pawnMoves = Tools::generateAttacks(WhitePawn);
     for (const Engine_NS::Bitboard& bitboard : pawnMoves)
       std::cout << bitboard.bits << ", ";
     std::cout << "\b\b  " << std::endl;
     std::cout << std::endl;
     std::cout << "Black Pawn Moves:" << std::endl;
-    pawnMoves = Tools::generateMoves(Engine_NS::BlackPawn);
+    pawnMoves = Tools::generateMoves(BlackPawn);
     for (const Engine_NS::Bitboard& bitboard : pawnMoves)
       std::cout << bitboard.bits << ", ";
     std::cout << "\b\b  " << std::endl;
     std::cout << "Black Pawn Attacks:" << std::endl;
-    pawnMoves = Tools::generateAttacks(Engine_NS::BlackPawn);
+    pawnMoves = Tools::generateAttacks(BlackPawn);
     for (const Engine_NS::Bitboard& bitboard : pawnMoves)
       std::cout << bitboard.bits << ", ";
     break;
   }
   case KnightMovements: {
     std::cout << "Knight Moves:" << std::endl;
-    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteKnight))
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(WhiteKnight))
       std::cout << bitboard.bits << ", ";
     break;
   }
   case BishopMovements: {
     std::cout << "Bishop Moves:" << std::endl;
-    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteBishop))
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(WhiteBishop))
       std::cout << bitboard.bits << ", ";
     break;
   }
   case RookMovements: {
     std::cout << "Rook Moves:" << std::endl;
-    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteRook))
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(WhiteRook))
       std::cout << bitboard.bits << ", ";
     break;
   }
   case QueenMovements: {
     std::cout << "Queen Moves:" << std::endl;
-    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteQueen))
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(WhiteQueen))
       std::cout << bitboard.bits << ", ";
     break;
   }
   case KingMovements: {
     std::cout << "King Moves:" << std::endl;
-    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(Engine_NS::WhiteKing))
+    for (const Engine_NS::Bitboard& bitboard : Tools::generateMoves(WhiteKing))
       std::cout << bitboard.bits << ", ";
     break;
   }

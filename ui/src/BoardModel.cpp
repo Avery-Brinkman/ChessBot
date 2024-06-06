@@ -40,7 +40,7 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     return valid;
   }
   case SelectedRole: {
-    if (m_selectedIndex == -1)
+    if (m_selectedIndex == Engine_NS::INVALID)
       return false;
     return m_selectedIndex == bitIndex;
   }
@@ -102,7 +102,7 @@ SettingsPanel* BoardModel::getSettingsPanel() const { return m_settingsPanel.get
 BitboardsModel* BoardModel::getBitboardsModel() const { return m_bitboardsModel.get(); }
 
 QUrl BoardModel::pieceImage(const Engine_NS::Piece& piece) const {
-  using namespace Engine_NS;
+  using namespace Engine_NS::Pieces;
   switch (piece.bits) {
   case WhitePawn.bits:
     return QUrl("qrc:/images/whitePawn.png");
@@ -179,7 +179,7 @@ bool BoardModel::addRemovePiece(const Engine_NS::BoardIndex& bitIndex, bool isWh
   using enum Chess_UI::BoardModel::BoardRoles;
 
   const Engine_NS::Color color = isWhite ? Engine_NS::Color::White : Engine_NS::Color::Black;
-  togglePiece(Engine_NS::Piece(m_settingsPanel->getPieceType() | color), bitIndex);
+  togglePiece(Engine_NS::Piece(color, m_settingsPanel->getPieceType()), bitIndex);
 
   m_bitboardsModel->updateBoards(getBitboards());
   m_bitboardsModel->updateDebugBits();

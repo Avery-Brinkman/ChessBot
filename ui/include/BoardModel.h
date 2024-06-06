@@ -60,12 +60,12 @@ private:
   void emitDataChangeSignals(const QModelIndex& index, const std::vector<BoardRoles>& roles);
   void emitDataChangeSignals(const std::vector<BoardRoles>& roles);
 
-  Engine_NS::BoardIndex m_selectedIndex = {};
-  Engine_NS::Bitboard m_currentValidMoves = {};
+  Engine_NS::BoardIndex m_selectedIndex{};
+  Engine_NS::Bitboard m_currentValidMoves{};
 
   std::unique_ptr<SettingsPanel> m_settingsPanel = std::make_unique<SettingsPanel>();
   std::unique_ptr<BitboardsModel> m_bitboardsModel;
 
-  Engine_NS::Bitboard m_bitboard = {};
+  Engine_NS::Bitboard m_bitboard{};
 };
 } // namespace Chess_UI
