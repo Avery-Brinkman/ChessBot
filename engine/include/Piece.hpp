@@ -7,8 +7,8 @@ namespace Engine_NS {
 
 using PieceBits = uint_fast8_t;
 
-enum Color : uint_fast8_t { White = 0b0000, Black = 0b1000 };
-enum PieceType : uint_fast8_t {
+enum Color : PieceBits { White = 0b0000, Black = 0b1000 };
+enum PieceType : PieceBits {
   NoneType = 0b0000,
   Pawn = 0b0001,
   Knight = 0b0010,
@@ -19,6 +19,11 @@ enum PieceType : uint_fast8_t {
 };
 
 struct Piece {
+  Piece(int) = delete;
+  constexpr Piece(const Color& color, const PieceType& type) : bits(color | type) {}
+  explicit(false) Piece(const PieceBits& bits) : bits(bits) {}
+  Piece() = default;
+
   Color color() const { return Color(bits & 0b1000); }
   PieceType type() const { return PieceType(bits & 0b0111); }
   bool isWhite() const { return color() == Color::White; }
@@ -42,18 +47,18 @@ struct Piece {
 
 constexpr Piece None{};
 
-constexpr Piece WhitePawn{White | Pawn};
-constexpr Piece WhiteKnight{Knight | White};
-constexpr Piece WhiteBishop{Bishop | White};
-constexpr Piece WhiteRook{Rook | White};
-constexpr Piece WhiteQueen{Queen | White};
-constexpr Piece WhiteKing{King | White};
+constexpr Piece WhitePawn(White, Pawn);
+constexpr Piece WhiteKnight(White, Knight);
+constexpr Piece WhiteBishop(White, Bishop);
+constexpr Piece WhiteRook(White, Rook);
+constexpr Piece WhiteQueen(White, Queen);
+constexpr Piece WhiteKing(White, King);
 
-constexpr Piece BlackPawn{Pawn | Black};
-constexpr Piece BlackKnight{Knight | Black};
-constexpr Piece BlackBishop{Bishop | Black};
-constexpr Piece BlackRook{Rook | Black};
-constexpr Piece BlackQueen{Queen | Black};
-constexpr Piece BlackKing{King | Black};
+constexpr Piece BlackPawn(Black, Pawn);
+constexpr Piece BlackKnight(Black, Knight);
+constexpr Piece BlackBishop(Black, Bishop);
+constexpr Piece BlackRook(Black, Rook);
+constexpr Piece BlackQueen(Black, Queen);
+constexpr Piece BlackKing(Black, King);
 
 } // namespace Engine_NS

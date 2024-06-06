@@ -106,7 +106,7 @@ Bitboard Board::getValidMoves(const BoardIndex& index) const {
 }
 
 void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
-  Move move = {};
+  Move move{};
   move.startPos = from;
   move.endPos = to;
   move.movedPiece = getPiece(from);
@@ -339,7 +339,7 @@ void Board::updateBitboards(const Move& move) {
     // TODO: Allow for promotion to other pieces
     // Check for promotion
     if ((move.flags & QueenPromotion) == QueenPromotion) {
-      pieceToAdd = Piece({Queen | pieceToAdd.color()});
+      pieceToAdd = Piece(pieceToAdd.color(), Queen);
     }
   }
 
