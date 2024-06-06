@@ -6,7 +6,7 @@ namespace Engine_NS {
 using BitboardBits = uint_fast64_t;
 
 struct Bitboard {
-  explicit Bitboard(const BoardIndex& index) { enableBit(index); }
+  explicit Bitboard(const BoardIndex& index) : Bitboard(1ULL << index.index) {}
   explicit(false) Bitboard(const BitboardBits& bits) : bits(bits) {}
   Bitboard() = default;
 
