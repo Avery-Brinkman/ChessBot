@@ -58,30 +58,33 @@ Piece Board::getPiece(const size_t& row, const size_t& col) const {
 Piece Board::getPiece(const BoardIndex& index) const {
   using namespace Engine_NS::Pieces;
 
-  if (m_bitboards.pawns[1].checkBit(index))
-    return WhitePawn;
-  if (m_bitboards.rooks[1].checkBit(index))
-    return WhiteRook;
-  if (m_bitboards.knights[1].checkBit(index))
-    return WhiteKnight;
-  if (m_bitboards.bishops[1].checkBit(index))
-    return WhiteBishop;
-  if (m_bitboards.queens[1].checkBit(index))
-    return WhiteQueen;
-  if (m_bitboards.kings[1].checkBit(index))
-    return WhiteKing;
-  if (m_bitboards.pawns[0].checkBit(index))
-    return BlackPawn;
-  if (m_bitboards.rooks[0].checkBit(index))
-    return BlackRook;
-  if (m_bitboards.knights[0].checkBit(index))
-    return BlackKnight;
-  if (m_bitboards.bishops[0].checkBit(index))
-    return BlackBishop;
-  if (m_bitboards.queens[0].checkBit(index))
-    return BlackQueen;
-  if (m_bitboards.kings[0].checkBit(index))
-    return BlackKing;
+  if (m_boardInfo.whitePieces.checkBit(index)) {
+    if (m_bitboards.pawns[1].checkBit(index))
+      return WhitePawn;
+    if (m_bitboards.rooks[1].checkBit(index))
+      return WhiteRook;
+    if (m_bitboards.knights[1].checkBit(index))
+      return WhiteKnight;
+    if (m_bitboards.bishops[1].checkBit(index))
+      return WhiteBishop;
+    if (m_bitboards.queens[1].checkBit(index))
+      return WhiteQueen;
+    if (m_bitboards.kings[1].checkBit(index))
+      return WhiteKing;
+  } else {
+    if (m_bitboards.pawns[0].checkBit(index))
+      return BlackPawn;
+    if (m_bitboards.rooks[0].checkBit(index))
+      return BlackRook;
+    if (m_bitboards.knights[0].checkBit(index))
+      return BlackKnight;
+    if (m_bitboards.bishops[0].checkBit(index))
+      return BlackBishop;
+    if (m_bitboards.queens[0].checkBit(index))
+      return BlackQueen;
+    if (m_bitboards.kings[0].checkBit(index))
+      return BlackKing;
+  }
 
   return None;
 }
@@ -126,24 +129,28 @@ void Board::movePiece(const BoardIndex& from, const BoardIndex& to) {
 
     // Double pawn push
     if (abs(from.rank() - to.rank()) > 1) {
-      flags = DoublePawnPush;
+      flags = Move_Flags::DoublePawnPush;
     }
     // En passant capture
     else if (opponentEnPassant.checkBit(to)) {
-      flags = EnPassant;
+      flags = Move_Flags::EnPassant;
 
       move.capturedPos = to + move.movedPiece.backward();
       move.capturedPiece = getPiece(move.capturedPos);
     }
     // Promotion
     else if (to.rank() == Rank(1) || to.rank() == Rank(8)) {
-      flags = QueenPromotion;
+      flags = Move_Flags::QueenPromotion;
     }
   }
 
   move.flags = flags;
 
   updateBitboards(move);
+}
+
+std::vector<BoardIndex> Board::getOccupiedSquares() const {
+  return m_boardInfo.allPieces.getEnabledBits();
 }
 
 // Protected Functions
@@ -173,6 +180,8 @@ void Board::togglePiece(const Piece& piece, const BoardIndex& index) {
   default:
     return;
   }
+
+  m_boardInfo = m_bitboards.getInfo();
 }
 
 // Private Functions
@@ -191,6 +200,52 @@ Bitboard Board::getValidPawnMoves(const BoardIndex& index) const {
 
   return (moves & m_boardInfo.emptySquares) |
          (attacks & (opponentPieces | m_bitboards.enPassant[!isWhite]));
+}
+
+std::vector<Move> Board::_getValidPawnMoves(const BoardIndex& index) const {
+  const Piece piece = getPiece(index);
+  const bool isWhite = piece.isWhite();
+  const Bitboard opponentPieces = isWhite ? m_boardInfo.blackPieces : m_boardInfo.whitePieces;
+
+  const Bitboard moves =
+      Engine_NS::Precomputed::PawnMoves.at(isWhite).at(index.index) & m_boardInfo.emptySquares;
+  const Bitboard attacks = Engine_NS::Precomputed::PawnAttacks.at(isWhite).at(index.index);
+  const Bitboard captures = attacks & opponentPieces;
+  const Bitboard enPassant = attacks & m_bitboards.enPassant[!isWhite];
+
+  const Rank promotionRank = isWhite ? Rank(8) : Rank(1);
+  std::vector<Move> validMoves{};
+
+  for (const BoardIndex& moveIndex : moves.getEnabledBits()) {
+    const Rank moveToRank = moveIndex.rank();
+
+    const bool isPromotion = moveToRank == promotionRank;
+    const bool isDoublePush = abs(index.rank() - moveToRank) > 1;
+    const MoveFlags flags = (isPromotion ? Move_Flags::QueenPromotion : Move_Flags::NoFlag) |
+                            (isDoublePush ? Move_Flags::DoublePawnPush : Move_Flags::NoFlag);
+
+    validMoves.emplace_back(
+        Move{.startPos = index, .endPos = moveIndex, .movedPiece = piece, .flags = flags});
+  }
+  for (const BoardIndex& captureIndex : captures.getEnabledBits()) {
+    validMoves.emplace_back(Move{.startPos = index,
+                                 .endPos = captureIndex,
+                                 .movedPiece = piece,
+                                 .capturedPos = captureIndex,
+                                 .capturedPiece = getPiece(captureIndex)});
+  }
+  for (const BoardIndex& enPassantIndex : enPassant.getEnabledBits()) {
+    const BoardIndex capturedPos = enPassantIndex + piece.backward();
+
+    validMoves.emplace_back(Move{.startPos = index,
+                                 .endPos = enPassantIndex,
+                                 .movedPiece = piece,
+                                 .capturedPos = capturedPos,
+                                 .capturedPiece = getPiece(capturedPos),
+                                 .flags = Move_Flags::EnPassant});
+  }
+
+  return validMoves;
 }
 
 Bitboard Board::getValidKnightMoves(const BoardIndex& index) const {
@@ -327,20 +382,21 @@ void Board::updateBitboards(const Move& move) {
     Bitboard& enPassant = m_bitboards.enPassant[isWhite];
 
     // Moved two steps
-    if (move.flags == DoublePawnPush) {
+    if (move.flags == Move_Flags::DoublePawnPush) {
       enPassant.enableBit(BoardIndex(std::midpoint(static_cast<unsigned char>(move.startPos.index),
                                                    static_cast<unsigned char>(move.endPos.index))));
     }
     // Clear en passant
     else {
-      const BoardIndex clearLoc =
-          move.flags == EnPassant ? move.endPos : move.startPos + move.movedPiece.backward();
+      const BoardIndex clearLoc = move.flags == Move_Flags::EnPassant
+                                      ? move.endPos
+                                      : move.startPos + move.movedPiece.backward();
       enPassant.disableBit(clearLoc);
     }
 
     // TODO: Allow for promotion to other pieces
     // Check for promotion
-    if ((move.flags & QueenPromotion) == QueenPromotion) {
+    if ((move.flags & Move_Flags::QueenPromotion) == Move_Flags::QueenPromotion) {
       pieceToAdd = Piece(pieceToAdd.color(), Queen);
     }
   }

@@ -4,6 +4,7 @@
 #include "BoardIndicies.hpp"
 #include "Move.h"
 #include "Piece.hpp"
+#include <vector>
 
 namespace Engine_NS {
 class Board {
@@ -21,6 +22,10 @@ public:
   Bitboard getValidMoves(const BoardIndex& index) const;
 
   void movePiece(const BoardIndex& from, const BoardIndex& to);
+
+  std::vector<BoardIndex> getOccupiedSquares() const;
+
+  std::vector<Move> _getValidPawnMoves(const BoardIndex& index) const;
 
 protected:
   const Bitboards& getBitboards() const;

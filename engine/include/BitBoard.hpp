@@ -2,6 +2,9 @@
 
 #include "BoardIndicies.hpp"
 
+#include <ranges>
+#include <vector>
+
 namespace Engine_NS {
 using BitboardBits = uint_fast64_t;
 
@@ -9,6 +12,12 @@ struct Bitboard {
   explicit Bitboard(const BoardIndex& index) : Bitboard(1ULL << index.index) {}
   explicit(false) Bitboard(const BitboardBits& bits) : bits(bits) {}
   Bitboard() = default;
+
+  std::vector<BoardIndex> getEnabledBits() const {
+    auto enabledBits = std::ranges::views::filter(
+        IndexList, [this](const BoardIndex& index) { return checkBit(index); });
+    return std::vector<BoardIndex>(enabledBits.begin(), enabledBits.end());
+  }
 
   BitboardBits bits = 0;
 

@@ -8,6 +8,7 @@ namespace Engine_NS {
 using MoveFlags = std::byte;
 
 // Flags
+namespace Move_Flags {
 
 constexpr MoveFlags NoFlag{0b00000000};
 constexpr MoveFlags DoublePawnPush{0b00000001};
@@ -17,6 +18,8 @@ constexpr MoveFlags QueenPromotion{0b00000100};
 constexpr MoveFlags KnightPromotion{0b00000101};
 constexpr MoveFlags BishopPromotion{0b00000110};
 constexpr MoveFlags RookPromotion{0b00000111};
+
+} // namespace Move_Flags
 
 struct Move {
   BoardIndex startPos{};
